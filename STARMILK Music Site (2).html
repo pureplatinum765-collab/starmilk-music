@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STARMILK - Music & Community</title>
+    <meta name="description" content="STARMILK: Electronic music artist creating original content. Stream on YouTube, SoundCloud, Spotify. Support directly via BuyMeACoffee, Venmo, PayPal.">
+    <meta name="keywords" content="electronic music, music producer, streaming, independent artist, STARMILK">
+    <meta property="og:title" content="STARMILK - Electronic Music Artist">
+    <meta property="og:description" content="Stream exclusive electronic music on YouTube, SoundCloud, and Spotify. Support independent music creation.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://i.ytimg.com/vi/dFvciU_lq54/maxresdefault.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#00f0ff">
+    <meta property="og:url" content="https://starmilk.music">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #00f0ff;
+            --secondary: #ff00e6;
+            --accent: #ffd700;
+            --bg: #0a0a0f;
+            --surface: #141420;
+            --text: #ffffff;
+            --text-secondary: #b0b0c0;
+            --success: #00ff88;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Animated starfield background */
+        .starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                        radial-gradient(2px 2px at 60px 70px, #fff, rgba(0,0,0,0)),
+                        radial-gradient(1px 1px at 50px 50px, #fff, rgba(0,0,0,0)),
+                        radial-gradient(1px 1px at 130px 80px, #fff, rgba(0,0,0,0)),
+                        radial-gradient(2px 2px at 90px 10px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            animation: twinkle 8s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Header/Navigation */
+        header {
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(10px);
+            background: rgba(10, 10, 15, 0.8);
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+            z-index: 100;
+            padding: 1rem 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-left: 2rem;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 4s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 20px var(--primary)); }
+            50% { filter: drop-shadow(0 0 40px var(--secondary)); }
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 500px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: var(--bg);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 240, 255, 0.4);
+        }
+
+        .cta-button:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .cta-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Sections */
+        section {
+            padding: 4rem 0;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        /* Music Platforms Grid */
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .platform-card {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(255, 0, 230, 0.05));
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .platform-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 40px rgba(0, 240, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .platform-card i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .platform-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .platform-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .platform-link {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            border: 1px solid var(--primary);
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .platform-link:hover {
+            background: var(--primary);
+            color: var(--bg);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 240, 255, 0.3);
+        }
+
+        .platform-link:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* Donation Section */
+        .donation-section {
+            background: linear-gradient(135deg, rgba(255, 0, 230, 0.05), rgba(255, 215, 0, 0.05));
+            border-top: 2px solid var(--accent);
+            border-bottom: 2px solid var(--accent);
+            padding: 3rem 0;
+            margin: 4rem 0;
+        }
+
+        .donation-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .donation-card {
+            background: var(--surface);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .donation-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2);
+        }
+
+        .donation-card i {
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .donation-card h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .donation-btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            color: var(--bg);
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .donation-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(255, 215, 0, 0.35);
+            background: #ffd700;
+        }
+
+        .donation-btn:focus {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .donation-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Newsletter Signup */
+        .newsletter {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(0, 255, 136, 0.05));
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 12px;
+            padding: 2.5rem;
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .newsletter h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .newsletter p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .newsletter-form input {
+            flex: 1;
+            min-width: 250px;
+            padding: 0.75rem 1.25rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--primary);
+            border-radius: 25px;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .newsletter-form input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .newsletter-form input:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--secondary);
+        }
+
+        .newsletter-form button {
+            padding: 0.75rem 2rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: var(--bg);
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .newsletter-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 240, 255, 0.3);
+        }
+
+        /* Social Links */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 50%;
+            color: var(--primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1.25rem;
+        }
+
+        .social-link:hover {
+            background: var(--primary);
+            color: var(--bg);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 10px 25px rgba(0, 240, 255, 0.3);
+        }
+
+        .social-link:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 3px;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(0, 240, 255, 0.05);
+            border-top: 1px solid rgba(0, 240, 255, 0.2);
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: 4rem;
+        }
+
+        /* Loading animation for async content */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        /* Accessibility: Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            .starfield {
+                animation: none;
+            }
+
+            @keyframes glow {
+                0%, 100% { filter: drop-shadow(0 0 10px var(--primary)); }
+                50% { filter: drop-shadow(0 0 15px var(--secondary)); }
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-wrap: wrap;
+            }
+
+            nav {
+                flex-basis: 100%;
+                margin-top: 1rem;
+                text-align: center;
+            }
+
+            nav a {
+                margin: 0 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .newsletter-form input {
+                min-width: unset;
+            }
+
+            .platform-card, .donation-card {
+                padding: 1.5rem;
+            }
+
+            section {
+                padding: 2.5rem 0;
+            }
+
+            .social-link {
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Utility */
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-4 {
+            margin-top: 2rem;
+        }
+
+        .opacity-secondary {
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="starfield"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <a href="#" class="logo">STARMILK</a>
+            <nav>
+                <a href="#stream">Stream</a>
+                <a href="#support">Support</a>
+                <a href="#connect">Connect</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>STARMILK</h1>
+            <p class="tagline">Born from the trembling. Raised by rivers. Where quantum physics meets childhood trauma and decides to dance.<br><span style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 1rem; display: block;">This is DNA remembering how to sing. Living mythology poured straight from the wound into the light.</span></p>
+            <a href="#stream" class="cta-button">Explore Music</a>
+        </div>
+    </section>
+
+    <!-- Streaming Platforms -->
+    <section id="stream">
+        <div class="container">
+            <div class="section-header">
+                <h2>Stream My Music</h2>
+                <p style="color: var(--text-secondary);">Available on all major platforms</p>
+            </div>
+
+            <div class="platforms-grid">
+                <!-- YouTube -->
+                <div class="platform-card">
+                    <i class="fab fa-youtube"></i>
+                    <h3>YouTube</h3>
+                    <p>Visual journey through the quantum scripture. Every track is a doorway.</p>
+                    <a href="https://youtu.be/dFvciU_lq54?si=dDXeVGeqiDkxkAr_" class="platform-link" target="_blank" rel="noopener noreferrer">Watch Now</a>
+                </div>
+
+                <!-- SoundCloud -->
+                <div class="platform-card">
+                    <i class="fab fa-soundcloud"></i>
+                    <h3>SoundCloud</h3>
+                    <p>Full catalog of tracks, early releases, and community feedback</p>
+                    <a href="https://soundcloud.com/starmilk" class="platform-link" target="_blank">Listen Now</a>
+                </div>
+
+                <!-- Spotify -->
+                <div class="platform-card">
+                    <i class="fab fa-spotify"></i>
+                    <h3>Spotify</h3>
+                    <p>Official releases distributed through DistroKid. Where breaking becomes breakthrough.</p>
+                    <a href="https://open.spotify.com/artist/6ZJBd6IllHctGDa3GhbQnK?si=hmxemmVfSZaoB15C4Gd4Uw" class="platform-link" target="_blank" rel="noopener noreferrer">Follow</a>
+                </div>
+
+                <!-- Apple Music -->
+                <div class="platform-card">
+                    <i class="fas fa-music"></i>
+                    <h3>Apple Music</h3>
+                    <p>High-quality audio streaming. Listen to Beautiful Mystical Mutant and 20+ tracks.</p>
+                    <a href="https://music.apple.com/us/artist/starmilk/1849551724" class="platform-link" target="_blank">Listen</a>
+                </div>
+
+                <!-- Bandcamp (optional) -->
+                <div class="platform-card">
+                    <i class="fab fa-bandcamp"></i>
+                    <h3>Other Platforms</h3>
+                    <p>Amazon Music, Tidal, and more via DistroKid</p>
+                    <a href="https://distrokid.com" class="platform-link" target="_blank">Explore</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Support/Donation Section -->
+    <section id="support" class="donation-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Support the Music</h2>
+                <p style="color: var(--text-secondary);">Direct support helps me create more music. SoundCloud doesn't pay creators, so your contribution goes directly to production.</p>
+            </div>
+
+            <div style="background: rgba(0, 240, 255, 0.08); border-left: 3px solid var(--primary); padding: 1.5rem; border-radius: 8px; margin-bottom: 2.5rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                <p style="color: var(--text); font-size: 1rem; line-height: 1.8; margin: 0; font-weight: 500;">
+                    We are, by nature, compassionate beings. The more we follow our intuition towards goodness and love, the more we start to align with the true way of things. Sharing these songs is simply a reflection of that alignment. It is a joy to be here with you, tapping into that unified potency and remembering the deep collective knowing of peace that exists when we allow ourselves to just be, especially when we feel connection to one another.
+                </p>
+            </div>
+
+            <div class="donation-cards">
+                <!-- BuyMeACoffee -->
+                <div class="donation-card">
+                    <i class="fas fa-coffee"></i>
+                    <h3>Buy Me a Coffee</h3>
+                    <p>Support the river. One-time or recurring.</p>
+                    <a href="https://buymeacoffee.com/pureplatinb" class="donation-btn" target="_blank" rel="noopener noreferrer">Support</a>
+                </div>
+
+                <!-- PayPal -->
+                <div class="donation-card">
+                    <i class="fab fa-paypal"></i>
+                    <h3>PayPal</h3>
+                    <p>Secure direct payment</p>
+                    <a href="https://paypal.me/starmilk" class="donation-btn" target="_blank" rel="noopener noreferrer">Donate</a>
+                </div>
+
+                <!-- Venmo -->
+                <div class="donation-card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>Venmo</h3>
+                    <p>Business payments @STARMILKLABS</p>
+                    <a href="https://www.venmo.com/u/STARMILKLABS" class="donation-btn" target="_blank" rel="noopener noreferrer">Send</a>
+                </div>
+
+                <!-- SoundCloud Support -->
+                <div class="donation-card">
+                    <i class="fas fa-hand-holding-heart"></i>
+                    <h3>SoundCloud Support</h3>
+                    <p>Direct support on SoundCloud</p>
+                    <a href="https://on.soundcloud.com/FU4YTMfLTxsTTly2Ku" class="donation-btn" target="_blank" rel="noopener noreferrer">Support</a>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem; color: var(--text-secondary); font-size: 0.95rem;">
+                <p>💡 <strong>Why direct support?</strong> SoundCloud creators don't receive direct payments, so your generous donations help fund studio time, equipment, and production of new music.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Signup -->
+    <section>
+        <div class="container">
+            <div class="newsletter">
+                <h3>Stay Updated</h3>
+                <p>Get notified about new releases, exclusive content, and special announcements</p>
+                <form class="newsletter-form" onsubmit="handleNewsletterSignup(event)">
+                    <input 
+                        type="email" 
+                        placeholder="Enter your email" 
+                        required 
+                        id="emailInput"
+                    >
+                    <button type="submit">Subscribe</button>
+                </form>
+                <p style="font-size: 0.85rem; margin-top: 1rem; color: var(--text-secondary);">No spam, just music updates. Unsubscribe anytime.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Connect Section -->
+    <section id="connect">
+        <div class="container text-center">
+            <div class="section-header">
+                <h2>Connect</h2>
+                <p style="color: var(--text-secondary);">Follow for daily updates and behind-the-scenes content</p>
+            </div>
+
+            <div class="social-links">
+                <a href="https://www.instagram.com/starmilk_labz?igsh=cTJpMWNpcXppbjgy" class="social-link" title="Instagram" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.tiktok.com/@starmilk1?_t=ZP-90xWzsjiLWQ&_r=1" class="social-link" title="TikTok" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-tiktok"></i>
+                </a>
+                <a href="https://youtu.be/dFvciU_lq54?si=dDXeVGeqiDkxkAr_" class="social-link" title="YouTube" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-youtube"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 STARMILK. All rights reserved.</p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem;">Electronic Music | Direct to Fans | No Middlemen</p>
+        </div>
+    </footer>
+
+    <script>
+        // Newsletter signup with validation
+        function handleNewsletterSignup(event) {
+            event.preventDefault();
+            const email = document.getElementById('emailInput').value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+            
+            // In production: Send to Mailchimp, ConvertKit, etc.
+            console.log('Newsletter signup:', email);
+            
+            // UX feedback
+            alert(`Thanks for subscribing! Check your email for confirmation updates.`);
+            document.getElementById('emailInput').value = '';
+        }
+
+        // Intersection Observer for scroll-triggered animations
+        const observerConfig = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerConfig);
+
+        // Observe all cards for lazy animations
+        document.querySelectorAll('.platform-card, .donation-card').forEach(el => {
+            el.classList.add('fade-in');
+            observer.observe(el);
+        });
+
+        // Keyboard navigation enhancement
+        document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && e.target.tagName === 'A') {
+                    e.target.click();
+                }
+            });
+        });
+
+        // Performance: Lazy load external images (future feature)
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Image lazy loading logic here
+                        observer.unobserve(entry.target);
+                    }
+                });
+            });
+        }
+
+        // Analytics event tracking (optional)
+        function trackEvent(category, action, label) {
+            console.log(`Event tracked: ${category} > ${action} > ${label}`);
+            // In production: Send to Google Analytics, Plausible, etc.
+        }
+
+        // Track clicks to streaming platforms
+        document.querySelectorAll('.platform-link').forEach(link => {
+            link.addEventListener('click', () => {
+                trackEvent('streaming', 'click', link.textContent);
+            });
+        });
+
+        // Track donation button clicks
+        document.querySelectorAll('.donation-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                trackEvent('donation', 'click', btn.parentElement.querySelector('h3').textContent);
+            });
+        });
+    </script>
+</body>
+</html>
