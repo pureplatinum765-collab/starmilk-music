@@ -13,25 +13,30 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="STARMILK | Cosmic Electronic Music" />
   <meta name="twitter:description" content="Where quantum physics meets childhood trauma and decides to dance." />
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%239333ea'/%3E%3Cstop offset='100%25' stop-color='%234338ca'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpolygon points='50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35' fill='url(%23g)'/%3E%3C/svg%3E" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23f59e0b'/%3E%3Cstop offset='50%25' stop-color='%239333ea'/%3E%3Cstop offset='100%25' stop-color='%234338ca'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpolygon points='50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35' fill='url(%23g)'/%3E%3C/svg%3E" />
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:        #0a0010;
-      --card:      #140b24;
-      --purple:    #9333ea;
-      --indigo:    #6366f1;
-      --violet:    #7c3aed;
-      --text:      #e2d9f3;
-      --muted:     #9d8ec4;
-      --radius:    16px;
-      --t:         .35s cubic-bezier(.4,0,.2,1);
-      --card-shadow: 0 0 0 1px rgba(147,51,234,.3), 0 4px 40px rgba(99,102,241,.15);
+      --bg:          #0a0010;
+      --card:        #120920;
+      --purple:      #9333ea;
+      --indigo:      #6366f1;
+      --violet:      #7c3aed;
+      --teal:        #0d9488;
+      --teal-light:  #2dd4bf;
+      --gold:        #f59e0b;
+      --gold-light:  #fcd34d;
+      --text:        #e2d9f3;
+      --muted:       #9d8ec4;
+      --radius:      16px;
+      --t:           .35s cubic-bezier(.4,0,.2,1);
+      --card-shadow: 0 0 0 1px rgba(147,51,234,.25), 0 4px 40px rgba(99,102,241,.12);
       --card-hover:  0 0 0 1px rgba(147,51,234,.85), 0 8px 60px rgba(147,51,234,.5), 0 0 30px rgba(99,102,241,.3);
-      --glow-sm:   0 0 12px rgba(147,51,234,.65), 0 0 30px rgba(99,102,241,.3);
-      --glow-lg:   0 0 20px rgba(147,51,234,.9), 0 0 60px rgba(99,102,241,.55), 0 0 100px rgba(124,58,237,.25);
+      --glow-sm:     0 0 12px rgba(147,51,234,.65), 0 0 30px rgba(99,102,241,.3);
+      --glow-lg:     0 0 20px rgba(147,51,234,.9), 0 0 60px rgba(99,102,241,.55), 0 0 100px rgba(124,58,237,.25);
+      --gold-glow:   0 0 18px rgba(245,158,11,.8), 0 0 50px rgba(245,158,11,.35);
     }
 
     html { scroll-behavior: smooth; }
@@ -52,16 +57,18 @@
       html { scroll-behavior: auto; }
     }
 
-    /* Canvas */
-    #starfield {
+    /* ── Canvas layers ── */
+    #starfield, #particles {
       position: fixed;
       inset: 0;
-      z-index: 0;
       pointer-events: none;
     }
 
-    /* Wrapper */
-    .wrap { position: relative; z-index: 1; }
+    #starfield  { z-index: 0; image-rendering: optimizeSpeed; }
+    #particles  { z-index: 1; }
+
+    /* ── Wrapper ── */
+    .wrap { position: relative; z-index: 2; }
 
     /* ── Nav ── */
     nav {
@@ -72,23 +79,30 @@
       justify-content: space-between;
       align-items: center;
       padding: 1.1rem 2rem;
-      background: rgba(10,0,16,.7);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border-bottom: 1px solid rgba(147,51,234,.14);
+      background: rgba(10,0,16,.72);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(245,158,11,.1);
       transition: background var(--t);
     }
 
     .nav-logo {
       font-size: 1.35rem;
       font-weight: 900;
-      letter-spacing: .2em;
+      letter-spacing: .22em;
       text-transform: uppercase;
-      background: linear-gradient(130deg, #c084fc, var(--indigo));
+      background: linear-gradient(120deg, var(--gold-light) 0%, #c084fc 40%, var(--indigo) 70%, var(--gold-light) 100%);
+      background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      filter: drop-shadow(0 0 10px rgba(147,51,234,.7));
+      animation: logoShimmer 7s linear infinite;
+      filter: drop-shadow(0 0 10px rgba(147,51,234,.55));
+    }
+
+    @keyframes logoShimmer {
+      from { background-position: 0% center; }
+      to   { background-position: 200% center; }
     }
 
     .nav-links {
@@ -107,8 +121,8 @@
     }
 
     .nav-links a:hover {
-      color: #fff;
-      text-shadow: 0 0 10px rgba(147,51,234,.9);
+      color: var(--gold-light);
+      text-shadow: 0 0 12px rgba(245,158,11,.8);
     }
 
     @media (max-width: 550px) {
@@ -129,8 +143,9 @@
       font-size: .7rem;
       letter-spacing: .35em;
       text-transform: uppercase;
-      color: var(--purple);
+      color: var(--gold);
       margin-bottom: .6rem;
+      text-shadow: 0 0 12px rgba(245,158,11,.6);
     }
 
     .section-title {
@@ -138,7 +153,7 @@
       font-weight: 900;
       letter-spacing: .06em;
       text-transform: uppercase;
-      background: linear-gradient(135deg, #fff 0%, var(--text) 55%, #818cf8 100%);
+      background: linear-gradient(135deg, #fff 0%, var(--gold-light) 20%, var(--text) 50%, #818cf8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -150,7 +165,14 @@
       height: 1px;
       max-width: 1100px;
       margin: 0 auto;
-      background: linear-gradient(90deg, transparent, rgba(147,51,234,.4), rgba(99,102,241,.3), transparent);
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(245,158,11,.25),
+        rgba(147,51,234,.45),
+        rgba(13,148,136,.3),
+        rgba(245,158,11,.2),
+        transparent);
+      box-shadow: 0 0 10px rgba(245,158,11,.1);
     }
 
     /* ── Grid ── */
@@ -177,18 +199,35 @@
       transition: transform var(--t), box-shadow var(--t);
     }
 
-    .card::after {
+    .card::before {
       content: '';
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      background: linear-gradient(135deg, rgba(147,51,234,.07), rgba(99,102,241,.04));
+      background: linear-gradient(135deg,
+        rgba(245,158,11,.04) 0%,
+        rgba(147,51,234,.06) 50%,
+        rgba(13,148,136,.04) 100%);
       opacity: 0;
       transition: opacity var(--t);
     }
 
+    .card::after {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at 50% 50%,
+        rgba(245,158,11,.05) 0%,
+        transparent 60%);
+      opacity: 0;
+      transition: opacity var(--t);
+      pointer-events: none;
+    }
+
     .card:hover { transform: translateY(-7px) scale(1.015); box-shadow: var(--card-hover); }
-    .card:hover::after { opacity: 1; }
+    .card:hover::before { opacity: 1; }
+    .card:hover::after  { opacity: 1; }
 
     .card-icon {
       width: 50px;
@@ -237,6 +276,34 @@
 
     .card:hover .card-arrow { gap: .75rem; color: #a5b4fc; }
 
+    /* Teal card variant */
+    .card-teal .card-icon {
+      background: rgba(13,148,136,.13);
+      border-color: rgba(13,148,136,.22);
+    }
+    .card-teal .card-plat  { color: var(--teal); }
+    .card-teal .card-arrow { color: var(--teal); }
+    .card-teal:hover {
+      box-shadow: 0 0 0 1px rgba(13,148,136,.85),
+                  0 8px 60px rgba(13,148,136,.45),
+                  0 0 30px rgba(45,212,191,.25);
+    }
+    .card-teal:hover .card-arrow { color: var(--teal-light); }
+
+    /* Gold card variant */
+    .card-gold .card-icon {
+      background: rgba(245,158,11,.1);
+      border-color: rgba(245,158,11,.22);
+    }
+    .card-gold .card-plat  { color: var(--gold); }
+    .card-gold .card-arrow { color: var(--gold); }
+    .card-gold:hover {
+      box-shadow: 0 0 0 1px rgba(245,158,11,.85),
+                  0 8px 55px rgba(245,158,11,.4),
+                  0 0 30px rgba(252,211,77,.2);
+    }
+    .card-gold:hover .card-arrow { color: var(--gold-light); }
+
     /* ── Hero ── */
     #hero {
       min-height: 100vh;
@@ -250,44 +317,81 @@
       overflow: hidden;
     }
 
+    /* Nebula gradient overlay in hero */
     .nebula {
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse 80% 55% at 50% 38%, rgba(124,58,237,.2) 0%, transparent 68%),
-        radial-gradient(ellipse 50% 38% at 18% 78%, rgba(147,51,234,.13) 0%, transparent 60%),
-        radial-gradient(ellipse 55% 45% at 82% 20%, rgba(99,102,241,.11) 0%, transparent 60%);
+        radial-gradient(ellipse 80% 55% at 50% 38%, rgba(124,58,237,.22) 0%, transparent 68%),
+        radial-gradient(ellipse 50% 38% at 18% 78%, rgba(245,158,11,.08) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 45% at 82% 20%, rgba(13,148,136,.1) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 30% at 65% 72%, rgba(99,102,241,.1) 0%, transparent 55%);
       animation: nebPulse 9s ease-in-out infinite alternate;
       pointer-events: none;
     }
 
     @keyframes nebPulse {
-      from { opacity: .65; }
+      from { opacity: .6; }
       to   { opacity: 1; }
     }
 
+    /* Sacred geometry rings */
     .ring {
       position: absolute;
       border-radius: 50%;
-      border: 1px solid rgba(147,51,234,.1);
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       pointer-events: none;
       animation: spin 45s linear infinite;
     }
 
-    .ring:nth-child(2) { width: 520px; height: 520px; animation-duration: 40s; }
-    .ring:nth-child(3) { width: 760px; height: 760px; animation-direction: reverse; animation-duration: 60s; border-color: rgba(99,102,241,.07); }
+    /* Four rings: gold inner, purple mid, teal outer, gold outermost */
+    .ring.r1 {
+      width: 280px; height: 280px;
+      border: 1px solid rgba(245,158,11,.18);
+      animation-duration: 22s;
+    }
+    .ring.r2 {
+      width: 520px; height: 520px;
+      border: 1px solid rgba(147,51,234,.12);
+      animation-duration: 40s;
+    }
+    .ring.r3 {
+      width: 760px; height: 760px;
+      border: 1px solid rgba(13,148,136,.09);
+      animation-direction: reverse;
+      animation-duration: 65s;
+    }
+    .ring.r4 {
+      width: 1050px; height: 1050px;
+      border: 1px solid rgba(245,158,11,.05);
+      animation-duration: 95s;
+      animation-direction: reverse;
+    }
+
+    /* Decorative dots on the inner ring */
+    .ring.r1::before, .ring.r1::after {
+      content: '';
+      position: absolute;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 10px rgba(245,158,11,.9);
+    }
+    .ring.r1::before { top: -3px; left: 50%; transform: translateX(-50%); }
+    .ring.r1::after  { bottom: -3px; left: 50%; transform: translateX(-50%); }
 
     @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
 
-    .hero-content { position: relative; z-index: 2; }
+    /* Hero content sits above nebula and rings */
+    .hero-content { position: relative; z-index: 3; }
 
     .hero-eyebrow {
       font-size: .75rem;
       letter-spacing: .42em;
       text-transform: uppercase;
-      color: var(--purple);
+      color: var(--gold);
+      text-shadow: 0 0 14px rgba(245,158,11,.7);
       margin-bottom: 1.6rem;
       animation: fadeUp .8s ease both;
     }
@@ -299,17 +403,38 @@
       text-transform: uppercase;
       line-height: .92;
       margin-bottom: 2.2rem;
-      background: linear-gradient(140deg, #fff 0%, #d8b4fe 35%, #818cf8 70%, #c4b5fd 100%);
+      background: linear-gradient(140deg,
+        #fff       0%,
+        #fcd34d   18%,
+        #d8b4fe   38%,
+        #818cf8   62%,
+        #fbbf24   78%,
+        #c4b5fd  100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      filter: drop-shadow(0 0 35px rgba(147,51,234,.75)) drop-shadow(0 0 80px rgba(99,102,241,.4));
-      animation: fadeUp .8s .12s ease both, titleGlow 4.5s 1s ease-in-out infinite alternate;
+      filter:
+        drop-shadow(0 0 35px rgba(147,51,234,.75))
+        drop-shadow(0 0 80px rgba(99,102,241,.4));
+      animation:
+        fadeUp    .8s .12s ease both,
+        titleGlow 4.5s 1s ease-in-out infinite alternate;
     }
 
     @keyframes titleGlow {
-      from { filter: drop-shadow(0 0 30px rgba(147,51,234,.7)) drop-shadow(0 0 60px rgba(99,102,241,.35)); }
-      to   { filter: drop-shadow(0 0 55px rgba(147,51,234,.95)) drop-shadow(0 0 110px rgba(99,102,241,.6)) drop-shadow(0 0 18px rgba(216,180,254,.35)); }
+      from {
+        filter:
+          drop-shadow(0 0 28px rgba(147,51,234,.7))
+          drop-shadow(0 0 55px rgba(99,102,241,.35))
+          drop-shadow(0 0 12px rgba(245,158,11,.2));
+      }
+      to {
+        filter:
+          drop-shadow(0 0 50px rgba(147,51,234,.95))
+          drop-shadow(0 0 100px rgba(99,102,241,.6))
+          drop-shadow(0 0 25px rgba(245,158,11,.45))
+          drop-shadow(0 0 60px rgba(13,148,136,.2));
+      }
     }
 
     @keyframes fadeUp {
@@ -347,7 +472,7 @@
       letter-spacing: .07em;
       text-transform: uppercase;
       box-shadow: var(--glow-sm), 0 4px 28px rgba(99,102,241,.4);
-      transition: transform var(--t), box-shadow var(--t);
+      transition: transform var(--t), box-shadow var(--t), background var(--t);
       animation: fadeUp .8s .4s ease both;
       border: none;
       cursor: pointer;
@@ -355,9 +480,57 @@
 
     .btn:hover {
       transform: translateY(-4px) scale(1.05);
-      box-shadow: var(--glow-lg), 0 10px 45px rgba(99,102,241,.55);
+      background: linear-gradient(135deg, var(--gold), #d97706);
+      box-shadow: var(--gold-glow), 0 10px 45px rgba(245,158,11,.4);
     }
 
+    /* ── Gold dripping stars in hero ── */
+    .hero-gstars {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .gstar {
+      position: absolute;
+      color: var(--gold);
+      font-size: var(--sz, 1.2rem);
+      font-style: normal;
+      line-height: 1;
+      filter:
+        drop-shadow(0 0 6px rgba(245,158,11,.9))
+        drop-shadow(0 0 18px rgba(245,158,11,.45));
+      animation: gPulse var(--dur, 3.2s) var(--del, 0s) ease-in-out infinite;
+    }
+
+    .gstar::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -2px;
+      transform: translateX(-50%);
+      width: 1.5px;
+      height: 0;
+      background: linear-gradient(to bottom, rgba(245,158,11,.95), rgba(252,211,77,.3), transparent);
+      animation: gDrip var(--dur, 3.2s) var(--del, 0s) ease-in infinite;
+    }
+
+    @keyframes gPulse {
+      0%, 100% { opacity: .18; transform: scale(.88) translateY(2px); }
+      45%, 55% { opacity: 1;   transform: scale(1.12) translateY(-2px); }
+    }
+
+    @keyframes gDrip {
+      0%, 20%  { height: 0;    opacity: 0; }
+      42%      { height: 0;    opacity: 0; }
+      55%      { height: 10px; opacity: .95; }
+      75%      { height: 45px; opacity: .6; }
+      100%     { height: 65px; opacity: 0; }
+    }
+
+    /* Scroll cue */
     .scroll-cue {
       position: absolute;
       bottom: 2.5rem;
@@ -378,7 +551,7 @@
       width: 22px;
       height: 36px;
       border-radius: 11px;
-      border: 2px solid rgba(147,51,234,.35);
+      border: 2px solid rgba(245,158,11,.35);
       position: relative;
     }
 
@@ -389,7 +562,7 @@
       transform: translateX(-50%);
       width: 4px; height: 9px;
       border-radius: 2px;
-      background: var(--purple);
+      background: var(--gold);
       animation: scrollDot 1.9s ease-in-out infinite;
     }
 
@@ -408,14 +581,16 @@
 
     /* ── Support ── */
     #support {
-      background: radial-gradient(ellipse 75% 55% at 50% 50%, rgba(124,58,237,.09) 0%, transparent 70%);
+      background: radial-gradient(ellipse 75% 55% at 50% 50%, rgba(124,58,237,.07) 0%, transparent 70%);
     }
 
     blockquote {
-      border-left: 4px solid var(--purple);
+      border-left: 3px solid var(--gold);
       border-radius: 0 var(--radius) var(--radius) 0;
       background: var(--card);
-      box-shadow: var(--card-shadow);
+      box-shadow:
+        var(--card-shadow),
+        inset 0 0 30px rgba(245,158,11,.04);
       padding: 1.4rem 1.8rem;
       font-style: italic;
       color: var(--text);
@@ -429,15 +604,15 @@
       margin-top: 2rem;
       padding: 1.2rem 1.5rem;
       border-radius: var(--radius);
-      background: rgba(147,51,234,.08);
-      border: 1px solid rgba(147,51,234,.2);
+      background: rgba(13,148,136,.06);
+      border: 1px solid rgba(13,148,136,.2);
       font-size: .86rem;
       color: var(--muted);
       line-height: 1.75;
       max-width: 650px;
     }
 
-    .note strong { color: var(--text); }
+    .note strong { color: var(--teal-light); }
 
     /* ── Connect ── */
     #connect .section-inner { text-align: center; }
@@ -472,9 +647,9 @@
 
     .soc-btn:hover {
       transform: translateY(-4px);
-      border-color: var(--purple);
-      background: rgba(147,51,234,.13);
-      box-shadow: 0 0 22px rgba(147,51,234,.45), 0 6px 28px rgba(99,102,241,.22);
+      border-color: var(--gold);
+      background: rgba(245,158,11,.08);
+      box-shadow: 0 0 22px rgba(245,158,11,.35), 0 6px 28px rgba(99,102,241,.2);
     }
 
     .soc-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
@@ -483,7 +658,8 @@
     footer {
       text-align: center;
       padding: 3rem 1.5rem;
-      border-top: 1px solid rgba(147,51,234,.14);
+      border-top: 1px solid rgba(245,158,11,.12);
+      background: linear-gradient(180deg, transparent, rgba(10,0,16,.6));
     }
 
     .footer-name {
@@ -491,11 +667,11 @@
       font-weight: 900;
       letter-spacing: .2em;
       text-transform: uppercase;
-      background: linear-gradient(130deg, #c084fc, var(--indigo));
+      background: linear-gradient(130deg, var(--gold-light), #c084fc, var(--indigo));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      filter: drop-shadow(0 0 8px rgba(147,51,234,.55));
+      filter: drop-shadow(0 0 8px rgba(245,158,11,.4));
       margin-bottom: .6rem;
     }
 
@@ -526,12 +702,16 @@
 
     @media (prefers-reduced-motion: reduce) {
       .reveal { opacity: 1; transform: none; }
+      .gstar, .gstar::after { animation: none !important; }
+      .gstar { opacity: .5; }
     }
   </style>
 </head>
 <body>
 
+<!-- WebGL cosmic background -->
 <canvas id="starfield" aria-hidden="true"></canvas>
+<!-- 2D particle overlay (stars + gold particles) — created in JS if WebGL available -->
 
 <div class="wrap">
 
@@ -548,8 +728,23 @@
   <!-- ═══ HERO ═══════════════════════════════════════════════════ -->
   <section id="hero" aria-label="Hero">
     <div class="nebula" aria-hidden="true"></div>
-    <div class="ring" aria-hidden="true"></div>
-    <div class="ring" aria-hidden="true"></div>
+
+    <!-- Sacred geometry rings -->
+    <div class="ring r1" aria-hidden="true"></div>
+    <div class="ring r2" aria-hidden="true"></div>
+    <div class="ring r3" aria-hidden="true"></div>
+    <div class="ring r4" aria-hidden="true"></div>
+
+    <!-- Dripping golden stars -->
+    <div class="hero-gstars" aria-hidden="true">
+      <span class="gstar" style="left:8%; top:22%; --sz:1.5rem; --dur:3.8s; --del:0s">✦</span>
+      <span class="gstar" style="left:22%;top:68%; --sz:1.0rem; --dur:4.5s; --del:1.2s">★</span>
+      <span class="gstar" style="left:38%;top:15%; --sz:1.2rem; --dur:3.1s; --del:2.3s">✧</span>
+      <span class="gstar" style="left:62%;top:78%; --sz:0.9rem; --dur:5.0s; --del:0.7s">✦</span>
+      <span class="gstar" style="left:75%;top:20%; --sz:1.6rem; --dur:3.5s; --del:1.8s">★</span>
+      <span class="gstar" style="left:88%;top:55%; --sz:1.1rem; --dur:4.2s; --del:3.1s">✧</span>
+      <span class="gstar" style="left:50%;top:85%; --sz:1.3rem; --dur:3.9s; --del:0.5s">✦</span>
+    </div>
 
     <div class="hero-content">
       <p class="hero-eyebrow">Cosmic Electronic Music</p>
@@ -582,8 +777,8 @@
 
       <div class="grid">
 
-        <!-- YouTube -->
-        <a class="card reveal" href="https://www.youtube.com/@starmilk6719" target="_blank" rel="noopener noreferrer">
+        <!-- YouTube — gold accent -->
+        <a class="card card-gold reveal" href="https://www.youtube.com/@starmilk6719" target="_blank" rel="noopener noreferrer">
           <div class="card-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M22.54 6.42A2.78 2.78 0 0 0 20.59 4.5C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.5C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" fill="#FF0000"/>
@@ -596,8 +791,8 @@
           <span class="card-arrow">Watch now &#8594;</span>
         </a>
 
-        <!-- SoundCloud -->
-        <a class="card reveal" href="https://soundcloud.com/starmilk" target="_blank" rel="noopener noreferrer">
+        <!-- SoundCloud — teal accent -->
+        <a class="card card-teal reveal" href="https://soundcloud.com/starmilk" target="_blank" rel="noopener noreferrer">
           <div class="card-icon">
             <svg width="28" height="20" viewBox="0 0 120 50" aria-hidden="true">
               <path d="M0 35c0 8.3 6.7 15 15 15s15-6.7 15-15V20C30 11.7 23.3 5 15 5 7.8 5 1.8 10 .3 17 .1 18 0 19 0 20v15z" fill="#FF5500"/>
@@ -650,12 +845,12 @@
           <span class="card-arrow">Open Apple Music &#8594;</span>
         </a>
 
-        <!-- Other Platforms -->
-        <a class="card reveal" href="https://distrokid.com/" target="_blank" rel="noopener noreferrer">
+        <!-- Other Platforms — teal accent -->
+        <a class="card card-teal reveal" href="https://distrokid.com/" target="_blank" rel="noopener noreferrer">
           <div class="card-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" stroke="#9333ea" stroke-width="1.5"/>
-              <path d="M12 2a10 10 0 0 1 0 20M2 12h20M3.5 7h17M3.5 17h17" stroke="#9333ea" stroke-width="1.2" stroke-linecap="round"/>
+              <circle cx="12" cy="12" r="10" stroke="#0d9488" stroke-width="1.5"/>
+              <path d="M12 2a10 10 0 0 1 0 20M2 12h20M3.5 7h17M3.5 17h17" stroke="#0d9488" stroke-width="1.2" stroke-linecap="round"/>
             </svg>
           </div>
           <span class="card-plat">All Platforms</span>
@@ -683,13 +878,13 @@
 
       <div class="grid">
 
-        <!-- Buy Me a Coffee -->
-        <a class="card reveal" href="https://buymeacoffee.com/pureplatinb" target="_blank" rel="noopener noreferrer">
+        <!-- Buy Me a Coffee — gold accent -->
+        <a class="card card-gold reveal" href="https://buymeacoffee.com/pureplatinb" target="_blank" rel="noopener noreferrer">
           <div class="card-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M18 8h1a4 4 0 0 1 0 8h-1" stroke="#FFDD00" stroke-width="2" stroke-linecap="round"/>
-              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" stroke="#FFDD00" stroke-width="2" stroke-linecap="round"/>
-              <path d="M6 1v3M10 1v3M14 1v3" stroke="#FFDD00" stroke-width="2" stroke-linecap="round"/>
+              <path d="M18 8h1a4 4 0 0 1 0 8h-1" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+              <path d="M6 1v3M10 1v3M14 1v3" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
             </svg>
           </div>
           <span class="card-plat">Buy Me a Coffee</span>
@@ -718,8 +913,8 @@
           <span class="card-arrow">Donate via PayPal &#8594;</span>
         </a>
 
-        <!-- Venmo -->
-        <a class="card reveal" href="https://www.venmo.com/u/STARMILKLABS" target="_blank" rel="noopener noreferrer">
+        <!-- Venmo — teal accent -->
+        <a class="card card-teal reveal" href="https://www.venmo.com/u/STARMILKLABS" target="_blank" rel="noopener noreferrer">
           <div class="card-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <rect width="24" height="24" rx="6" fill="#3D95CE"/>
@@ -820,58 +1015,311 @@
 (function () {
   'use strict';
 
-  /* ─── Star field ───────────────────────────────────────────── */
-  const canvas = document.getElementById('starfield');
-  const ctx    = canvas.getContext('2d');
   const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isMobile = window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent);
 
-  let W, H, stars, nebulae;
+  /* ═══════════════════════════════════════════════════════════════
+     WebGL COSMIC BACKGROUND — Van Gogh domain-warped nebula shader
+     ═══════════════════════════════════════════════════════════════ */
 
-  function r(lo, hi) { return lo + Math.random() * (hi - lo); }
+  const starfield = document.getElementById('starfield');
+  let gl = null, useWebGL = false;
 
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-
-    stars = Array.from({ length: 260 }, () => ({
-      x: r(0, W), y: r(0, H),
-      rad: r(0.25, 1.9),
-      a:   r(0.15, 1),
-      spd: r(0.0003, 0.0009),
-      ph:  r(0, Math.PI * 2),
-      dx:  r(-0.035, 0.035),
-      dy:  r(-0.012, 0.012),
-    }));
-
-    nebulae = Array.from({ length: 6 }, () => ({
-      x:   r(W * .1, W * .9),
-      y:   r(H * .1, H * .9),
-      rx:  r(W * .14, W * .32),
-      ry:  r(H * .09, H * .22),
-      hue: r(255, 295),
-      a:   r(0.022, 0.058),
-    }));
+  if (!REDUCED) {
+    try {
+      gl = starfield.getContext('webgl') ||
+           starfield.getContext('experimental-webgl');
+      if (gl) useWebGL = true;
+    } catch (e) { /* fallback to 2D */ }
   }
 
-  function draw(ts) {
+  /* ── WebGL path ── */
+  if (useWebGL) {
+
+    // Render at lower resolution for performance, stretch with CSS
+    const SCALE = isMobile ? 0.32 : 0.55;
+
+    function resizeGL() {
+      const W = Math.ceil(window.innerWidth  * SCALE);
+      const H = Math.ceil(window.innerHeight * SCALE);
+      starfield.width  = W;
+      starfield.height = H;
+      starfield.style.width  = window.innerWidth  + 'px';
+      starfield.style.height = window.innerHeight + 'px';
+      gl.viewport(0, 0, W, H);
+    }
+
+    // ── Vertex shader (trivial fullscreen quad)
+    const VERT = `attribute vec2 a;void main(){gl_Position=vec4(a,0,1);}`;
+
+    // ── Fragment shader: Van Gogh domain-warped FBM, brand palette
+    // Colors flow: void → midnight blue → cosmic teal → deep purple → vivid purple → molten gold → bright gold
+    const FRAG = `precision mediump float;
+uniform float T;
+uniform vec2 R;
+
+// Gradient noise helpers
+vec2 h2(vec2 p){
+  p=vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3)));
+  return -1.+2.*fract(sin(p)*43758.5453);
+}
+float gn(vec2 p){
+  vec2 i=floor(p),f=fract(p),u=f*f*(3.-2.*f);
+  return mix(
+    mix(dot(h2(i),f),        dot(h2(i+vec2(1,0)),f-vec2(1,0)),u.x),
+    mix(dot(h2(i+vec2(0,1)),f-vec2(0,1)),dot(h2(i+vec2(1,1)),f-vec2(1,1)),u.x),
+    u.y);
+}
+
+// Fractional Brownian Motion — 4 octaves (mobile-friendly)
+float fbm(vec2 p){
+  float v=0.,a=.5;
+  v+=a*gn(p);p=p*2.09+vec2(1.3,.71);a*=.5;
+  v+=a*gn(p);p=p*2.11+vec2(0.8,1.3);a*=.5;
+  v+=a*gn(p);p=p*2.07+vec2(1.7,0.5);a*=.5;
+  v+=a*gn(p);
+  return v;
+}
+
+void main(){
+  vec2 uv=gl_FragCoord.xy/R;
+  // Aspect-corrected, centered, scaled coords
+  vec2 st=(uv-.5)*vec2(R.x/R.y,1.)*3.2;
+
+  float t=T*.042; // slow cosmic drift
+
+  // ── Domain warping (Van Gogh swirl technique by Inigo Quilez)
+  // First warp pass
+  vec2 q=vec2(
+    fbm(st + vec2(0.0, 0.0) + t),
+    fbm(st + vec2(5.2, 1.3) + t*.75)
+  );
+  // Second warp pass — creates the deep swirling vortex
+  vec2 r=vec2(
+    fbm(st + 3.8*q + vec2(1.7,9.2) + t*.14),
+    fbm(st + 3.8*q + vec2(8.3,2.8) + t*.11)
+  );
+  // Final value
+  float f=fbm(st + 4.2*r + t*.07)*.5+.5;
+
+  // ── Brand color palette
+  // c0 void         #0a0010  (deep black-purple)
+  // c1 midnight     #071428  (dark blue)
+  // c2 abyssal teal #063b3a  (dark teal)
+  // c3 deep violet  #2e0a5e  (dark purple)
+  // c4 vivid purple #7c20eb  (brand purple)
+  // c5 molten gold  #d97706
+  // c6 bright gold  #fcd34d
+  vec3 c0=vec3(.04,.0,.063);
+  vec3 c1=vec3(.028,.08,.16);
+  vec3 c2=vec3(.024,.23,.23);
+  vec3 c3=vec3(.18,.04,.37);
+  vec3 c4=vec3(.49,.13,.92);
+  vec3 c5=vec3(.85,.47,.024);
+  vec3 c6=vec3(.99,.83,.3);
+
+  vec3 col=c0;
+  col=mix(col,c1,smoothstep(.04,.26,f));
+  col=mix(col,c2,smoothstep(.22,.42,f));
+  col=mix(col,c3,smoothstep(.36,.56,f));
+  col=mix(col,c4,smoothstep(.52,.71,f));
+  col=mix(col,c5,smoothstep(.68,.86,f));
+  col=mix(col,c6,smoothstep(.83,.97,f));
+
+  // ── Radial vignette — dark at edges, bright in center
+  float vig=1.-smoothstep(.35,1.25,length(uv-.5)*1.7);
+  col*=mix(.12,1.,vig);
+
+  // ── Subtle brightness curve (keep it dark for readability)
+  col=pow(max(col,vec3(0.)),vec3(1.15))*.80;
+
+  gl_FragColor=vec4(col,1.);
+}`;
+
+    function makeShader(type, src) {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+        console.warn('Shader compile error:', gl.getShaderInfoLog(s));
+        return null;
+      }
+      return s;
+    }
+
+    const vs = makeShader(gl.VERTEX_SHADER, VERT);
+    const fs = makeShader(gl.FRAGMENT_SHADER, FRAG);
+
+    if (!vs || !fs) {
+      useWebGL = false; // drop to 2D fallback
+    } else {
+      const prog = gl.createProgram();
+      gl.attachShader(prog, vs);
+      gl.attachShader(prog, fs);
+      gl.linkProgram(prog);
+
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+        useWebGL = false;
+      } else {
+        // Fullscreen quad geometry
+        const buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER,
+          new Float32Array([-1,-1, 1,-1, -1,1, 1,1]),
+          gl.STATIC_DRAW);
+
+        gl.useProgram(prog);
+        const aLoc = gl.getAttribLocation(prog, 'a');
+        const tLoc = gl.getUniformLocation(prog, 'T');
+        const rLoc = gl.getUniformLocation(prog, 'R');
+
+        gl.enableVertexAttribArray(aLoc);
+        gl.vertexAttribPointer(aLoc, 2, gl.FLOAT, false, 0, 0);
+
+        resizeGL();
+        window.addEventListener('resize', resizeGL);
+
+        let glStart = null;
+        let lastGLFrame = 0;
+        // Cap framerate: 24fps mobile / 40fps desktop (background doesn't need 60)
+        const GL_INTERVAL = 1000 / (isMobile ? 22 : 38);
+
+        function renderGL(ts) {
+          if (!glStart) glStart = ts;
+          if (ts - lastGLFrame >= GL_INTERVAL) {
+            lastGLFrame = ts;
+            gl.uniform1f(tLoc, (ts - glStart) * 0.001);
+            gl.uniform2f(rLoc, starfield.width, starfield.height);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+          }
+          requestAnimationFrame(renderGL);
+        }
+
+        if (REDUCED) {
+          gl.uniform1f(tLoc, 0);
+          gl.uniform2f(rLoc, starfield.width, starfield.height);
+          gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        } else {
+          requestAnimationFrame(renderGL);
+        }
+      }
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     2D PARTICLE LAYER — stars (lavender + gold) with gold drips
+     Runs on a separate canvas layered above WebGL,
+     or falls back to #starfield if WebGL unavailable.
+     ═══════════════════════════════════════════════════════════════ */
+
+  let pc, ctx;
+
+  if (useWebGL) {
+    // Create particle canvas between WebGL bg and content
+    pc = document.createElement('canvas');
+    pc.setAttribute('aria-hidden', 'true');
+    pc.style.cssText = 'position:fixed;inset:0;z-index:1;pointer-events:none;';
+    document.body.insertBefore(pc, document.querySelector('.wrap'));
+  } else {
+    // Fallback: use #starfield for everything
+    pc = starfield;
+    starfield.style.zIndex = '0';
+  }
+
+  ctx = pc.getContext('2d');
+
+  const TAU = Math.PI * 2;
+  function rnd(lo, hi) { return lo + Math.random() * (hi - lo); }
+
+  let W, H, stars, golds, nebulae2d;
+
+  /* ── Helper: draw a 4-pointed star shape ── */
+  function drawStar4(cx, cy, r, ctx2d) {
+    ctx2d.beginPath();
+    for (let i = 0; i < 8; i++) {
+      const angle = (i / 8) * TAU - TAU / 16;
+      const radius = i % 2 === 0 ? r : r * 0.38;
+      const x = cx + Math.cos(angle) * radius;
+      const y = cy + Math.sin(angle) * radius;
+      i === 0 ? ctx2d.moveTo(x, y) : ctx2d.lineTo(x, y);
+    }
+    ctx2d.closePath();
+  }
+
+  function buildParticles() {
+    W = pc.width  = window.innerWidth;
+    H = pc.height = window.innerHeight;
+
+    // Regular background stars — lavender / white
+    const starCount = isMobile ? 140 : 240;
+    stars = Array.from({ length: starCount }, () => ({
+      x:   rnd(0, W),
+      y:   rnd(0, H),
+      rad: rnd(0.28, 1.85),
+      a:   rnd(0.18, 0.95),
+      spd: rnd(0.0004, 0.001),
+      ph:  rnd(0, TAU),
+      dx:  rnd(-0.032, 0.032),
+      dy:  rnd(-0.012, 0.012),
+    }));
+
+    // Gold stars — larger, 4-pointed, with drip trails
+    const goldCount = isMobile ? 12 : 22;
+    golds = Array.from({ length: goldCount }, () => ({
+      x:         rnd(0, W),
+      y:         rnd(0, H * 0.85),
+      size:      rnd(2.2, 5.5),
+      a:         rnd(0.45, 0.9),
+      ph:        rnd(0, TAU),
+      spd:       rnd(0.0003, 0.0007),
+      dx:        rnd(-0.022, 0.022),
+      dy:        rnd(-0.012, 0.012),
+      // Drip state
+      dripLen:   0,
+      dripMax:   rnd(18, 55),
+      dripPhase: 'idle', // idle | growing | fading
+      nextDrip:  rnd(1500, 7000),
+      lastDrip:  0,
+    }));
+
+    // Subtle 2D nebula blobs (only used in non-WebGL fallback)
+    if (!useWebGL) {
+      nebulae2d = Array.from({ length: 7 }, () => ({
+        x:   rnd(W * .08, W * .92),
+        y:   rnd(H * .08, H * .92),
+        rx:  rnd(W * .12, W * .30),
+        ry:  rnd(H * .08, H * .22),
+        hue: rnd(245, 300),
+        sat: rnd(55, 80),
+        a:   rnd(0.025, 0.065),
+      }));
+    }
+  }
+
+  buildParticles();
+  window.addEventListener('resize', buildParticles);
+
+  function drawParticles(ts) {
     ctx.clearRect(0, 0, W, H);
 
-    // nebulae
-    nebulae.forEach(n => {
-      const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.rx);
-      g.addColorStop(0,   `hsla(${n.hue},75%,48%,${n.a})`);
-      g.addColorStop(.55, `hsla(${n.hue+18},65%,38%,${n.a * .45})`);
-      g.addColorStop(1,   `hsla(${n.hue+38},55%,28%,0)`);
-      ctx.save();
-      ctx.scale(1, n.ry / n.rx);
-      ctx.beginPath();
-      ctx.arc(n.x, n.y * n.rx / n.ry, n.rx, 0, Math.PI * 2);
-      ctx.fillStyle = g;
-      ctx.fill();
-      ctx.restore();
-    });
+    // ── 2D fallback nebulae (only when WebGL not available)
+    if (!useWebGL && nebulae2d) {
+      nebulae2d.forEach(n => {
+        const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.rx);
+        g.addColorStop(0, `hsla(${n.hue},${n.sat}%,48%,${n.a})`);
+        g.addColorStop(.55, `hsla(${n.hue+15},${n.sat-10}%,38%,${n.a * .4})`);
+        g.addColorStop(1, `hsla(${n.hue+35},50%,28%,0)`);
+        ctx.save();
+        ctx.scale(1, n.ry / n.rx);
+        ctx.beginPath();
+        ctx.arc(n.x, n.y * n.rx / n.ry, n.rx, 0, TAU);
+        ctx.fillStyle = g;
+        ctx.fill();
+        ctx.restore();
+      });
+    }
 
-    // stars
+    // ── Regular stars
     stars.forEach(s => {
       if (!REDUCED) {
         s.x += s.dx; s.y += s.dy;
@@ -880,46 +1328,125 @@
         if (s.y < -2) s.y = H + 2;
         if (s.y > H + 2) s.y = -2;
       }
-      const twinkle = REDUCED ? s.a : s.a * (.55 + .45 * Math.sin(ts * s.spd + s.ph));
+      const tw = REDUCED ? s.a : s.a * (.5 + .5 * Math.sin(ts * s.spd + s.ph));
       ctx.beginPath();
-      ctx.arc(s.x, s.y, s.rad, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(215,205,255,${twinkle})`;
+      ctx.arc(s.x, s.y, s.rad, 0, TAU);
+      ctx.fillStyle = `rgba(220,210,255,${tw})`;
       ctx.fill();
 
-      if (s.rad > 1.3) {
+      // Subtle halo on brighter stars
+      if (s.rad > 1.35) {
         ctx.beginPath();
-        ctx.arc(s.x, s.y, s.rad * 2.8, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(185,165,255,${twinkle * .13})`;
+        ctx.arc(s.x, s.y, s.rad * 2.9, 0, TAU);
+        ctx.fillStyle = `rgba(190,170,255,${tw * .11})`;
         ctx.fill();
+      }
+    });
+
+    // ── Gold stars with drip trails
+    golds.forEach(g => {
+      if (!REDUCED) {
+        g.x += g.dx; g.y += g.dy;
+        if (g.x < -5) g.x = W + 5;
+        if (g.x > W + 5) g.x = -5;
+        if (g.y < -5) g.y = H + 5;
+        if (g.y > H + 5) g.y = -5;
+      }
+
+      const tw = REDUCED ? g.a : g.a * (.45 + .55 * Math.sin(ts * g.spd + g.ph));
+
+      // Outer glow halo
+      const halo = ctx.createRadialGradient(g.x, g.y, 0, g.x, g.y, g.size * 6);
+      halo.addColorStop(0, `rgba(245,158,11,${tw * 0.45})`);
+      halo.addColorStop(0.4, `rgba(252,211,77,${tw * 0.15})`);
+      halo.addColorStop(1, 'rgba(245,158,11,0)');
+      ctx.beginPath();
+      ctx.arc(g.x, g.y, g.size * 6, 0, TAU);
+      ctx.fillStyle = halo;
+      ctx.fill();
+
+      // 4-pointed star body
+      ctx.save();
+      ctx.translate(g.x, g.y);
+      drawStar4(0, 0, g.size, ctx);
+      ctx.fillStyle = `rgba(252,211,77,${tw})`;
+      ctx.fill();
+      ctx.restore();
+
+      // ── Drip trail animation
+      if (!REDUCED) {
+        if (g.dripPhase === 'idle') {
+          if (ts - g.lastDrip > g.nextDrip) {
+            g.dripPhase = 'growing';
+            g.dripLen = 0;
+          }
+        } else if (g.dripPhase === 'growing') {
+          g.dripLen += 0.55;
+          if (g.dripLen >= g.dripMax) g.dripPhase = 'fading';
+        } else { // fading
+          g.dripLen -= 0.7;
+          if (g.dripLen <= 0) {
+            g.dripPhase = 'idle';
+            g.dripLen = 0;
+            g.lastDrip = ts;
+            g.nextDrip = rnd(3000, 9000);
+          }
+        }
+
+        if (g.dripLen > 0) {
+          const dripGrad = ctx.createLinearGradient(g.x, g.y, g.x, g.y + g.dripLen);
+          dripGrad.addColorStop(0, `rgba(252,211,77,${tw * 0.9})`);
+          dripGrad.addColorStop(0.6, `rgba(245,158,11,${tw * 0.55})`);
+          dripGrad.addColorStop(1, 'rgba(245,158,11,0)');
+          ctx.beginPath();
+          ctx.moveTo(g.x, g.y + g.size * 0.8);
+          ctx.lineTo(g.x, g.y + g.dripLen);
+          ctx.strokeStyle = dripGrad;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          // Drip bead at the tip
+          if (g.dripLen > 8) {
+            const bead = Math.min(g.dripLen / g.dripMax, 1);
+            ctx.beginPath();
+            ctx.arc(g.x, g.y + g.dripLen, 1.8 * bead, 0, TAU);
+            ctx.fillStyle = `rgba(252,211,77,${tw * bead * 0.7})`;
+            ctx.fill();
+          }
+        }
       }
     });
   }
 
-  resize();
-  window.addEventListener('resize', resize);
-
   if (REDUCED) {
-    draw(0);
+    drawParticles(0);
   } else {
-    (function loop(ts) { draw(ts); requestAnimationFrame(loop); })(0);
+    (function loop(ts) {
+      drawParticles(ts);
+      requestAnimationFrame(loop);
+    })(0);
   }
 
-  /* ─── Nav opacity on scroll ────────────────────────────────── */
+  /* ═══════════════════════════════════════════════════════════════
+     NAV — opacity on scroll
+     ═══════════════════════════════════════════════════════════════ */
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => {
     nav.style.background = window.scrollY > 55
-      ? 'rgba(10,0,16,.96)'
-      : 'rgba(10,0,16,.7)';
+      ? 'rgba(10,0,16,.97)'
+      : 'rgba(10,0,16,.72)';
   }, { passive: true });
 
-  /* ─── Parallax nebula ──────────────────────────────────────── */
+  /* ═══════════════════════════════════════════════════════════════
+     PARALLAX — hero nebula follows scroll
+     ═══════════════════════════════════════════════════════════════ */
   if (!REDUCED) {
     const neb = document.querySelector('.nebula');
     let ticking = false;
     window.addEventListener('scroll', () => {
       if (!ticking) {
         requestAnimationFrame(() => {
-          neb.style.transform = `translateY(${window.scrollY * 0.22}px)`;
+          if (neb) neb.style.transform = `translateY(${window.scrollY * 0.2}px)`;
           ticking = false;
         });
         ticking = true;
@@ -927,15 +1454,17 @@
     }, { passive: true });
   }
 
-  /* ─── Intersection observer — reveal on scroll ─────────────── */
+  /* ═══════════════════════════════════════════════════════════════
+     INTERSECTION OBSERVER — reveal on scroll
+     ═══════════════════════════════════════════════════════════════ */
   if (!REDUCED) {
     const io = new IntersectionObserver(entries => {
-      entries.forEach((e, i) => {
+      entries.forEach(e => {
         if (e.isIntersecting) {
-          // stagger siblings slightly
-          e.target.style.transitionDelay = (Array.from(
+          const siblings = Array.from(
             e.target.parentElement.querySelectorAll('.reveal')
-          ).indexOf(e.target) % 5) * 0.08 + 's';
+          );
+          e.target.style.transitionDelay = (siblings.indexOf(e.target) % 5) * 0.085 + 's';
           e.target.classList.add('vis');
           io.unobserve(e.target);
         }
