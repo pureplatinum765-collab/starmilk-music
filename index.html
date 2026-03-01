@@ -1,32 +1,954 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="STARMILK - Where quantum physics meets childhood trauma and decides to dance. Electronic music by an independent artist." />
-    <meta name="theme-color" content="#0a0a0f" />
-    <meta name="keywords" content="STARMILK, electronic music, independent artist, ambient, experimental" />
-    <meta property="og:title" content="STARMILK - Cosmic Music Experience" />
-    <meta property="og:description" content="Where quantum physics meets childhood trauma and decides to dance." />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://pureplatinum765-collab.github.io/starmilk-music/og-image.png" />
-    <meta property="og:url" content="https://pureplatinum765-collab.github.io/starmilk-music/" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><radialGradient id='g' cx='50%25' cy='50%25' r='50%25'><stop offset='0%25' stop-color='%23c084fc'/><stop offset='100%25' stop-color='%236366f1'/></radialGradient></defs><polygon points='50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35' fill='url(%23g)'/></svg>" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <title>STARMILK - Cosmic Music Experience</title>
-    <style>
-      body {
-        background-color: #0a0a0f;
-        margin: 0;
-        padding: 0;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STARMILK | Cosmic Electronic Music</title>
+  <meta name="description" content="Born from the trembling. Raised by rivers. Where quantum physics meets childhood trauma and decides to dance. STARMILK — electronic music direct to fans." />
+  <meta name="theme-color" content="#0a0010" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://pureplatinum765-collab.github.io/starmilk-music/" />
+  <meta property="og:title" content="STARMILK | Cosmic Electronic Music" />
+  <meta property="og:description" content="Born from the trembling. Raised by rivers. Where quantum physics meets childhood trauma and decides to dance." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="STARMILK | Cosmic Electronic Music" />
+  <meta name="twitter:description" content="Where quantum physics meets childhood trauma and decides to dance." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%239333ea'/%3E%3Cstop offset='100%25' stop-color='%234338ca'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpolygon points='50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35' fill='url(%23g)'/%3E%3C/svg%3E" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0a0010;
+      --card:      #140b24;
+      --purple:    #9333ea;
+      --indigo:    #6366f1;
+      --violet:    #7c3aed;
+      --text:      #e2d9f3;
+      --muted:     #9d8ec4;
+      --radius:    16px;
+      --t:         .35s cubic-bezier(.4,0,.2,1);
+      --card-shadow: 0 0 0 1px rgba(147,51,234,.3), 0 4px 40px rgba(99,102,241,.15);
+      --card-hover:  0 0 0 1px rgba(147,51,234,.85), 0 8px 60px rgba(147,51,234,.5), 0 0 30px rgba(99,102,241,.3);
+      --glow-sm:   0 0 12px rgba(147,51,234,.65), 0 0 30px rgba(99,102,241,.3);
+      --glow-lg:   0 0 20px rgba(147,51,234,.9), 0 0 60px rgba(99,102,241,.55), 0 0 100px rgba(124,58,237,.25);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.65;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
       }
-    </style>
-    <script type="module" crossorigin src="./assets/index-zJs-1gGA.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-_ZDTYJaH.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+      html { scroll-behavior: auto; }
+    }
+
+    /* Canvas */
+    #starfield {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Wrapper */
+    .wrap { position: relative; z-index: 1; }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 200;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.1rem 2rem;
+      background: rgba(10,0,16,.7);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(147,51,234,.14);
+      transition: background var(--t);
+    }
+
+    .nav-logo {
+      font-size: 1.35rem;
+      font-weight: 900;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      background: linear-gradient(130deg, #c084fc, var(--indigo));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 10px rgba(147,51,234,.7));
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.75rem;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .85rem;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      transition: color var(--t), text-shadow var(--t);
+    }
+
+    .nav-links a:hover {
+      color: #fff;
+      text-shadow: 0 0 10px rgba(147,51,234,.9);
+    }
+
+    @media (max-width: 550px) {
+      nav { padding: 1rem 1.25rem; }
+      .nav-links { gap: 1rem; }
+      .nav-links a { font-size: .78rem; }
+    }
+
+    /* ── Shared section ── */
+    .section-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 6.5rem 1.5rem;
+    }
+
+    .label {
+      display: block;
+      font-size: .7rem;
+      letter-spacing: .35em;
+      text-transform: uppercase;
+      color: var(--purple);
+      margin-bottom: .6rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.9rem, 5vw, 3rem);
+      font-weight: 900;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #fff 0%, var(--text) 55%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      line-height: 1.1;
+    }
+
+    .divider {
+      height: 1px;
+      max-width: 1100px;
+      margin: 0 auto;
+      background: linear-gradient(90deg, transparent, rgba(147,51,234,.4), rgba(99,102,241,.3), transparent);
+    }
+
+    /* ── Grid ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 1.4rem;
+      margin-top: 2.8rem;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.75rem 1.75rem 1.5rem;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: .85rem;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+      transition: transform var(--t), box-shadow var(--t);
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(147,51,234,.07), rgba(99,102,241,.04));
+      opacity: 0;
+      transition: opacity var(--t);
+    }
+
+    .card:hover { transform: translateY(-7px) scale(1.015); box-shadow: var(--card-hover); }
+    .card:hover::after { opacity: 1; }
+
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(147,51,234,.13);
+      border: 1px solid rgba(147,51,234,.22);
+      flex-shrink: 0;
+    }
+
+    .card-plat {
+      font-size: .68rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--purple);
+      font-weight: 700;
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.3;
+    }
+
+    .card p {
+      font-size: .88rem;
+      color: var(--muted);
+      line-height: 1.65;
+      flex: 1;
+    }
+
+    .card-arrow {
+      font-size: .84rem;
+      font-weight: 700;
+      color: var(--purple);
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      margin-top: .25rem;
+      transition: gap var(--t), color var(--t);
+    }
+
+    .card:hover .card-arrow { gap: .75rem; color: #a5b4fc; }
+
+    /* ── Hero ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 8rem 1.5rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nebula {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 55% at 50% 38%, rgba(124,58,237,.2) 0%, transparent 68%),
+        radial-gradient(ellipse 50% 38% at 18% 78%, rgba(147,51,234,.13) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 45% at 82% 20%, rgba(99,102,241,.11) 0%, transparent 60%);
+      animation: nebPulse 9s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes nebPulse {
+      from { opacity: .65; }
+      to   { opacity: 1; }
+    }
+
+    .ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(147,51,234,.1);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      animation: spin 45s linear infinite;
+    }
+
+    .ring:nth-child(2) { width: 520px; height: 520px; animation-duration: 40s; }
+    .ring:nth-child(3) { width: 760px; height: 760px; animation-direction: reverse; animation-duration: 60s; border-color: rgba(99,102,241,.07); }
+
+    @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+    .hero-content { position: relative; z-index: 2; }
+
+    .hero-eyebrow {
+      font-size: .75rem;
+      letter-spacing: .42em;
+      text-transform: uppercase;
+      color: var(--purple);
+      margin-bottom: 1.6rem;
+      animation: fadeUp .8s ease both;
+    }
+
+    .hero-title {
+      font-size: clamp(4.5rem, 16vw, 11rem);
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      line-height: .92;
+      margin-bottom: 2.2rem;
+      background: linear-gradient(140deg, #fff 0%, #d8b4fe 35%, #818cf8 70%, #c4b5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 35px rgba(147,51,234,.75)) drop-shadow(0 0 80px rgba(99,102,241,.4));
+      animation: fadeUp .8s .12s ease both, titleGlow 4.5s 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes titleGlow {
+      from { filter: drop-shadow(0 0 30px rgba(147,51,234,.7)) drop-shadow(0 0 60px rgba(99,102,241,.35)); }
+      to   { filter: drop-shadow(0 0 55px rgba(147,51,234,.95)) drop-shadow(0 0 110px rgba(99,102,241,.6)) drop-shadow(0 0 18px rgba(216,180,254,.35)); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(32px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-tagline {
+      font-size: clamp(.95rem, 2.4vw, 1.15rem);
+      color: var(--muted);
+      max-width: 640px;
+      margin: 0 auto 2.8rem;
+      line-height: 1.9;
+      font-style: italic;
+      animation: fadeUp .8s .25s ease both;
+    }
+
+    .hero-tagline em {
+      color: var(--text);
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .55rem;
+      padding: .95rem 2.4rem;
+      border-radius: 50px;
+      background: linear-gradient(135deg, var(--violet), var(--indigo));
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: .95rem;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      box-shadow: var(--glow-sm), 0 4px 28px rgba(99,102,241,.4);
+      transition: transform var(--t), box-shadow var(--t);
+      animation: fadeUp .8s .4s ease both;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: var(--glow-lg), 0 10px 45px rgba(99,102,241,.55);
+    }
+
+    .scroll-cue {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .5rem;
+      color: var(--muted);
+      font-size: .65rem;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      animation: fadeUp 1s .85s ease both;
+    }
+
+    .scroll-pill {
+      width: 22px;
+      height: 36px;
+      border-radius: 11px;
+      border: 2px solid rgba(147,51,234,.35);
+      position: relative;
+    }
+
+    .scroll-pill::after {
+      content: '';
+      position: absolute;
+      top: 6px; left: 50%;
+      transform: translateX(-50%);
+      width: 4px; height: 9px;
+      border-radius: 2px;
+      background: var(--purple);
+      animation: scrollDot 1.9s ease-in-out infinite;
+    }
+
+    @keyframes scrollDot {
+      0%,100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+      80%      { transform: translateX(-50%) translateY(12px); opacity: 0; }
+    }
+
+    /* ── Stream ── */
+    #stream .sub {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 560px;
+      margin-top: .4rem;
+    }
+
+    /* ── Support ── */
+    #support {
+      background: radial-gradient(ellipse 75% 55% at 50% 50%, rgba(124,58,237,.09) 0%, transparent 70%);
+    }
+
+    blockquote {
+      border-left: 4px solid var(--purple);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      background: var(--card);
+      box-shadow: var(--card-shadow);
+      padding: 1.4rem 1.8rem;
+      font-style: italic;
+      color: var(--text);
+      font-size: .98rem;
+      line-height: 1.85;
+      max-width: 700px;
+      margin: 1.8rem 0 2.8rem;
+    }
+
+    .note {
+      margin-top: 2rem;
+      padding: 1.2rem 1.5rem;
+      border-radius: var(--radius);
+      background: rgba(147,51,234,.08);
+      border: 1px solid rgba(147,51,234,.2);
+      font-size: .86rem;
+      color: var(--muted);
+      line-height: 1.75;
+      max-width: 650px;
+    }
+
+    .note strong { color: var(--text); }
+
+    /* ── Connect ── */
+    #connect .section-inner { text-align: center; }
+
+    #connect .sub {
+      color: var(--muted);
+      font-size: .98rem;
+      margin: .4rem 0 2.8rem;
+    }
+
+    .social-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .soc-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .9rem 1.8rem;
+      border-radius: 50px;
+      background: var(--card);
+      border: 1px solid rgba(147,51,234,.28);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: .94rem;
+      transition: transform var(--t), box-shadow var(--t), border-color var(--t), background var(--t);
+    }
+
+    .soc-btn:hover {
+      transform: translateY(-4px);
+      border-color: var(--purple);
+      background: rgba(147,51,234,.13);
+      box-shadow: 0 0 22px rgba(147,51,234,.45), 0 6px 28px rgba(99,102,241,.22);
+    }
+
+    .soc-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      border-top: 1px solid rgba(147,51,234,.14);
+    }
+
+    .footer-name {
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      background: linear-gradient(130deg, #c084fc, var(--indigo));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 8px rgba(147,51,234,.55));
+      margin-bottom: .6rem;
+    }
+
+    .footer-sub {
+      color: var(--muted);
+      font-size: .82rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .footer-copy {
+      color: rgba(157,142,196,.45);
+      font-size: .76rem;
+      margin-top: .75rem;
+    }
+
+    /* ── Reveal animation ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(38px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+
+    .reveal.vis {
+      opacity: 1;
+      transform: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="starfield" aria-hidden="true"></canvas>
+
+<div class="wrap">
+
+  <!-- Nav -->
+  <nav id="nav" aria-label="Main navigation">
+    <span class="nav-logo">STARMILK</span>
+    <ul class="nav-links">
+      <li><a href="#stream">Stream</a></li>
+      <li><a href="#support">Support</a></li>
+      <li><a href="#connect">Connect</a></li>
+    </ul>
+  </nav>
+
+  <!-- ═══ HERO ═══════════════════════════════════════════════════ -->
+  <section id="hero" aria-label="Hero">
+    <div class="nebula" aria-hidden="true"></div>
+    <div class="ring" aria-hidden="true"></div>
+    <div class="ring" aria-hidden="true"></div>
+
+    <div class="hero-content">
+      <p class="hero-eyebrow">Cosmic Electronic Music</p>
+      <h1 class="hero-title">STARMILK</h1>
+      <p class="hero-tagline">
+        Born from the trembling. Raised by rivers.<br>
+        Where quantum physics meets childhood trauma and decides to dance.<br>
+        <em>This is DNA remembering how to sing.</em><br>
+        Living mythology poured straight from the wound into the light.
+      </p>
+      <a href="#stream" class="btn">
+        Explore Music <span aria-hidden="true">&#8595;</span>
+      </a>
+    </div>
+
+    <div class="scroll-cue" aria-hidden="true">
+      <div class="scroll-pill"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══ STREAM ═════════════════════════════════════════════════ -->
+  <section id="stream" aria-labelledby="stream-h">
+    <div class="section-inner">
+      <span class="label reveal">Listen Everywhere</span>
+      <h2 class="section-title reveal" id="stream-h">Stream My Music</h2>
+      <p class="sub reveal">Find STARMILK across all major platforms — pick your portal and step through.</p>
+
+      <div class="grid">
+
+        <!-- YouTube -->
+        <a class="card reveal" href="https://www.youtube.com/@starmilk6719" target="_blank" rel="noopener noreferrer">
+          <div class="card-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M22.54 6.42A2.78 2.78 0 0 0 20.59 4.5C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.5C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" fill="#FF0000"/>
+              <polygon points="9.75,15.02 15.5,12 9.75,8.98" fill="#fff"/>
+            </svg>
+          </div>
+          <span class="card-plat">YouTube</span>
+          <h3>Visual Scriptures</h3>
+          <p>Visual journey through the quantum scripture. Every track is a doorway.</p>
+          <span class="card-arrow">Watch now &#8594;</span>
+        </a>
+
+        <!-- SoundCloud -->
+        <a class="card reveal" href="https://soundcloud.com/starmilk" target="_blank" rel="noopener noreferrer">
+          <div class="card-icon">
+            <svg width="28" height="20" viewBox="0 0 120 50" aria-hidden="true">
+              <path d="M0 35c0 8.3 6.7 15 15 15s15-6.7 15-15V20C30 11.7 23.3 5 15 5 7.8 5 1.8 10 .3 17 .1 18 0 19 0 20v15z" fill="#FF5500"/>
+              <rect x="34" y="15" width="8" height="35" rx="4" fill="#FF5500"/>
+              <rect x="46" y="8" width="8" height="42" rx="4" fill="#FF5500"/>
+              <rect x="58" y="18" width="8" height="32" rx="4" fill="#FF5500"/>
+              <rect x="70" y="10" width="8" height="40" rx="4" fill="#FF5500"/>
+              <rect x="82" y="20" width="8" height="30" rx="4" fill="#FF5500"/>
+              <path d="M94 15c0-8.3 6.7-15 15-15s11 6.7 11 15v20c0 8.3-2.7 15-11 15s-15-6.7-15-15V15z" fill="#FF5500"/>
+            </svg>
+          </div>
+          <span class="card-plat">SoundCloud</span>
+          <h3>Full Catalog</h3>
+          <p>Full catalog of tracks, early releases, and community feedback.</p>
+          <span class="card-arrow">Listen free &#8594;</span>
+        </a>
+
+        <!-- Spotify -->
+        <a class="card reveal" href="https://open.spotify.com/artist/6ZJBd6IllHctGDa3GhbQnK?si=hmxemmVfSZaoB15C4Gd4Uw" target="_blank" rel="noopener noreferrer">
+          <div class="card-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="12" fill="#1DB954"/>
+              <path d="M17.25 16.5a.75.75 0 0 1-.41-.12C14.77 15 12 14.45 8.74 15.06a.75.75 0 1 1-.28-1.47c3.63-.69 6.7-.07 9.2 1.56a.75.75 0 0 1-.41 1.35zm1.17-2.75a.94.94 0 0 1-.52-.16c-2.71-1.7-6.84-2.19-10.05-1.2a.938.938 0 0 1-.54-1.8c3.66-1.1 8.21-.56 11.33 1.38a.937.937 0 0 1-.22 1.78zm.1-2.87c-3.25-1.93-8.61-2.11-11.71-1.17a1.125 1.125 0 0 1-.65-2.15c3.56-1.08 9.47-.87 13.21 1.35a1.125 1.125 0 0 1-1.12 1.97z" fill="#fff"/>
+            </svg>
+          </div>
+          <span class="card-plat">Spotify</span>
+          <h3>Official Releases</h3>
+          <p>Official releases distributed through DistroKid.</p>
+          <span class="card-arrow">Open Spotify &#8594;</span>
+        </a>
+
+        <!-- Apple Music -->
+        <a class="card reveal" href="https://music.apple.com/us/artist/starmilk/1849551724" target="_blank" rel="noopener noreferrer">
+          <div class="card-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
+              <defs>
+                <linearGradient id="amlg" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#fc5c7d"/>
+                  <stop offset="100%" stop-color="#6a3093"/>
+                </linearGradient>
+              </defs>
+              <circle cx="12" cy="12" r="12" fill="url(#amlg)"/>
+              <path d="M16.5 7.5h-5a1 1 0 0 0-1 1v5.56A2.5 2.5 0 1 0 12 16.5V11h4v-1.5a2 2 0 0 0-2-2z" fill="#fff" opacity=".9"/>
+              <circle cx="10" cy="16" r="1.5" fill="#fff"/>
+            </svg>
+          </div>
+          <span class="card-plat">Apple Music</span>
+          <h3>High Fidelity</h3>
+          <p>High-quality audio streaming.</p>
+          <span class="card-arrow">Open Apple Music &#8594;</span>
+        </a>
+
+        <!-- Other Platforms -->
+        <a class="card reveal" href="https://distrokid.com/" target="_blank" rel="noopener noreferrer">
+          <div class="card-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" stroke="#9333ea" stroke-width="1.5"/>
+              <path d="M12 2a10 10 0 0 1 0 20M2 12h20M3.5 7h17M3.5 17h17" stroke="#9333ea" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="card-plat">All Platforms</span>
+          <h3>Everywhere Else</h3>
+          <p>Amazon Music, Tidal, and more via DistroKid.</p>
+          <span class="card-arrow">Discover more &#8594;</span>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══ SUPPORT ════════════════════════════════════════════════ -->
+  <section id="support" aria-labelledby="support-h">
+    <div class="section-inner">
+      <span class="label reveal">Keep the Signal Alive</span>
+      <h2 class="section-title reveal" id="support-h">Support the Music</h2>
+
+      <blockquote class="reveal">
+        "We are, by nature, compassionate beings. The more we follow our intuition towards goodness and love,
+        the more we start to align with the true way of things."
+      </blockquote>
+
+      <div class="grid">
+
+        <!-- Buy Me a Coffee -->
+        <a class="card reveal" href="https://buymeacoffee.com/pureplatinb" target="_blank" rel="noopener noreferrer">
+          <div class="card-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M18 8h1a4 4 0 0 1 0 8h-1" stroke="#FFDD00" stroke-width="2" stroke-linecap="round"/>
+              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" stroke="#FFDD00" stroke-width="2" stroke-linecap="round"/>
+              <path d="M6 1v3M10 1v3M14 1v3" stroke="#FFDD00" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="card-plat">Buy Me a Coffee</span>
+          <h3>Fuel the Sessions</h3>
+          <p>Every coffee keeps the studio lights on and the synths warm.</p>
+          <span class="card-arrow">Buy a coffee &#8594;</span>
+        </a>
+
+        <!-- PayPal -->
+        <a class="card reveal" href="https://paypal.me/RaphaelJacobs" target="_blank" rel="noopener noreferrer">
+          <div class="card-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="pplg" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#003087"/>
+                  <stop offset="100%" stop-color="#009CDE"/>
+                </linearGradient>
+              </defs>
+              <path d="M7 4h8a4 4 0 0 1 4 4c0 2.5-1.5 4.5-4 5H9l-1 6H5L7 4z" fill="url(#pplg)"/>
+              <path d="M9 9h6a3 3 0 0 1 3 3c0 2-1.5 3.5-3.5 4H11l-.8 5H7.5L9 9z" fill="#009CDE" opacity=".8"/>
+            </svg>
+          </div>
+          <span class="card-plat">PayPal</span>
+          <h3>Direct Donation</h3>
+          <p>Fast, secure, and goes straight to the artist.</p>
+          <span class="card-arrow">Donate via PayPal &#8594;</span>
+        </a>
+
+        <!-- Venmo -->
+        <a class="card reveal" href="https://www.venmo.com/u/STARMILKLABS" target="_blank" rel="noopener noreferrer">
+          <div class="card-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect width="24" height="24" rx="6" fill="#3D95CE"/>
+              <path d="M17.5 4.5c.4.65.6 1.35.6 2.2 0 2.7-2.3 6.2-4.2 8.7H9.7L8 5.9l4.3-.4.75 5.9c.7-1.15 1.55-2.95 1.55-4.2 0-.7-.12-1.18-.32-1.55L17.5 4.5z" fill="#fff"/>
+            </svg>
+          </div>
+          <span class="card-plat">Venmo</span>
+          <h3>@STARMILKLABS</h3>
+          <p>Send support directly through Venmo — quick and easy.</p>
+          <span class="card-arrow">Open Venmo &#8594;</span>
+        </a>
+
+        <!-- SoundCloud Support -->
+        <a class="card reveal" href="https://on.soundcloud.com/FU4YTMfLTxsTTly2Ku" target="_blank" rel="noopener noreferrer">
+          <div class="card-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 21.6C6.1 15.9 1 11.2 1 7.3 1 3.7 3.9 2 6 2c1.4 0 4.2.5 6 4.6C13.7 2.6 16.6 2 18 2c2.4 0 5 1.6 5 5.3 0 3.9-4.9 8.6-11 14.3z" fill="#FF5500" opacity=".85"/>
+            </svg>
+          </div>
+          <span class="card-plat">SoundCloud</span>
+          <h3>Show Love on SC</h3>
+          <p>Support directly through the SoundCloud community platform.</p>
+          <span class="card-arrow">Support on SC &#8594;</span>
+        </a>
+
+      </div>
+
+      <p class="note reveal">
+        <strong>Note:</strong> SoundCloud creators don't receive direct payments from streams,
+        so your donations help fund studio time, equipment, and production — keeping the music alive and independent.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══ CONNECT ════════════════════════════════════════════════ -->
+  <section id="connect" aria-labelledby="connect-h">
+    <div class="section-inner">
+      <span class="label reveal">Stay in the Signal</span>
+      <h2 class="section-title reveal" id="connect-h">Connect</h2>
+      <p class="sub reveal">Follow on social media for updates, new releases, and transmissions from the void.</p>
+
+      <div class="social-row">
+
+        <!-- Instagram -->
+        <a class="soc-btn reveal" href="https://www.instagram.com/starmilk_labz?igsh=cTJpMWNpcXppbjgy" target="_blank" rel="noopener noreferrer" aria-label="STARMILK on Instagram">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="iglg" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#f09433"/>
+                <stop offset="35%" stop-color="#e6683c"/>
+                <stop offset="65%" stop-color="#dc2743"/>
+                <stop offset="100%" stop-color="#bc1888"/>
+              </linearGradient>
+            </defs>
+            <rect x="2" y="2" width="20" height="20" rx="5.5" fill="url(#iglg)"/>
+            <circle cx="12" cy="12" r="4.2" stroke="#fff" stroke-width="1.8" fill="none"/>
+            <circle cx="17.4" cy="6.6" r="1.15" fill="#fff"/>
+          </svg>
+          Instagram
+        </a>
+
+        <!-- TikTok -->
+        <a class="soc-btn reveal" href="https://www.tiktok.com/@starmilk1?_t=ZP-90xWzsjiLWQ&_r=1" target="_blank" rel="noopener noreferrer" aria-label="STARMILK on TikTok">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="5.5" fill="#010101"/>
+            <path d="M16 3.5v10.8a3.3 3.3 0 1 1-2.4-3.17V7.8a6.5 6.5 0 1 0 4.9 6.5V7A6.45 6.45 0 0 0 22 7.5" stroke="none"/>
+            <path d="M15 4.5c.5 2 2 3.3 3.5 3.5v2.5c-1.5 0-3-.5-4-1.5V16a4 4 0 1 1-3-3.87V14.6A1.5 1.5 0 1 0 13 16V4.5h2z" fill="#fff"/>
+            <path d="M18.5 8c.5 0 1 .07 1.5.2V5.7A6.5 6.5 0 0 1 15 4.5v2c.9.4 2.2.8 3.5 1.5z" fill="#69C9D0"/>
+          </svg>
+          TikTok
+        </a>
+
+        <!-- YouTube -->
+        <a class="soc-btn reveal" href="https://www.youtube.com/@starmilk6719" target="_blank" rel="noopener noreferrer" aria-label="STARMILK on YouTube">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M22.54 6.42A2.78 2.78 0 0 0 20.59 4.5C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.5C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" fill="#FF0000"/>
+            <polygon points="9.75,15.02 15.5,12 9.75,8.98" fill="#fff"/>
+          </svg>
+          YouTube
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═════════════════════════════════════════════════ -->
+  <footer>
+    <div class="footer-name">STARMILK</div>
+    <p class="footer-sub">Electronic Music &nbsp;&bull;&nbsp; Direct to Fans &nbsp;&bull;&nbsp; No Middlemen</p>
+    <p class="footer-copy">&copy; 2026 STARMILK. All rights reserved.</p>
+  </footer>
+
+</div><!-- /wrap -->
+
+<script>
+(function () {
+  'use strict';
+
+  /* ─── Star field ───────────────────────────────────────────── */
+  const canvas = document.getElementById('starfield');
+  const ctx    = canvas.getContext('2d');
+  const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W, H, stars, nebulae;
+
+  function r(lo, hi) { return lo + Math.random() * (hi - lo); }
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+
+    stars = Array.from({ length: 260 }, () => ({
+      x: r(0, W), y: r(0, H),
+      rad: r(0.25, 1.9),
+      a:   r(0.15, 1),
+      spd: r(0.0003, 0.0009),
+      ph:  r(0, Math.PI * 2),
+      dx:  r(-0.035, 0.035),
+      dy:  r(-0.012, 0.012),
+    }));
+
+    nebulae = Array.from({ length: 6 }, () => ({
+      x:   r(W * .1, W * .9),
+      y:   r(H * .1, H * .9),
+      rx:  r(W * .14, W * .32),
+      ry:  r(H * .09, H * .22),
+      hue: r(255, 295),
+      a:   r(0.022, 0.058),
+    }));
+  }
+
+  function draw(ts) {
+    ctx.clearRect(0, 0, W, H);
+
+    // nebulae
+    nebulae.forEach(n => {
+      const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.rx);
+      g.addColorStop(0,   `hsla(${n.hue},75%,48%,${n.a})`);
+      g.addColorStop(.55, `hsla(${n.hue+18},65%,38%,${n.a * .45})`);
+      g.addColorStop(1,   `hsla(${n.hue+38},55%,28%,0)`);
+      ctx.save();
+      ctx.scale(1, n.ry / n.rx);
+      ctx.beginPath();
+      ctx.arc(n.x, n.y * n.rx / n.ry, n.rx, 0, Math.PI * 2);
+      ctx.fillStyle = g;
+      ctx.fill();
+      ctx.restore();
+    });
+
+    // stars
+    stars.forEach(s => {
+      if (!REDUCED) {
+        s.x += s.dx; s.y += s.dy;
+        if (s.x < -2) s.x = W + 2;
+        if (s.x > W + 2) s.x = -2;
+        if (s.y < -2) s.y = H + 2;
+        if (s.y > H + 2) s.y = -2;
+      }
+      const twinkle = REDUCED ? s.a : s.a * (.55 + .45 * Math.sin(ts * s.spd + s.ph));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.rad, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(215,205,255,${twinkle})`;
+      ctx.fill();
+
+      if (s.rad > 1.3) {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.rad * 2.8, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(185,165,255,${twinkle * .13})`;
+        ctx.fill();
+      }
+    });
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+
+  if (REDUCED) {
+    draw(0);
+  } else {
+    (function loop(ts) { draw(ts); requestAnimationFrame(loop); })(0);
+  }
+
+  /* ─── Nav opacity on scroll ────────────────────────────────── */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.style.background = window.scrollY > 55
+      ? 'rgba(10,0,16,.96)'
+      : 'rgba(10,0,16,.7)';
+  }, { passive: true });
+
+  /* ─── Parallax nebula ──────────────────────────────────────── */
+  if (!REDUCED) {
+    const neb = document.querySelector('.nebula');
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          neb.style.transform = `translateY(${window.scrollY * 0.22}px)`;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  }
+
+  /* ─── Intersection observer — reveal on scroll ─────────────── */
+  if (!REDUCED) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          // stagger siblings slightly
+          e.target.style.transitionDelay = (Array.from(
+            e.target.parentElement.querySelectorAll('.reveal')
+          ).indexOf(e.target) % 5) * 0.08 + 's';
+          e.target.classList.add('vis');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('vis'));
+  }
+
+})();
+</script>
+
+</body>
 </html>
