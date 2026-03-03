@@ -9,6 +9,7 @@
 
   let idleTimer = null;
   let fadeTimer = null;
+  let pollingTimer = null;
   let isShowing = false;
 
   const events = ['mousemove', 'mousedown', 'click', 'scroll', 'keydown', 'touchstart', 'touchmove', 'pointerdown', 'wheel'];
@@ -16,6 +17,20 @@
   function clearTimers() {
     if (idleTimer) clearTimeout(idleTimer);
     if (fadeTimer) clearTimeout(fadeTimer);
+    if (pollingTimer) clearTimeout(pollingTimer);
+  }
+
+  function isOverlayVisible(node) {
+    if (!node || !node.isConnected || node.hidden) return false;
+    if (node.classList.contains('exited') || node.classList.contains('hidden')) return false;
+    const styles = window.getComputedStyle(node);
+    return styles.display !== 'none' && styles.visibility !== 'hidden' && styles.pointerEvents !== 'none' && styles.opacity !== '0';
+  }
+
+  function isBlockedByOverlay() {
+    const parkingLotOverlay = document.getElementById('parking-lot-overlay');
+    const moodRingOverlay = document.getElementById('mood-ring-overlay');
+    return document.hidden || isOverlayVisible(parkingLotOverlay) || isOverlayVisible(moodRingOverlay);
   }
 
   function hideClearing() {
@@ -46,6 +61,12 @@
   function scheduleIdle() {
     clearTimers();
     if (isShowing) return;
+
+    if (isBlockedByOverlay()) {
+      pollingTimer = setTimeout(scheduleIdle, 1000);
+      return;
+    }
+
     idleTimer = setTimeout(revealClearing, IDLE_MS);
   }
 
@@ -61,6 +82,10 @@
     hideClearing();
     scheduleIdle();
   });
+
+  window.addEventListener('starmilk:parkingLotDismissed', scheduleIdle);
+  window.addEventListener('starmilk:moodRingVisibility', scheduleIdle);
+  document.addEventListener('visibilitychange', scheduleIdle);
 
   scheduleIdle();
 })();

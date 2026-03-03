@@ -29,6 +29,7 @@
   let rainGain = null;
   let tickTimer = null;
   let tickCount = 0;
+  let rainPaused = false;
 
   function buildRain() {
     if (!rainCanvas) return;
@@ -58,7 +59,7 @@
   }
 
   function drawRain() {
-    if (!ctx) return;
+    if (!ctx || rainPaused) return;
     const width = window.innerWidth;
     const height = window.innerHeight;
     ctx.clearRect(0, 0, width, height);
@@ -209,8 +210,12 @@
         window.setTimeout(() => {
           overlay.remove();
           document.body.classList.remove('parking-lot-active');
+          window.dispatchEvent(new CustomEvent('starmilk:parkingLotDismissed'));
 
-          if (rafId) cancelAnimationFrame(rafId);
+          if (rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = 0;
+          }
           if (tickTimer) clearTimeout(tickTimer);
 
           if (rainSource) {
@@ -268,6 +273,18 @@
   });
 
   window.addEventListener('resize', buildRain);
+
+  document.addEventListener('visibilitychange', () => {
+    rainPaused = document.hidden;
+    if (rainPaused && rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+      return;
+    }
+    if (!rainPaused && !state.isEntering && !rafId) {
+      drawRain();
+    }
+  });
 
   buildRain();
   drawRain();

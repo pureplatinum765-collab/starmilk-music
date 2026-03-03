@@ -11,7 +11,7 @@
     { name: 'TRIBE STAR MILK', url: 'https://soundcloud.com/star-milk-645735333/tribe-star-milk' },
     { name: 'HONEY IN THE WOUND', url: 'https://soundcloud.com/star-milk-645735333/honey-in-the-wound' },
     { name: 'Shifting', url: 'https://soundcloud.com/star-milk-645735333/shifting' },
-    { name: 'Rivers Pull', url: 'https://soundcloud.com/star-milk-645735333/rivers-pull' },
+    { name: 'Rivers Pull', url: 'https://soundcloud.com/star-milk-645735333/rivers-pull-new-version' },
     { name: 'The Trembling Becomes the Truth', url: 'https://soundcloud.com/star-milk-645735333/the-trembling-becomes-the-truth' },
     { name: 'VELVET HONEY THUNDER', url: 'https://soundcloud.com/star-milk-645735333/velvet-honey-thunder' },
     { name: 'COSMIC FLOWS', url: 'https://soundcloud.com/star-milk-645735333/cosmic-flows' },
@@ -40,6 +40,9 @@
     particles: [],
     activeInfo: null
   };
+
+  let rafId = 0;
+  let isInView = true;
 
   function createTree(index, total) {
     const lane = (index + 0.5) / total;
@@ -233,7 +236,22 @@
     for (const fruit of state.fruits) drawFruit(fruit, growth, wind);
     drawParticles();
 
-    requestAnimationFrame(render);
+    rafId = requestAnimationFrame(render);
+  }
+
+  function canAnimate() {
+    return !document.hidden && isInView;
+  }
+
+  function stopAnimation() {
+    if (!rafId) return;
+    cancelAnimationFrame(rafId);
+    rafId = 0;
+  }
+
+  function ensureAnimation() {
+    if (!canAnimate() || rafId) return;
+    rafId = requestAnimationFrame(render);
   }
 
   function eventPos(evt) {
@@ -278,9 +296,27 @@
 
   buildOrchard();
   resize();
-  window.addEventListener('resize', resize, { passive: true });
+
+  const observer = new IntersectionObserver((entries) => {
+    const entry = entries[0];
+    isInView = Boolean(entry && entry.isIntersecting);
+    if (isInView) ensureAnimation();
+    else stopAnimation();
+  }, { threshold: 0.05 });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stopAnimation();
+    else ensureAnimation();
+  });
+
+  window.addEventListener('resize', () => {
+    resize();
+    ensureAnimation();
+  }, { passive: true });
   canvas.addEventListener('click', handleTap);
   canvas.addEventListener('touchstart', handleTap, { passive: false });
   document.addEventListener('scroll', () => { state.targetProgress = Math.min(1, state.targetProgress + 0.005); }, { passive: true });
-  render();
+
+  observer.observe(section);
+  ensureAnimation();
 })();
