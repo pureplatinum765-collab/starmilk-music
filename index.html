@@ -933,6 +933,184 @@
 
     .orchard-fruit-info a:hover { color: var(--gold-light); }
 
+
+    /* ── River journey ── */
+    #river {
+      position: relative;
+      min-height: 420vh;
+      isolation: isolate;
+      background: linear-gradient(180deg, #130d2f 0%, #072438 45%, #067b8f 72%, #79ebff 100%);
+      overflow: clip;
+    }
+
+    .river-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #river-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: .92;
+    }
+
+    .river-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 22%, rgba(255,255,255,.08), transparent 52%);
+      animation: riverPulse 6s ease-in-out infinite;
+    }
+
+    @keyframes riverPulse {
+      0%,100% { opacity: .3; }
+      50% { opacity: .6; }
+    }
+
+    .river-copy {
+      position: absolute;
+      top: 11vh;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      width: min(90vw, 720px);
+      z-index: 2;
+    }
+
+    .river-title { color: #d8fbff; text-shadow: 0 0 22px rgba(132,246,255,.45); }
+    .river-caption { color: rgba(232,244,255,.92); }
+
+    .tributary {
+      position: absolute;
+      width: clamp(170px, 24vw, 320px);
+      padding: .7rem 1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(187,248,255,.45);
+      background: linear-gradient(90deg, rgba(12,34,65,.72), rgba(43,152,170,.26));
+      color: #d5f8ff;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      font-size: .75rem;
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity .8s ease, transform .8s ease;
+      z-index: 2;
+    }
+
+    .tributary.visible { opacity: 1; transform: translateY(0); }
+    .tributary.left { left: 7vw; text-align: right; }
+    .tributary.right { right: 7vw; }
+    .tributary.pool { animation: poolStill 5s ease-in-out infinite; }
+    .tributary.rapid { animation: rapidPulse 1.8s linear infinite; }
+
+    @keyframes poolStill { 0%,100%{filter: brightness(1);} 50%{filter: brightness(1.15);} }
+    @keyframes rapidPulse { 0%,100%{transform: translateY(0);} 50%{transform: translateY(-4px);} }
+
+    .river-leaf {
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: rgba(255, 235, 168, .95);
+      background: rgba(8,28,44,.45);
+      border: 1px solid rgba(218,246,255,.28);
+      border-radius: 14px;
+      padding: .5rem .8rem;
+      font-size: .78rem;
+      box-shadow: 0 0 14px rgba(132,247,255,.2);
+      z-index: 2;
+      white-space: nowrap;
+    }
+
+    .river-ocean-copy {
+      position: absolute;
+      bottom: 12vh;
+      width: 100%;
+      text-align: center;
+      color: #e8feff;
+      text-shadow: 0 0 24px rgba(129,248,255,.65);
+      font-size: clamp(1rem, 2.8vw, 1.4rem);
+      z-index: 2;
+    }
+
+    /* ── Honey drip lyrics ── */
+    #lyrics {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #140f1d;
+      transition: background 1.3s ease;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #lyrics::before {
+      content: '';
+      position: absolute;
+      inset: -20%;
+      background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.06), transparent 58%);
+      animation: breathBg 6s ease-in-out infinite;
+    }
+
+    @keyframes breathBg { 0%,100%{opacity:.35;}50%{opacity:.62;} }
+
+    #lyrics[data-temperature='tender'] { background: #5f3c10; }
+    #lyrics[data-temperature='heavy'] { background: #2a1240; }
+    #lyrics[data-temperature='hopeful'] { background: #173252; }
+
+    .lyrics-shell {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      width: min(92vw, 760px);
+      padding: 3rem 1rem;
+    }
+
+    .honey-line {
+      min-height: 3.5em;
+      color: #d4a017;
+      font-size: clamp(1.4rem, 4.5vw, 2.9rem);
+      line-height: 1.3;
+      text-shadow: 0 0 18px rgba(212,160,23,.35);
+      opacity: 0;
+      transform: translateY(-36px) scaleY(1.12);
+      transform-origin: top center;
+    }
+
+    .honey-line.is-dripping {
+      animation: honeyDrip 3s ease forwards;
+    }
+
+    @keyframes honeyDrip {
+      0% { opacity: 0; transform: translateY(-36px) scaleY(1.15) scaleX(.94); color: #c8963e; }
+      58% { opacity: 1; transform: translateY(15px) scaleY(.88) scaleX(1.03); color: #d9aa33; }
+      100% { opacity: 1; transform: translateY(0) scaleY(1) scaleX(1); color: #d4a017; }
+    }
+
+    .lyrics-controls { margin-top: 1.4rem; display: flex; gap: .8rem; justify-content: center; align-items: center; flex-wrap: wrap; }
+    .lyrics-controls button {
+      border: 1px solid rgba(212,160,23,.45);
+      background: rgba(0,0,0,.28);
+      color: #e8be63;
+      border-radius: 999px;
+      padding: .55rem 1rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-size: .75rem;
+    }
+
+    .lyrics-count { color: rgba(255,226,162,.84); font-size: .78rem; letter-spacing: .1em; }
+
+    @media (max-width: 850px) {
+      .tributary.left { left: 3vw; }
+      .tributary.right { right: 3vw; }
+      .river-leaf { font-size: .68rem; }
+    }
+
     /* ── Support ── */
     #support {
       background: radial-gradient(ellipse 75% 55% at 50% 50%, rgba(124,58,237,.07) 0%, transparent 70%);
@@ -1193,6 +1371,8 @@
     <ul class="nav-links">
       <li><a href="#stream">Stream</a></li>
       <li><a href="#orchard">Orchard</a></li>
+      <li><a href="#river">River</a></li>
+      <li><a href="#lyrics">Lyrics</a></li>
       <li><a href="#games" class="game-link">Games</a></li>
       <li><a href="#support">Support</a></li>
       <li><a href="#connect">Connect</a></li>
@@ -1337,6 +1517,52 @@
       </div>
     </div>
   </section>
+
+
+  <div class="divider"></div>
+
+  <!-- ═══ RIVER ════════════════════════════════════════════════ -->
+  <section id="river" data-mood-section="thawing" aria-labelledby="river-h">
+    <div class="river-sticky">
+      <canvas id="river-canvas" aria-hidden="true"></canvas>
+      <div class="river-overlay" aria-hidden="true"></div>
+      <div class="river-copy">
+        <span class="label">Journey</span>
+        <h2 id="river-h" class="section-title river-title">The River to Ocean</h2>
+        <p class="river-caption">Scroll the current from springwater indigo into luminous open sea.</p>
+      </div>
+
+      <div class="tributary left pool" data-progress="0.12" style="top: 22vh;">Rivers Pull</div>
+      <div class="tributary right rapid" data-progress="0.24" style="top: 30vh;">Mouth of the River</div>
+      <div class="tributary left rapid" data-progress="0.38" style="top: 43vh;">TRIBE STAR MILK</div>
+      <div class="tributary right pool" data-progress="0.52" style="top: 56vh;">The Trembling Becomes the Truth</div>
+      <div class="tributary left rapid" data-progress="0.66" style="top: 68vh;">Shifting</div>
+      <div class="tributary right pool" data-progress="0.8" style="top: 79vh;">HONEY IN THE WOUND</div>
+
+      <div class="river-leaf" data-speed="0.21" data-x="20">River to ocean, I open wide</div>
+      <div class="river-leaf" data-speed="0.18" data-x="58">The wound will make you wise</div>
+      <div class="river-leaf" data-speed="0.23" data-x="40">Born from the trembling</div>
+
+      <p class="river-ocean-copy">At the mouth: luminous cyan, open water, and light on every wave.</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══ LYRICS ═══════════════════════════════════════════════ -->
+  <section id="lyrics" data-temperature="tender" aria-labelledby="lyrics-h">
+    <div class="lyrics-shell">
+      <span class="label">Immersive Lyrics</span>
+      <h2 id="lyrics-h" class="section-title">Honey Drip — HONEY IN THE WOUND</h2>
+      <p class="honey-line is-dripping" data-lyric-line></p>
+      <div class="lyrics-controls">
+        <button type="button" data-lyrics-play aria-pressed="true">Pause Flow</button>
+        <button type="button" data-lyrics-next>Drip Next Line</button>
+        <span class="lyrics-count" data-lyric-count>1 / 6</span>
+      </div>
+    </div>
+  </section>
+
 
   <div class="divider"></div>
 
@@ -1576,6 +1802,8 @@ Stay as long as you like.</p>
 <script src="mood-ring.js" defer></script>
 <script src="the-clearing.js" defer></script>
 <script src="orchard.js" defer></script>
+<script src="the-river.js" defer></script>
+<script src="honey-drip.js" defer></script>
 
 <script>
 (function () {
