@@ -673,10 +673,70 @@
       padding: 1rem;
     }
 
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.2rem;
+      margin-top: 1.9rem;
+    }
+
+    .game-card h3 {
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--gold-light);
+      font-size: .95rem;
+      margin-bottom: .55rem;
+    }
+
+    .game-card p {
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.7;
+    }
+
     #brick-breaker-launch {
       width: 100%;
       justify-content: center;
       margin-top: 1rem;
+    }
+
+    #cosmic-maze-launch {
+      width: 100%;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .bandcamp-shell {
+      margin-top: 2.2rem;
+      border-radius: var(--radius);
+      border: 1px solid rgba(13,148,136,.32);
+      background: linear-gradient(180deg, rgba(7,1,14,.9), rgba(10,3,22,.88));
+      box-shadow: 0 0 0 1px rgba(13,148,136,.2), 0 8px 36px rgba(99,102,241,.16);
+      padding: 1.2rem;
+    }
+
+    .bandcamp-shell h3 {
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--teal-light);
+      font-size: .92rem;
+      margin-bottom: .5rem;
+    }
+
+    .bandcamp-shell p {
+      color: var(--muted);
+      margin-bottom: 1rem;
+      font-size: .9rem;
+    }
+
+    .bandcamp-frame {
+      width: 100%;
+      min-height: 120px;
+      border: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      background: rgba(3,0,8,.85);
     }
 
     .bb-overlay { position: fixed; inset: 0; display: none; z-index: 10000; background: rgba(3,0,9,.94); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding: 1rem; }
@@ -914,12 +974,21 @@
   <section id="games" aria-labelledby="games-h">
     <div class="section-inner">
       <span class="label reveal">Arcade Portal</span>
-      <h2 class="section-title reveal" id="games-h">Brick Breaker Mini Game</h2>
-      <p class="sub reveal">A retro-cosmic breakout challenge with neon bricks, power-ups, and layered synth-style effects.</p>
+      <h2 class="section-title reveal" id="games-h">Cosmic Games Terminal</h2>
+      <p class="sub reveal">Pick your portal: race through the maze of stars or smash luminous constellations in retro arcade mode.</p>
 
-      <div class="game-shell reveal">
-        <p>Destroy constellations of glowing bricks, climb through increasing levels, and trigger free power-ups. Optional tips support STARMILK, but every boost is playable at no cost.</p>
-        <button class="btn" id="brick-breaker-launch">Launch Brick Breaker</button>
+      <div class="game-grid">
+        <div class="game-shell game-card reveal">
+          <h3>Cosmic Maze Quest</h3>
+          <p>Navigate the living star maze, unlock hidden tracks, and collect mystery relics in the full STARMILK cosmic quest experience.</p>
+          <button class="btn" id="cosmic-maze-launch" data-cosmic-launch>Launch Cosmic Maze</button>
+        </div>
+
+        <div class="game-shell game-card reveal">
+          <h3>Arcade Brick Breaker</h3>
+          <p>Destroy constellations of glowing bricks, climb through increasing levels, and trigger free power-ups. Optional tips support STARMILK, but every boost is playable at no cost.</p>
+          <button class="btn" id="brick-breaker-launch">Launch Brick Breaker</button>
+        </div>
       </div>
     </div>
   </section>
@@ -1007,6 +1076,20 @@
         <strong>Note:</strong> SoundCloud creators don't receive direct payments from streams,
         so your donations help fund studio time, equipment, and production — keeping the music alive and independent.
       </p>
+
+      <div class="bandcamp-shell reveal" aria-label="Bandcamp album section">
+        <h3>Bandcamp Transmission</h3>
+        <p>Own the music. Support the artist directly.</p>
+        <iframe
+          class="bandcamp-frame"
+          title="Bandcamp player for TRIBE STAR MILK"
+          src="https://bandcamp.com/EmbeddedPlayer/album=0000000000/size=large/bgcol=120920/linkcol=f59e0b/tracklist=false/artwork=small/transparent=true/"
+          seamless>
+          <a href="#" data-bandcamp-url-placeholder>Buy Album on Bandcamp</a>
+        </iframe>
+        <!-- Replace href/src with the real Bandcamp album URL once published. -->
+        <a class="btn" href="#" data-bandcamp-url-placeholder>Buy Album</a>
+      </div>
     </div>
   </section>
 
