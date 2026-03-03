@@ -45,6 +45,7 @@
   let poemCooldown = false;
   let activeNodes = [];
   let interludeTimeout = 0;
+  let visualizerRaf = 0;
 
   const shuffle = (list) => {
     const clone = [...list];
@@ -247,12 +248,13 @@
 
   const loadSoundCloudApi = () => new Promise((resolve) => {
     if (window.SC?.Widget) {
-      resolve();
+      resolve(true);
       return;
     }
     const script = document.createElement('script');
     script.src = 'https://w.soundcloud.com/player/api.js';
-    script.onload = () => resolve();
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
     document.head.appendChild(script);
   });
 
@@ -262,37 +264,57 @@
     const bars = 32;
     const data = new Uint8Array(analyser.frequencyBinCount);
 
-    const loop = () => {
-      analyser.getByteFrequencyData(data);
-      ctx.clearRect(0, 0, width, height);
+    analyser.getByteFrequencyData(data);
+    ctx.clearRect(0, 0, width, height);
 
-      const gradient = ctx.createLinearGradient(0, 0, width, height);
-      gradient.addColorStop(0, 'rgba(147,51,234,.92)');
-      gradient.addColorStop(0.5, 'rgba(34,211,238,.85)');
-      gradient.addColorStop(1, 'rgba(245,158,11,.95)');
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, 'rgba(147,51,234,.92)');
+    gradient.addColorStop(0.5, 'rgba(34,211,238,.85)');
+    gradient.addColorStop(1, 'rgba(245,158,11,.95)');
 
-      const spacing = width / bars;
-      for (let i = 0; i < bars; i += 1) {
-        const value = data[i] || (Math.sin((Date.now() / 280) + i) + 1) * 24;
-        const barHeight = Math.max(4, (value / 255) * height * 0.96);
-        const x = i * spacing + 1;
-        const y = (height - barHeight) / 2;
-        ctx.fillStyle = gradient;
-        ctx.shadowBlur = 9;
-        ctx.shadowColor = 'rgba(147,51,234,.7)';
-        ctx.fillRect(x, y, Math.max(2, spacing - 3), barHeight);
+    const spacing = width / bars;
+    for (let i = 0; i < bars; i += 1) {
+      const value = data[i] || (Math.sin((Date.now() / 280) + i) + 1) * 24;
+      const barHeight = Math.max(4, (value / 255) * height * 0.96);
+      const x = i * spacing + 1;
+      const y = (height - barHeight) / 2;
+      ctx.fillStyle = gradient;
+      ctx.shadowBlur = 9;
+      ctx.shadowColor = 'rgba(147,51,234,.7)';
+      ctx.fillRect(x, y, Math.max(2, spacing - 3), barHeight);
+    }
+  };
+
+  const canAnimateVisualizer = () => !document.hidden && !floating.classList.contains('collapsed');
+
+  const stopVisualizerLoop = () => {
+    if (visualizerRaf) {
+      cancelAnimationFrame(visualizerRaf);
+      visualizerRaf = 0;
+    }
+  };
+
+  const ensureVisualizerLoop = () => {
+    if (!canAnimateVisualizer() || visualizerRaf) return;
+
+    const tick = () => {
+      if (!canAnimateVisualizer()) {
+        visualizerRaf = 0;
+        return;
       }
-
-      requestAnimationFrame(loop);
+      drawVisualizer();
+      visualizerRaf = requestAnimationFrame(tick);
     };
 
-    loop();
+    visualizerRaf = requestAnimationFrame(tick);
   };
 
   badge.addEventListener('click', () => {
     const collapsed = floating.classList.toggle('collapsed');
     badge.setAttribute('aria-expanded', String(!collapsed));
     badge.textContent = collapsed ? 'STARMILK RADIO ✦ tap to tune' : 'STARMILK RADIO ✦ collapse';
+    if (collapsed) stopVisualizerLoop();
+    else ensureVisualizerLoop();
   });
 
   playBtn.addEventListener('click', togglePlayback);
@@ -303,16 +325,24 @@
   });
 
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden && isPlaying && widget) {
-      setWidgetVolume(Number(volumeSlider.value) * 0.85);
+    if (document.hidden) {
+      stopVisualizerLoop();
+      if (isPlaying && widget) setWidgetVolume(Number(volumeSlider.value) * 0.85);
+      return;
     }
+    ensureVisualizerLoop();
   });
 
   prepareOrder();
   updateTrackLabel('Ready to tune');
-  loadSoundCloudApi().then(() => {
+  loadSoundCloudApi().then((ready) => {
+    if (!ready) {
+      updateTrackLabel('Signal offline');
+      return;
+    }
     scReady = true;
     initWidget();
   });
   drawVisualizer();
+  ensureVisualizerLoop();
 })();

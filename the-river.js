@@ -13,6 +13,8 @@
   let h = 0;
   let progress = 0;
   let time = 0;
+  let rafId = 0;
+  let isInView = true;
 
   function resize() {
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
@@ -119,13 +121,49 @@
     time = ts;
     update();
     drawRiver();
-    requestAnimationFrame(frame);
+    rafId = requestAnimationFrame(frame);
   }
+
+  function canAnimate() {
+    return !document.hidden && isInView;
+  }
+
+  function stopAnimation() {
+    if (!rafId) return;
+    cancelAnimationFrame(rafId);
+    rafId = 0;
+  }
+
+  function ensureAnimation() {
+    if (!canAnimate() || rafId) return;
+    rafId = requestAnimationFrame(frame);
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    const entry = entries[0];
+    isInView = Boolean(entry && entry.isIntersecting);
+    if (isInView) {
+      update();
+      ensureAnimation();
+    } else {
+      stopAnimation();
+    }
+  }, { threshold: 0.05 });
 
   resize();
   update();
-  requestAnimationFrame(frame);
+  observer.observe(section);
+  ensureAnimation();
 
-  window.addEventListener('resize', resize, { passive: true });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stopAnimation();
+    else ensureAnimation();
+  });
+
+  window.addEventListener('resize', () => {
+    resize();
+    update();
+    ensureAnimation();
+  }, { passive: true });
   window.addEventListener('scroll', update, { passive: true });
 })();

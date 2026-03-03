@@ -40,11 +40,13 @@
   function closeMoodSelector() {
     overlay.classList.remove('open');
     overlay.setAttribute('aria-hidden', 'true');
+    window.dispatchEvent(new CustomEvent('starmilk:moodRingVisibility', { detail: { open: false } }));
   }
 
   function openMoodSelector() {
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
+    window.dispatchEvent(new CustomEvent('starmilk:moodRingVisibility', { detail: { open: true } }));
   }
 
   function setMood(mood, shouldScroll) {

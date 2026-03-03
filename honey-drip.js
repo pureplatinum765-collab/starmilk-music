@@ -21,6 +21,7 @@
   let index = 0;
   let playing = true;
   let timer = null;
+  let inView = true;
 
   function render() {
     const item = lines[index];
@@ -39,7 +40,7 @@
   }
 
   function start() {
-    if (timer) clearInterval(timer);
+    if (timer || !inView || document.hidden) return;
     timer = setInterval(step, 4000);
     playBtn.textContent = 'Pause Flow';
     playBtn.setAttribute('aria-pressed', 'true');
@@ -65,6 +66,19 @@
     }
   });
 
+  const observer = new IntersectionObserver((entries) => {
+    const entry = entries[0];
+    inView = Boolean(entry && entry.isIntersecting);
+    if (!inView) stop();
+    else if (playing) start();
+  }, { threshold: 0.15 });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stop();
+    else if (playing && inView) start();
+  });
+
+  observer.observe(section);
   render();
   start();
 })();
