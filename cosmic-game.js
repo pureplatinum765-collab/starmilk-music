@@ -216,14 +216,24 @@
   }
 
   function injectLaunch() {
+    attachLaunchTriggers();
     const hero = document.querySelector('.hero-content');
     if (!hero) return;
     const btn = document.createElement('button');
     btn.id = 'cq-launch-btn';
     btn.className = 'btn';
     btn.innerHTML = '★ Enter the Cosmos ★';
-    btn.onclick = launchGame;
+    btn.setAttribute('data-cosmic-launch', '');
     hero.appendChild(btn);
+    attachLaunchTriggers();
+  }
+
+  function attachLaunchTriggers() {
+    document.querySelectorAll('[data-cosmic-launch]').forEach(btn => {
+      if (btn.dataset.boundCosmicLaunch === '1') return;
+      btn.addEventListener('click', launchGame);
+      btn.dataset.boundCosmicLaunch = '1';
+    });
   }
 
   function generateRun() {
