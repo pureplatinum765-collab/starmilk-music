@@ -266,7 +266,135 @@
       list-style: none;
       display: flex;
       gap: 1.75rem;
+      align-items: center;
     }
+
+    .mood-ring-trigger {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.35);
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), rgba(147,51,234,.55) 45%, rgba(10,0,16,.9));
+      box-shadow: 0 0 16px rgba(147,51,234,.45);
+      cursor: pointer;
+      transition: transform var(--t), box-shadow var(--t);
+    }
+
+    .mood-ring-trigger:hover,
+    .mood-ring-trigger:focus-visible {
+      transform: scale(1.1);
+      box-shadow: 0 0 22px rgba(245,158,11,.55);
+      outline: none;
+    }
+
+    .mood-ring-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      background: radial-gradient(circle at 50% 40%, rgba(28,18,52,.84), rgba(8,4,16,.94));
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .7s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .mood-ring-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .mood-ring-card {
+      width: min(92vw, 700px);
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,.16);
+      padding: 2rem;
+      background: linear-gradient(145deg, rgba(18,9,32,.92), rgba(10,4,20,.95));
+      box-shadow: 0 0 40px rgba(147,51,234,.22);
+      text-align: center;
+    }
+
+    .mood-ring-title {
+      font-family: Georgia, serif;
+      font-size: clamp(1.3rem, 4vw, 2rem);
+      color: #f4e7ff;
+      margin-bottom: 1.5rem;
+      letter-spacing: .04em;
+      text-shadow: 0 0 20px rgba(192,132,252,.4);
+    }
+
+    .mood-ring-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+    }
+
+    .mood-orb {
+      border: 0;
+      border-radius: 50%;
+      width: 112px;
+      aspect-ratio: 1;
+      margin: 0 auto;
+      color: white;
+      font-size: .76rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      cursor: pointer;
+      animation: moodPulse 2.8s ease-in-out infinite;
+      transition: transform .3s ease;
+    }
+
+    .mood-orb:hover,
+    .mood-orb:focus-visible { transform: scale(1.08); outline: none; }
+
+    .mood-orb[data-mood='heavy'] { background: radial-gradient(circle at 30% 25%, #4a58a5, #11193a 72%); box-shadow: 0 0 26px rgba(49,68,149,.75); }
+    .mood-orb[data-mood='thawing'] { background: linear-gradient(140deg, #93c5fd, #f7d8b0); box-shadow: 0 0 24px rgba(147,197,253,.75); color: #3b2f39; }
+    .mood-orb[data-mood='tender'] { background: radial-gradient(circle at 30% 25%, #f9a8d4, #be5b8f 74%); box-shadow: 0 0 28px rgba(244,114,182,.7); }
+    .mood-orb[data-mood='alive'] { background: linear-gradient(140deg, #facc15, #86efac); box-shadow: 0 0 28px rgba(250,204,21,.78); color: #2b2b16; }
+    .mood-orb[data-mood='going-round'] { background: conic-gradient(from 80deg, #7e22ce, #ec4899, #9333ea, #7e22ce); box-shadow: 0 0 28px rgba(217,70,239,.72); }
+
+    @keyframes moodPulse {
+      0%, 100% { transform: scale(.98); filter: saturate(1); }
+      50% { transform: scale(1.04); filter: saturate(1.15); }
+    }
+
+    body[data-mood='heavy'] { background: #090f2a; }
+    body[data-mood='thawing'] { background: #1a2738; }
+    body[data-mood='tender'] { background: #2a1227; }
+    body[data-mood='alive'] { background: #20280f; }
+    body[data-mood='going-round'] { background: #230830; }
+
+    body[data-mood='heavy'] nav { background: rgba(8,16,42,.78); }
+    body[data-mood='thawing'] nav { background: rgba(20,39,56,.78); }
+    body[data-mood='tender'] nav { background: rgba(42,18,39,.78); }
+    body[data-mood='alive'] nav { background: rgba(27,36,13,.78); }
+    body[data-mood='going-round'] nav { background: rgba(31,8,42,.78); }
+
+    .clearing-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      background: #fff;
+      color: #1e1e1e;
+      display: none;
+      padding: 2rem;
+      text-align: center;
+      place-items: center;
+      font-family: Georgia, 'Times New Roman', serif;
+      opacity: 0;
+    }
+
+    .clearing-overlay.visible { display: grid; }
+    .clearing-overlay.revealed { animation: clearingBreathe 5s ease-in-out infinite alternate; }
+
+    @keyframes clearingBreathe {
+      from { opacity: .85; }
+      to { opacity: 1; }
+    }
+
+    .clearing-poem { max-width: 700px; line-height: 1.9; font-size: clamp(1.2rem, 3vw, 1.6rem); white-space: pre-line; }
+    .clearing-return { position: absolute; bottom: 1.2rem; left: 50%; transform: translateX(-50%); color: #333; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; }
 
     .nav-links a {
       color: var(--muted);
@@ -997,11 +1125,12 @@
       <li><a href="#games" class="game-link">Games</a></li>
       <li><a href="#support">Support</a></li>
       <li><a href="#connect">Connect</a></li>
+      <li><button type="button" id="mood-ring-trigger" class="mood-ring-trigger" aria-label="Change mood"></button></li>
     </ul>
   </nav>
 
   <!-- ═══ HERO ═══════════════════════════════════════════════════ -->
-  <section id="hero" aria-label="Hero">
+  <section id="hero" data-mood-section="going-round" aria-label="Hero">
     <div class="nebula" aria-hidden="true"></div>
 
     <!-- Sacred geometry rings -->
@@ -1044,7 +1173,7 @@
   <div class="divider"></div>
 
   <!-- ═══ STREAM ═════════════════════════════════════════════════ -->
-  <section id="stream" aria-labelledby="stream-h">
+  <section id="stream" data-mood-section="alive" aria-labelledby="stream-h">
     <div class="section-inner">
       <span class="label reveal">Listen Everywhere</span>
       <h2 class="section-title reveal" id="stream-h">Stream My Music</h2>
@@ -1141,7 +1270,7 @@
   <div class="divider"></div>
 
   <!-- ═══ GAMES ══════════════════════════════════════════════════ -->
-  <section id="games" aria-labelledby="games-h">
+  <section id="games" data-mood-section="thawing" aria-labelledby="games-h">
     <div class="section-inner">
       <span class="label reveal">Arcade Portal</span>
       <h2 class="section-title reveal" id="games-h">Cosmic Games Terminal</h2>
@@ -1166,7 +1295,7 @@
   <div class="divider"></div>
 
   <!-- ═══ SUPPORT ════════════════════════════════════════════════ -->
-  <section id="support" aria-labelledby="support-h">
+  <section id="support" data-mood-section="heavy" aria-labelledby="support-h">
     <div class="section-inner">
       <span class="label reveal">Keep the Signal Alive</span>
       <h2 class="section-title reveal" id="support-h">Support the Music</h2>
@@ -1266,7 +1395,7 @@
   <div class="divider"></div>
 
   <!-- ═══ CONNECT ════════════════════════════════════════════════ -->
-  <section id="connect" aria-labelledby="connect-h">
+  <section id="connect" data-mood-section="tender" aria-labelledby="connect-h">
     <div class="section-inner">
       <span class="label reveal">Stay in the Signal</span>
       <h2 class="section-title reveal" id="connect-h">Connect</h2>
@@ -1325,6 +1454,16 @@
 
 </div><!-- /wrap -->
 
+<div id="mood-ring-overlay" class="mood-ring-overlay" aria-hidden="true"></div>
+
+<div id="the-clearing" class="clearing-overlay" aria-hidden="true">
+  <p class="clearing-poem">You found the clearing.
+Most people never stop long enough.
+Here, nothing is asked of you.
+Stay as long as you like.</p>
+  <a href="#" id="clearing-return" class="clearing-return">return</a>
+</div>
+
 <div id="brick-breaker-overlay" class="bb-overlay" aria-hidden="true">
   <div class="bb-panel" role="dialog" aria-modal="true" aria-labelledby="bb-title">
     <div class="bb-head">
@@ -1345,6 +1484,9 @@
     </div>
   </div>
 </div>
+
+<script src="mood-ring.js" defer></script>
+<script src="the-clearing.js" defer></script>
 
 <script>
 (function () {
