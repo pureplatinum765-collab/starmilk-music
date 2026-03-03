@@ -125,6 +125,11 @@
       text-shadow: 0 0 12px rgba(245,158,11,.8);
     }
 
+    .nav-links .game-link {
+      color: var(--gold-light);
+      text-shadow: 0 0 10px rgba(245,158,11,.45);
+    }
+
     @media (max-width: 550px) {
       nav { padding: 1rem 1.25rem; }
       .nav-links { gap: 1rem; }
@@ -654,6 +659,45 @@
 
     .soc-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
 
+    /* ── Games ── */
+    #games {
+      background: radial-gradient(ellipse 70% 50% at 50% 40%, rgba(99,102,241,.12) 0%, transparent 70%);
+    }
+
+    .game-shell {
+      margin-top: 2rem;
+      border-radius: var(--radius);
+      border: 1px solid rgba(147,51,234,.3);
+      background: rgba(9,2,16,.8);
+      box-shadow: var(--card-shadow);
+      padding: 1rem;
+    }
+
+    #brick-breaker-launch {
+      width: 100%;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .bb-overlay { position: fixed; inset: 0; display: none; z-index: 10000; background: rgba(3,0,9,.94); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding: 1rem; }
+    .bb-overlay.open { display: flex; align-items: center; justify-content: center; }
+    .bb-panel { width: min(980px, 100%); max-height: 100%; overflow: auto; background: linear-gradient(180deg, rgba(12,3,24,.98), rgba(5,0,14,.98)); border: 1px solid rgba(147,51,234,.45); border-radius: 18px; box-shadow: 0 0 40px rgba(147,51,234,.22); padding: 1rem; }
+    .bb-head { display: flex; justify-content: space-between; align-items: center; gap: .75rem; flex-wrap: wrap; margin-bottom: .6rem; }
+    .bb-head h3 { text-transform: uppercase; letter-spacing: .14em; font-size: .95rem; color: var(--gold-light); }
+    .bb-close { border: 1px solid rgba(245,158,11,.35); background: rgba(245,158,11,.1); color: var(--gold-light); border-radius: 999px; padding: .4rem .9rem; cursor: pointer; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: .7rem; }
+    .bb-canvas-wrap { border-radius: 14px; border: 1px solid rgba(99,102,241,.45); overflow: hidden; background: #04010a; }
+    #brick-breaker-canvas { width: 100%; display: block; touch-action: none; }
+    .bb-ui { display: grid; grid-template-columns: 1fr; gap: .8rem; margin-top: .85rem; font-size: .82rem; color: var(--muted); }
+    .bb-powers { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .bb-powers button, .bb-powers a { border-radius: 999px; border: 1px solid rgba(147,51,234,.4); background: rgba(24,8,38,.85); color: var(--text); text-decoration: none; padding: .45rem .85rem; font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+    .bb-mobile { display: none; gap: .6rem; }
+    .bb-mobile button { flex: 1; border: 1px solid rgba(147,51,234,.45); background: rgba(11,2,22,.95); color: #fff; border-radius: 10px; padding: .65rem; font-weight: 700; font-size: .88rem; touch-action: manipulation; }
+
+    @media (max-width: 800px) {
+      .bb-mobile { display: flex; }
+      .bb-panel { padding: .75rem; }
+    }
+
     /* ── Footer ── */
     footer {
       text-align: center;
@@ -720,6 +764,7 @@
     <span class="nav-logo">STARMILK</span>
     <ul class="nav-links">
       <li><a href="#stream">Stream</a></li>
+      <li><a href="#games" class="game-link">Games</a></li>
       <li><a href="#support">Support</a></li>
       <li><a href="#connect">Connect</a></li>
     </ul>
@@ -859,6 +904,22 @@
           <span class="card-arrow">Discover more &#8594;</span>
         </a>
 
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══ GAMES ══════════════════════════════════════════════════ -->
+  <section id="games" aria-labelledby="games-h">
+    <div class="section-inner">
+      <span class="label reveal">Arcade Portal</span>
+      <h2 class="section-title reveal" id="games-h">Brick Breaker Mini Game</h2>
+      <p class="sub reveal">A retro-cosmic breakout challenge with neon bricks, power-ups, and layered synth-style effects.</p>
+
+      <div class="game-shell reveal">
+        <p>Destroy constellations of glowing bricks, climb through increasing levels, and trigger free power-ups. Optional tips support STARMILK, but every boost is playable at no cost.</p>
+        <button class="btn" id="brick-breaker-launch">Launch Brick Breaker</button>
       </div>
     </div>
   </section>
@@ -1010,6 +1071,27 @@
   </footer>
 
 </div><!-- /wrap -->
+
+<div id="brick-breaker-overlay" class="bb-overlay" aria-hidden="true">
+  <div class="bb-panel" role="dialog" aria-modal="true" aria-labelledby="bb-title">
+    <div class="bb-head">
+      <h3 id="bb-title">STARMILK Cosmic Brick Breaker</h3>
+      <button class="bb-close" id="brick-breaker-close">Close</button>
+    </div>
+    <div class="bb-canvas-wrap">
+      <canvas id="brick-breaker-canvas" width="960" height="540"></canvas>
+    </div>
+    <div class="bb-ui">
+      <div id="brick-breaker-stats">Score: 0 • Lives: 3 • Level: 1</div>
+      <div class="bb-powers" id="brick-breaker-powerups"></div>
+      <p>Controls: ←/→ or A/D, swipe/touch to move paddle, Space to launch ball.</p>
+      <div class="bb-mobile" id="brick-breaker-mobile-controls">
+        <button data-dir="left">◀ Left</button>
+        <button data-dir="right">Right ▶</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
 (function () {
@@ -1478,6 +1560,8 @@ void main(){
 
 })();
 </script>
+
+<script src="brick-breaker-game.js" defer></script>
 
 <!-- ═══ STARMILK COSMIC QUEST ════════════════════════════════════════════ -->
 <script src="cosmic-game.js" defer></script>
