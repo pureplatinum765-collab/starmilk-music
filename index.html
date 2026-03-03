@@ -869,6 +869,70 @@
       margin-top: .4rem;
     }
 
+    /* ── Orchard ── */
+    #orchard {
+      background: radial-gradient(ellipse 70% 55% at 50% 40%, rgba(245,158,11,.08) 0%, rgba(124,58,237,.08) 40%, transparent 72%);
+    }
+
+    .orchard-shell {
+      margin-top: 2rem;
+      border-radius: var(--radius);
+      border: 1px solid rgba(245,158,11,.3);
+      background: linear-gradient(180deg, rgba(8,5,16,.92), rgba(12,8,20,.94));
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    #orchard-canvas {
+      width: 100%;
+      height: min(70vh, 540px);
+      display: block;
+      touch-action: manipulation;
+      background: #0a0a0f;
+    }
+
+    .orchard-hint {
+      color: var(--muted);
+      font-size: .85rem;
+      padding: .85rem 1rem 1rem;
+      letter-spacing: .04em;
+      border-top: 1px solid rgba(245,158,11,.15);
+      background: rgba(0,0,0,.2);
+    }
+
+    .orchard-fruit-info {
+      position: absolute;
+      min-width: 190px;
+      max-width: 260px;
+      pointer-events: auto;
+      background: rgba(10,6,18,.94);
+      border: 1px solid rgba(245,158,11,.35);
+      box-shadow: 0 0 0 1px rgba(245,158,11,.22), 0 10px 34px rgba(0,0,0,.45);
+      border-radius: 13px;
+      padding: .85rem .95rem;
+      transform: translate(-50%, -110%);
+    }
+
+    .orchard-fruit-info h3 {
+      font-size: .84rem;
+      color: var(--gold-light);
+      line-height: 1.4;
+      margin-bottom: .4rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .orchard-fruit-info a {
+      color: var(--teal-light);
+      font-size: .82rem;
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: .05em;
+    }
+
+    .orchard-fruit-info a:hover { color: var(--gold-light); }
+
     /* ── Support ── */
     #support {
       background: radial-gradient(ellipse 75% 55% at 50% 50%, rgba(124,58,237,.07) 0%, transparent 70%);
@@ -1041,6 +1105,12 @@
     @media (max-width: 800px) {
       .bb-mobile { display: flex; }
       .bb-panel { padding: .75rem; }
+      #orchard-canvas { height: min(62vh, 460px); }
+      .orchard-fruit-info {
+        min-width: 168px;
+        max-width: 220px;
+        padding: .72rem .8rem;
+      }
     }
 
     /* ── Footer ── */
@@ -1122,6 +1192,7 @@
     <span class="nav-logo">STARMILK</span>
     <ul class="nav-links">
       <li><a href="#stream">Stream</a></li>
+      <li><a href="#orchard">Orchard</a></li>
       <li><a href="#games" class="game-link">Games</a></li>
       <li><a href="#support">Support</a></li>
       <li><a href="#connect">Connect</a></li>
@@ -1182,7 +1253,7 @@
       <div class="grid">
 
         <!-- YouTube — gold accent -->
-        <a class="card card-gold reveal" href="https://www.youtube.com/@starmilk6719" target="_blank" rel="noopener noreferrer">
+        <a class="card card-gold reveal" href="https://www.youtube.com/@STARMILK-s5u" target="_blank" rel="noopener noreferrer">
           <div class="card-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M22.54 6.42A2.78 2.78 0 0 0 20.59 4.5C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.5C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" fill="#FF0000"/>
@@ -1263,6 +1334,23 @@
           <span class="card-arrow">Discover more &#8594;</span>
         </a>
 
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══ ORCHARD ════════════════════════════════════════════════ -->
+  <section id="orchard" data-mood-section="alive" aria-labelledby="orchard-h">
+    <div class="section-inner">
+      <span class="label reveal">Living Catalog</span>
+      <h2 class="section-title reveal" id="orchard-h">The Orchard</h2>
+      <p class="sub reveal">A breathing grove where each fruit is a song. Tap or click fruit to drop it, split it open, and listen.</p>
+
+      <div class="orchard-shell reveal">
+        <canvas id="orchard-canvas" aria-label="Interactive orchard of songs"></canvas>
+        <div id="orchard-fruit-info" class="orchard-fruit-info" hidden></div>
+        <p class="orchard-hint">Trees grow as you linger. Return visitors awaken a fuller orchard immediately.</p>
       </div>
     </div>
   </section>
@@ -1433,7 +1521,7 @@
         </a>
 
         <!-- YouTube -->
-        <a class="soc-btn reveal" href="https://www.youtube.com/@starmilk6719" target="_blank" rel="noopener noreferrer" aria-label="STARMILK on YouTube">
+        <a class="soc-btn reveal" href="https://www.youtube.com/@STARMILK-s5u" target="_blank" rel="noopener noreferrer" aria-label="STARMILK on YouTube">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M22.54 6.42A2.78 2.78 0 0 0 20.59 4.5C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.5C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" fill="#FF0000"/>
             <polygon points="9.75,15.02 15.5,12 9.75,8.98" fill="#fff"/>
@@ -1487,6 +1575,7 @@ Stay as long as you like.</p>
 
 <script src="mood-ring.js" defer></script>
 <script src="the-clearing.js" defer></script>
+<script src="orchard.js" defer></script>
 
 <script>
 (function () {
