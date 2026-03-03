@@ -29,13 +29,9 @@
     return;
   }
 
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const visualizerGain = audioCtx.createGain();
-  const analyser = audioCtx.createAnalyser();
-  analyser.fftSize = 128;
-  visualizerGain.gain.value = 0;
-  visualizerGain.connect(analyser);
-  analyser.connect(audioCtx.destination);
+  let audioCtx = null;
+  let visualizerGain = null;
+  let analyser = null;
 
   let scReady = false;
   let widget = null;
@@ -46,6 +42,33 @@
   let activeNodes = [];
   let interludeTimeout = 0;
   let visualizerRaf = 0;
+  let playStartTimeout = 0;
+  let awaitingPlaybackStart = false;
+  let pendingReadyPlay = false;
+
+  const ensureAudioGraph = () => {
+    if (audioCtx) return audioCtx;
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return null;
+
+    audioCtx = new AudioContextClass();
+    visualizerGain = audioCtx.createGain();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 128;
+    visualizerGain.gain.value = 0;
+    visualizerGain.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    return audioCtx;
+  };
+
+  const resumeAudioGraph = async () => {
+    const ctxRef = ensureAudioGraph();
+    if (!ctxRef) return false;
+    if (ctxRef.state === 'suspended') {
+      await ctxRef.resume();
+    }
+    return true;
+  };
 
   const shuffle = (list) => {
     const clone = [...list];
@@ -101,6 +124,7 @@
       }
     });
     activeNodes = [];
+    if (!audioCtx || !visualizerGain) return;
     visualizerGain.gain.cancelScheduledValues(audioCtx.currentTime);
     visualizerGain.gain.setValueAtTime(0.1, audioCtx.currentTime);
     visualizerGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.45);
@@ -109,6 +133,7 @@
   const randomBetween = (min, max) => min + Math.random() * (max - min);
 
   const connectNode = (node, gainAmount = 0.4) => {
+    if (!audioCtx || !visualizerGain) return null;
     const gain = audioCtx.createGain();
     gain.gain.value = gainAmount;
     node.connect(gain);
@@ -126,48 +151,50 @@
   };
 
   const startInterlude = () => {
+    const ctxRef = ensureAudioGraph();
+    if (!ctxRef || !visualizerGain) return;
     clearInterlude();
     updateTrackLabel('Interlude in the signal');
     showPoem();
 
-    const now = audioCtx.currentTime;
+    const now = ctxRef.currentTime;
     const duration = randomBetween(8, 15);
 
     visualizerGain.gain.setValueAtTime(0.0001, now);
     visualizerGain.gain.exponentialRampToValueAtTime(0.8, now + 1.2);
     visualizerGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
-    const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * duration, audioCtx.sampleRate);
+    const noiseBuffer = ctxRef.createBuffer(1, ctxRef.sampleRate * duration, ctxRef.sampleRate);
     const data = noiseBuffer.getChannelData(0);
     for (let i = 0; i < data.length; i += 1) {
       data[i] = Math.random() * 2 - 1;
     }
 
-    const rain = audioCtx.createBufferSource();
+    const rain = ctxRef.createBufferSource();
     rain.buffer = noiseBuffer;
-    const rainFilter = audioCtx.createBiquadFilter();
+    const rainFilter = ctxRef.createBiquadFilter();
     rainFilter.type = 'bandpass';
     rainFilter.frequency.value = 1300;
     rain.connect(rainFilter);
     const rainGain = connectNode(rainFilter, 0.22);
 
-    const crackle = audioCtx.createBufferSource();
+    const crackle = ctxRef.createBufferSource();
     crackle.buffer = noiseBuffer;
-    const crackleFilter = audioCtx.createBiquadFilter();
+    const crackleFilter = ctxRef.createBiquadFilter();
     crackleFilter.type = 'highpass';
     crackleFilter.frequency.value = 3200;
     crackle.connect(crackleFilter);
     const crackleGain = connectNode(crackleFilter, 0.08);
 
-    const rumble = audioCtx.createOscillator();
+    const rumble = ctxRef.createOscillator();
     rumble.type = 'sine';
     rumble.frequency.value = 45;
     const rumbleGain = connectNode(rumble, 0.13);
 
-    const cricketLfo = audioCtx.createOscillator();
+    const cricketLfo = ctxRef.createOscillator();
     cricketLfo.type = 'square';
     cricketLfo.frequency.value = 3.3;
-    const cricket = audioCtx.createOscillator();
+    const cricket = ctxRef.createOscillator();
     cricket.type = 'triangle';
     cricket.frequency.value = 2100;
     const cricketGain = connectNode(cricket, 0.05);
@@ -199,9 +226,43 @@
     }
   };
 
-  const playCurrentTrack = () => {
+  const clearPlayStartWatchdog = () => {
+    clearTimeout(playStartTimeout);
+    playStartTimeout = 0;
+    awaitingPlaybackStart = false;
+  };
+
+  const markPlaybackStarted = () => {
+    if (!isPlaying) {
+      isPlaying = true;
+      playBtn.textContent = '❚❚';
+      updateTrackLabel();
+    }
+    if (awaitingPlaybackStart) {
+      clearPlayStartWatchdog();
+    }
+  };
+
+  const startPlayStartWatchdog = () => {
+    clearPlayStartWatchdog();
+    awaitingPlaybackStart = true;
+    playStartTimeout = window.setTimeout(() => {
+      awaitingPlaybackStart = false;
+      isPlaying = false;
+      playBtn.textContent = '▶';
+      updateTrackLabel('Tap play again');
+      clearInterlude();
+      if (widget && typeof widget.pause === 'function') {
+        widget.pause();
+      }
+    }, 5000);
+  };
+
+  const playCurrentTrack = ({ userInitiated = false } = {}) => {
     clearInterlude();
     if (!widget) return;
+    pendingReadyPlay = true;
+    if (userInitiated) startPlayStartWatchdog();
     widget.load(currentTrack().url, {
       auto_play: true,
       hide_related: true,
@@ -209,12 +270,6 @@
       show_user: false,
       show_reposts: false,
       visual: false
-    });
-    widget.bind(window.SC.Widget.Events.READY, () => {
-      setWidgetVolume(Number(volumeSlider.value));
-      updateTrackLabel();
-      isPlaying = true;
-      playBtn.textContent = '❚❚';
     });
   };
 
@@ -227,18 +282,37 @@
       nextTrack();
       startInterlude();
     });
+
+    widget.bind(window.SC.Widget.Events.READY, () => {
+      setWidgetVolume(Number(volumeSlider.value));
+      updateTrackLabel();
+      if (pendingReadyPlay) {
+        pendingReadyPlay = false;
+        widget.play();
+      }
+    });
+
+    widget.bind(window.SC.Widget.Events.PLAY, () => {
+      markPlaybackStarted();
+    });
+
+    widget.bind(window.SC.Widget.Events.PLAY_PROGRESS, () => {
+      markPlaybackStarted();
+    });
   };
 
   const togglePlayback = async () => {
-    await audioCtx.resume();
+    await resumeAudioGraph();
     if (!scReady) return;
 
     if (!isPlaying) {
       if (!widget) initWidget();
-      playCurrentTrack();
+      playCurrentTrack({ userInitiated: true });
       return;
     }
 
+    clearPlayStartWatchdog();
+    pendingReadyPlay = false;
     widget.pause();
     clearInterlude();
     isPlaying = false;
@@ -262,9 +336,11 @@
     const width = canvas.width;
     const height = canvas.height;
     const bars = 32;
-    const data = new Uint8Array(analyser.frequencyBinCount);
+    const data = new Uint8Array(analyser ? analyser.frequencyBinCount : bars);
 
-    analyser.getByteFrequencyData(data);
+    if (analyser) {
+      analyser.getByteFrequencyData(data);
+    }
     ctx.clearRect(0, 0, width, height);
 
     const gradient = ctx.createLinearGradient(0, 0, width, height);
@@ -318,6 +394,10 @@
   });
 
   playBtn.addEventListener('click', togglePlayback);
+
+  document.addEventListener('touchstart', () => {
+    resumeAudioGraph();
+  }, { once: true, passive: true });
 
   volumeSlider.addEventListener('input', () => {
     const value = Number(volumeSlider.value);
