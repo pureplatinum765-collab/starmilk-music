@@ -48,6 +48,12 @@
     'The project treats basslines as emotional archaeology.',
   ];
 
+  const POWER_UPS = [
+    { id: 'star-vision', title: 'Star Vision', color: '#fbbf24', duration: 10000, icon: '✦' },
+    { id: 'cosmic-speed', title: 'Cosmic Speed', color: '#38bdf8', duration: 15000, icon: '➤' },
+    { id: 'milk-shield', title: 'Milk Shield', color: '#a78bfa', duration: 0, icon: '◍' },
+  ];
+
   const state = {
     active: false,
     maze: null,
@@ -60,6 +66,9 @@
     joystick: { on: false, dx: 0, dy: 0 },
     particles: [],
     mysteryBoxes: [],
+    powerUps: [],
+    activePowerUps: { starVisionUntil: 0, cosmicSpeedUntil: 0, milkShieldCharges: 0 },
+    effects: [],
     bonusOrbs: [],
     energyPulses: [],
     lastTs: 0,
@@ -67,6 +76,7 @@
   };
 
   let overlay, playArea, canvas, ctx, hud, popup, mapScreen, musicPanel, musicFrame, playlist;
+  let powerPrompt;
   let W = 0;
   let H = 0;
 
@@ -105,6 +115,10 @@
     popup = document.createElement('div');
     popup.style.cssText = 'display:none;position:absolute;z-index:40;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,92vw);background:rgba(6,0,15,.98);border:1px solid rgba(245,158,11,.5);border-radius:18px;padding:1rem;';
     overlay.appendChild(popup);
+
+    powerPrompt = document.createElement('div');
+    powerPrompt.style.cssText = 'display:none;position:absolute;right:1rem;bottom:4.6rem;z-index:25;max-width:min(360px,88vw);background:rgba(8,0,18,.92);border:1px solid rgba(147,51,234,.45);border-radius:14px;padding:.75rem;box-shadow:0 8px 24px rgba(0,0,0,.45);';
+    overlay.appendChild(powerPrompt);
 
     mapScreen = document.createElement('div');
     mapScreen.style.cssText = 'display:none;position:absolute;inset:0;background:rgba(2,0,9,.94);z-index:30;align-items:center;justify-content:center;';
@@ -231,6 +245,14 @@
     }));
 
     state.mysteryBoxes = deadEnds.slice(0, 10).map(c => ({ wx: c.x * CELL + CELL / 2, wy: c.y * CELL + CELL / 2, open: false }));
+    state.powerUps = POWER_UPS.map((powerUp, i) => {
+      const c = deadEnds[TRACKS.length + 3 + i] || { x: 1 + i, y: ROWS - 1 - i };
+      return { ...powerUp, wx: c.x * CELL + CELL / 2, wy: c.y * CELL + CELL / 2, collected: false };
+    });
+    state.activePowerUps.starVisionUntil = 0;
+    state.activePowerUps.cosmicSpeedUntil = 0;
+    state.activePowerUps.milkShieldCharges = 0;
+    state.effects = [];
     state.particles = Array.from({ length: 240 }, () => ({ x: Math.random() * WORLD_W, y: Math.random() * WORLD_H, r: Math.random() * 2 + 0.5, a: Math.random() * 0.6 }));
     state.energyPulses = Array.from({ length: 120 }, () => ({ t: Math.random() * Math.PI * 2, s: Math.random() * 0.004 + 0.002 }));
 
@@ -255,6 +277,7 @@
     cancelAnimationFrame(state.raf);
     overlay.style.display = 'none';
     popup.style.display = 'none';
+    powerPrompt.style.display = 'none';
     mapScreen.style.display = 'none';
   }
 
@@ -284,15 +307,21 @@
     const l = Math.hypot(ax, ay);
     if (l > 1) { ax /= l; ay /= l; }
 
-    p.vx = p.vx * PLAYER_FRICTION + ax * PLAYER_ACCEL;
-    p.vy = p.vy * PLAYER_FRICTION + ay * PLAYER_ACCEL;
+    const speedBoost = ts < state.activePowerUps.cosmicSpeedUntil ? 2 : 1;
+    p.vx = p.vx * PLAYER_FRICTION + ax * PLAYER_ACCEL * speedBoost;
+    p.vy = p.vy * PLAYER_FRICTION + ay * PLAYER_ACCEL * speedBoost;
     const sp = Math.hypot(p.vx, p.vy);
-    if (sp > PLAYER_MAX) { p.vx = (p.vx / sp) * PLAYER_MAX; p.vy = (p.vy / sp) * PLAYER_MAX; }
+    const maxSpeed = PLAYER_MAX * speedBoost;
+    if (sp > maxSpeed) { p.vx = (p.vx / sp) * maxSpeed; p.vy = (p.vy / sp) * maxSpeed; }
 
     const nx = p.x + p.vx;
-    if (canMove(nx, p.y)) p.x = nx; else p.vx *= -0.15;
+    if (canMove(nx, p.y)) p.x = nx;
+    else if (consumeShieldCharge()) p.x = clamp(nx, PLAYER_R, WORLD_W - PLAYER_R);
+    else p.vx *= -0.15;
     const ny = p.y + p.vy;
-    if (canMove(p.x, ny)) p.y = ny; else p.vy *= -0.15;
+    if (canMove(p.x, ny)) p.y = ny;
+    else if (consumeShieldCharge()) p.y = clamp(ny, PLAYER_R, WORLD_H - PLAYER_R);
+    else p.vy *= -0.15;
 
     state.cam.x += (p.x - W / 2 - state.cam.x) * 0.1;
     state.cam.y += (p.y - H / 2 - state.cam.y) * 0.1;
@@ -306,6 +335,13 @@
     const dt = ts - state.lastTs;
     state.lastTs = ts;
     state.energyPulses.forEach(e => { e.t += dt * e.s; });
+    state.effects = state.effects.filter(e => ts < e.until);
+  }
+
+  function consumeShieldCharge() {
+    if (state.activePowerUps.milkShieldCharges <= 0) return false;
+    state.activePowerUps.milkShieldCharges -= 1;
+    return true;
   }
 
   function canMove(x, y) {
@@ -359,6 +395,12 @@
         showPopup(`<h3>Song fragment collectible</h3><p>+1 fragment for <strong>${target.title}</strong></p>`);
       }
     });
+
+    state.powerUps.forEach(powerUp => {
+      if (powerUp.collected || dist(p.x, p.y, powerUp.wx, powerUp.wy) > 42) return;
+      powerUp.collected = true;
+      offerPowerUpActivation(powerUp);
+    });
   }
 
   function render(ts) {
@@ -374,6 +416,7 @@
     renderCollectibles(ts);
     renderTrail();
     renderMascot(ts);
+    renderActiveEffects(ts);
   }
 
   function renderParticles(ts) {
@@ -445,6 +488,49 @@
       ctx.fillRect(sx - 12, sy - 12, 24, 24);
       ctx.strokeRect(sx - 12, sy - 12, 24, 24);
     });
+
+    state.powerUps.forEach(powerUp => {
+      if (powerUp.collected) return;
+      drawPowerUp(powerUp, ts);
+    });
+
+    if (ts < state.activePowerUps.starVisionUntil) {
+      TRACKS.forEach(track => {
+        const s = state.tracks[track.id];
+        if (!s.discovered) drawRevealPulse(s.wx, s.wy, ts, 34);
+      });
+      state.mysteryBoxes.forEach(b => {
+        if (!b.open) drawRevealPulse(b.wx, b.wy, ts, 28);
+      });
+    }
+  }
+
+  function drawPowerUp(powerUp, ts) {
+    const sx = powerUp.wx - state.cam.x, sy = powerUp.wy - state.cam.y;
+    const pulse = 0.65 + Math.sin(ts * 0.005 + powerUp.wx * 0.01) * 0.3;
+    const aura = ctx.createRadialGradient(sx, sy, 0, sx, sy, 40);
+    aura.addColorStop(0, 'rgba(255,255,255,.95)');
+    aura.addColorStop(0.35, hexToRgba(powerUp.color, 0.7 + pulse * 0.2));
+    aura.addColorStop(1, hexToRgba(powerUp.color, 0));
+    ctx.fillStyle = aura;
+    ctx.beginPath(); ctx.arc(sx, sy, 30, 0, Math.PI * 2); ctx.fill();
+
+    ctx.strokeStyle = hexToRgba(powerUp.color, 0.9);
+    ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.arc(sx, sy, 14 + pulse * 4, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = '#fff7d6';
+    ctx.font = '700 18px Segoe UI';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(powerUp.icon, sx, sy + 1);
+  }
+
+  function drawRevealPulse(wx, wy, ts, r) {
+    const sx = wx - state.cam.x, sy = wy - state.cam.y;
+    const pulse = 0.4 + Math.sin(ts * 0.008 + wx * 0.005) * 0.2;
+    ctx.strokeStyle = `rgba(251,191,36,${0.6 + pulse})`;
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(sx, sy, r + pulse * 10, 0, Math.PI * 2); ctx.stroke();
   }
 
   function drawOrb(wx, wy, color, ts, r) {
@@ -484,6 +570,33 @@
     ctx.restore();
   }
 
+  function renderActiveEffects(ts) {
+    state.effects.forEach(effect => {
+      const age = 1 - (effect.until - ts) / effect.duration;
+      if (effect.type === 'star-vision') {
+        ctx.fillStyle = `rgba(251,191,36,${0.18 * (1 - age)})`;
+        ctx.fillRect(0, 0, W, H);
+      } else if (effect.type === 'cosmic-speed') {
+        ctx.strokeStyle = `rgba(56,189,248,${0.22 * (1 - age)})`;
+        for (let i = 0; i < 9; i++) {
+          const y = ((i + age * 15) % 9) * (H / 9);
+          ctx.beginPath();
+          ctx.moveTo(W * 0.25, y);
+          ctx.lineTo(W * 0.75, y + 14);
+          ctx.stroke();
+        }
+      } else if (effect.type === 'milk-shield') {
+        const sx = state.player.x - state.cam.x;
+        const sy = state.player.y - state.cam.y;
+        ctx.strokeStyle = `rgba(167,139,250,${0.6 * (1 - age)})`;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(sx, sy, PLAYER_R + 16 + age * 20, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    });
+  }
+
   function setTrack(track, autoplay) {
     musicFrame.src = `${track.embedBase}&auto_play=${autoplay ? 'true' : 'false'}`;
     Array.from(playlist.children).forEach(btn => {
@@ -501,7 +614,39 @@
       const done = s.discovered ? '✓' : '○';
       return `${done} ${track.title}: ${s.frags}/${track.fragsNeed}`;
     }).join(' | ');
-    hud.textContent = `${t} | Golden Orbs: ${state.bonusFound}/${state.bonusOrbs.length} | Mystery Boxes: ${state.boxesOpened}/${state.mysteryBoxes.length}`;
+    const ts = performance.now();
+    const starVisionLeft = Math.max(0, Math.ceil((state.activePowerUps.starVisionUntil - ts) / 1000));
+    const speedLeft = Math.max(0, Math.ceil((state.activePowerUps.cosmicSpeedUntil - ts) / 1000));
+    const powerText = `Power-Ups: Vision ${starVisionLeft}s, Speed ${speedLeft}s, Shield ${state.activePowerUps.milkShieldCharges}`;
+    hud.textContent = `${t} | Golden Orbs: ${state.bonusFound}/${state.bonusOrbs.length} | Mystery Boxes: ${state.boxesOpened}/${state.mysteryBoxes.length} | ${powerText}`;
+  }
+
+  function offerPowerUpActivation(powerUp) {
+    const activateNow = () => {
+      activatePowerUp(powerUp.id);
+      powerPrompt.style.display = 'none';
+    };
+    powerPrompt.innerHTML = `<div style="font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;color:#fcd34d">${powerUp.title} collected</div><p style="margin:.35rem 0 .6rem;color:#ddccff;font-size:.86rem">Enjoying STARMILK? Support the music!</p><div style="display:flex;gap:.45rem;flex-wrap:wrap"><button id="cq-power-free" style="border:1px solid rgba(147,51,234,.55);background:rgba(16,2,30,.88);color:#f5ecff;padding:.4rem .6rem;border-radius:9px;cursor:pointer">Use Power-Up (Free)</button><button id="cq-power-donate" style="border:1px solid rgba(245,158,11,.65);background:rgba(42,15,4,.78);color:#ffd36b;padding:.4rem .6rem;border-radius:9px;cursor:pointer">Support STARMILK</button></div>`;
+    powerPrompt.style.display = 'block';
+    powerPrompt.querySelector('#cq-power-free').onclick = activateNow;
+    powerPrompt.querySelector('#cq-power-donate').onclick = () => {
+      window.open('https://www.buymeacoffee.com/starmilk', '_blank', 'noopener');
+      activateNow();
+    };
+  }
+
+  function activatePowerUp(id) {
+    const now = performance.now();
+    if (id === 'star-vision') {
+      state.activePowerUps.starVisionUntil = Math.max(state.activePowerUps.starVisionUntil, now) + 10000;
+      state.effects.push({ type: 'star-vision', until: now + 800, duration: 800 });
+    } else if (id === 'cosmic-speed') {
+      state.activePowerUps.cosmicSpeedUntil = Math.max(state.activePowerUps.cosmicSpeedUntil, now) + 15000;
+      state.effects.push({ type: 'cosmic-speed', until: now + 900, duration: 900 });
+    } else if (id === 'milk-shield') {
+      state.activePowerUps.milkShieldCharges += 1;
+      state.effects.push({ type: 'milk-shield', until: now + 900, duration: 900 });
+    }
   }
 
   function toggleMap() {
@@ -595,6 +740,7 @@
 
   function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
   function dist(x1, y1, x2, y2) { return Math.hypot(x2 - x1, y2 - y1); }
+  function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
   function hexToRgba(hex, a) {
     const n = hex.replace('#', '');
     const r = parseInt(n.slice(0, 2), 16), g = parseInt(n.slice(2, 4), 16), b = parseInt(n.slice(4, 6), 16);
