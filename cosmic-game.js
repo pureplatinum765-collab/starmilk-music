@@ -10,7 +10,7 @@
 
   const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ─── World constants ──────────────────────────────────────────
+  // ─── World constants ────────────────────────────────────────────
   const CELL = 360;
   const COLS = 14;
   const ROWS = 10;
@@ -22,10 +22,10 @@
   const PLAYER_MAX = 7;
   const WALL_MARGIN = 26;
 
-  // ─── Fixed timestep ───────────────────────────────────────────
+  // ─── Fixed timestep ─────────────────────────────────────────────
   const TICK_RATE = 1000 / 60; // 60 Hz physics
 
-  // ─── Track data (unchanged) ───────────────────────────────────
+  // ─── Track data (unchanged) ───────────────────────────────────────
   const TRACKS = [
     {
       id: 'tribe',
@@ -35,9 +35,9 @@
       fragsNeed: 4,
     },
     {
-      id: 'kaleidoscopic',
-      title: 'Kaleidoscopic Truth',
-      embedBase: 'https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/star-milk-645735333/kaleidoscopic-truth&color=%23f59e0b&hide_related=true&show_comments=false&show_reposts=false&show_teaser=false',
+      id: 'honey-wound',
+      title: 'HONEY IN THE WOUND',
+      embedBase: 'https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/star-milk-645735333/honey-in-the-wound&color=%23f59e0b&hide_related=true&show_comments=false&show_reposts=false&show_teaser=false',
       color: '#f59e0b',
       fragsNeed: 4,
     },
@@ -49,8 +49,8 @@
       embed: 'https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/star-milk-645735333/tribe-star-milk&color=%23fbbf24&auto_play=true&hide_related=true&show_comments=false&show_reposts=false&show_teaser=false',
     },
     {
-      title: 'Kaleidoscopic Truth (Hidden Portal Edit)',
-      embed: 'https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/star-milk-645735333/kaleidoscopic-truth&color=%23fbbf24&auto_play=true&hide_related=true&show_comments=false&show_reposts=false&show_teaser=false',
+      title: 'HONEY IN THE WOUND (Hidden Portal Edit)',
+      embed: 'https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/star-milk-645735333/honey-in-the-wound&color=%23fbbf24&auto_play=true&hide_related=true&show_comments=false&show_reposts=false&show_teaser=false',
     },
   ];
 
@@ -67,14 +67,14 @@
     { id: 'milk-shield', title: 'Milk Shield', color: '#a78bfa', duration: 0, icon: '◍' },
   ];
 
-  // ─── Score constants ──────────────────────────────────────────
+  // ─── Score constants ────────────────────────────────────────────
   const SCORE_FRAGMENT = 250;
   const SCORE_TRACK = 1000;
   const SCORE_BOX = 150;
   const SCORE_BONUS = 500;
   const SCORE_POWERUP = 100;
 
-  // ─── Game state ───────────────────────────────────────────────
+  // ─── Game state ──────────────────────────────────────────────────
   const state = {
     active: false,
     maze: null,
@@ -104,7 +104,7 @@
     musicPanelOpen: true,
   };
 
-  // ─── Audio engine ─────────────────────────────────────────────
+  // ─── Audio engine ──────────────────────────────────────────────────
   let audioCtx = null;
 
   function ensureAudio() {
@@ -149,7 +149,7 @@
     } catch (_) { /* silent */ }
   }
 
-  // ─── DOM references ───────────────────────────────────────────
+  // ─── DOM references ───────────────────────────────────────────────
   let overlay, playArea, canvas, ctx, hud, popup, mapScreen, musicPanel, musicFrame, playlist;
   let powerPrompt, minimapCanvas, minimapCtx, musicToggleBtn;
   let W = 0, H = 0;
@@ -166,7 +166,7 @@
     injectLaunch();
   }
 
-  // ─── DOM construction ─────────────────────────────────────────
+  // ─── DOM construction ───────────────────────────────────────────────
 
   function buildDOM() {
     overlay = document.createElement('div');
@@ -319,7 +319,7 @@
     }, { passive: true });
   }
 
-  // ─── Input ────────────────────────────────────────────────────
+  // ─── Input ─────────────────────────────────────────────────────────────
 
   function setupInput() {
     document.addEventListener('keydown', e => {
@@ -332,7 +332,7 @@
     window.addEventListener('resize', resize);
   }
 
-  // ─── Launch injection ─────────────────────────────────────────
+  // ─── Launch injection ───────────────────────────────────────────────
 
   function injectLaunch() {
     attachLaunchTriggers();
@@ -395,7 +395,7 @@
     return ends;
   }
 
-  // ─── Run generation ───────────────────────────────────────────
+  // ─── Run generation ───────────────────────────────────────────────
 
   function generateRun() {
     state.maze = createMaze(COLS, ROWS);
@@ -512,7 +512,7 @@
     state.raf = requestAnimationFrame(loop);
   }
 
-  // ─── Fixed-step physics (60 Hz) ───────────────────────────────
+  // ─── Fixed-step physics (60 Hz) ──────────────────────────────────────
 
   function fixedUpdate(dt) {
     const p = state.player;
@@ -579,7 +579,7 @@
     sfxWallBump();
   }
 
-  // ─── Variable visual updates ──────────────────────────────────
+  // ─── Variable visual updates ─────────────────────────────────────────
 
   function updateVisualEffects(ts, dt) {
     // Screen shake decay
@@ -604,7 +604,7 @@
     updateHud();
   }
 
-  // ─── Collision ────────────────────────────────────────────────
+  // ─── Collision ───────────────────────────────────────────────────────────
 
   function consumeShieldCharge() {
     if (state.activePowerUps.milkShieldCharges <= 0) return false;
@@ -628,7 +628,7 @@
     return true;
   }
 
-  // ─── Collectibles ─────────────────────────────────────────────
+  // ─── Collectibles ───────────────────────────────────────────────────────
 
   function checkCollectibles() {
     const p = state.player;
@@ -712,7 +712,7 @@
     if (state.minimapVisible) renderMinimap(ts);
   }
 
-  // ─── Background particles ─────────────────────────────────────
+  // ─── Background particles ───────────────────────────────────────────
 
   function renderParticles(ts) {
     state.particles.forEach((p, i) => {
@@ -725,7 +725,7 @@
     });
   }
 
-  // ─── Maze walls ───────────────────────────────────────────────
+  // ─── Maze walls ─────────────────────────────────────────────────────────
 
   function renderMaze(ts) {
     for (let y = 0; y < ROWS; y++) {
@@ -763,7 +763,7 @@
     ctx.stroke();
   }
 
-  // ─── Fog of war ───────────────────────────────────────────────
+  // ─── Fog of war ─────────────────────────────────────────────────────────
 
   function renderFogOfWar() {
     if (REDUCED) return;
@@ -783,7 +783,7 @@
     ctx.fillRect(0, 0, W, H);
   }
 
-  // ─── Collectibles ─────────────────────────────────────────────
+  // ─── Collectibles ───────────────────────────────────────────────────────
 
   function renderCollectibles(ts) {
     TRACKS.forEach(track => {
@@ -865,7 +865,7 @@
     ctx.fill();
   }
 
-  // ─── Trail (smooth gradient) ──────────────────────────────────
+  // ─── Trail (smooth gradient) ──────────────────────────────────────────
 
   function renderTrail() {
     const trail = state.player.trail;
@@ -887,7 +887,7 @@
     }
   }
 
-  // ─── Mascot (expressive) ──────────────────────────────────────
+  // ─── Mascot (expressive) ─────────────────────────────────────────────
 
   function renderMascot(ts) {
     const p = state.player;
@@ -979,7 +979,7 @@
     ctx.restore();
   }
 
-  // ─── Active effects overlay ───────────────────────────────────
+  // ─── Active effects overlay ─────────────────────────────────────────
 
   function renderActiveEffects(ts) {
     state.effects.forEach(effect => {
@@ -1011,7 +1011,7 @@
     });
   }
 
-  // ─── Persistent minimap ───────────────────────────────────────
+  // ─── Persistent minimap ─────────────────────────────────────────────
 
   function renderMinimap(ts) {
     const mc = minimapCtx;
@@ -1106,7 +1106,7 @@
     hud.textContent = `Score: ${state.score} | ⏱ ${timeStr} | ${t} | Orbs: ${state.bonusFound}/${state.bonusOrbs.length} | Boxes: ${state.boxesOpened}/${state.mysteryBoxes.length} | ✦${starVisionLeft}s ➤${speedLeft}s ◍${state.activePowerUps.milkShieldCharges}`;
   }
 
-  // ─── Power-up UI ──────────────────────────────────────────────
+  // ─── Power-up UI ────────────────────────────────────────────────────────
 
   function offerPowerUpActivation(powerUp) {
     const activateNow = () => {
@@ -1136,7 +1136,7 @@
     }
   }
 
-  // ─── Star Map overlay ─────────────────────────────────────────
+  // ─── Star Map overlay ─────────────────────────────────────────────
 
   function toggleMap() {
     if (mapScreen.style.display === 'flex') {
@@ -1185,7 +1185,7 @@
 
   function line(g, x1, y1, x2, y2) { g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); }
 
-  // ─── Popup ────────────────────────────────────────────────────
+  // ─── Popup ─────────────────────────────────────────────────────────────
 
   function showPopup(inner) {
     popup.innerHTML = `${inner}<div style="margin-top:.7rem;text-align:right"><button id="cq-close-pop" style="border:1px solid rgba(147,51,234,.5);background:#130428;color:#e8dfff;padding:.35rem .7rem;border-radius:8px;cursor:pointer">Continue</button></div>`;
@@ -1206,7 +1206,7 @@
     return `rgba(${r},${g},${b},${a})`;
   }
 
-  // ─── Bootstrap ────────────────────────────────────────────────
+  // ─── Bootstrap ─────────────────────────────────────────────────────────────
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
