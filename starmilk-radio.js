@@ -19,10 +19,13 @@
   const badge = document.getElementById('radio-badge');
   const panel = document.getElementById('radio-panel');
   const playBtn = document.getElementById('radio-play');
+  const prevBtn = document.getElementById('radio-prev');
+  const nextBtn = document.getElementById('radio-next');
   const volumeSlider = document.getElementById('radio-volume');
   const trackNameEl = document.getElementById('radio-track-name');
   const poemEl = document.getElementById('radio-poem');
   const canvas = document.getElementById('radio-visualizer');
+  const queueEl = document.getElementById('radio-queue');
   const ctx = canvas?.getContext('2d');
 
   if (!shell || !floating || !badge || !panel || !playBtn || !volumeSlider || !trackNameEl || !canvas || !ctx) {
@@ -70,22 +73,67 @@
     return true;
   };
 
-  const shuffle = (list) => {
-    const clone = [...list];
-    for (let i = clone.length - 1; i > 0; i -= 1) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [clone[i], clone[j]] = [clone[j], clone[i]];
-    }
-    return clone;
-  };
-
+  // ── Order helpers ──────────────────────────────────────────────────
+  // We use a sequential order (no shuffle) so prev/next make sense to users.
+  // Order is just 0..n-1.
   const prepareOrder = () => {
-    order = shuffle(tracks.map((_, i) => i));
+    order = tracks.map((_, i) => i);
     currentTrackIndex = 0;
   };
 
   const currentTrack = () => tracks[order[currentTrackIndex]];
 
+  // ── Queue rendering ────────────────────────────────────────────────
+  const buildQueue = () => {
+    if (!queueEl) return;
+    queueEl.innerHTML = '';
+    order.forEach((trackIdx, posIdx) => {
+      const track = tracks[trackIdx];
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'radio-queue-item' + (posIdx === currentTrackIndex ? ' active' : '');
+      item.textContent = track.name;
+      item.setAttribute('aria-label', `Play ${track.name}`);
+      item.addEventListener('click', () => {
+        jumpToQueuePosition(posIdx);
+      });
+      queueEl.appendChild(item);
+    });
+  };
+
+  const updateQueueActive = () => {
+    if (!queueEl) return;
+    queueEl.querySelectorAll('.radio-queue-item').forEach((item, idx) => {
+      item.classList.toggle('active', idx === currentTrackIndex);
+    });
+    // Scroll active item into view
+    const activeItem = queueEl.querySelector('.radio-queue-item.active');
+    if (activeItem) {
+      activeItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  };
+
+  // ── Navigation ────────────────────────────────────────────────────
+  const jumpToQueuePosition = (posIdx) => {
+    currentTrackIndex = posIdx;
+    updateQueueActive();
+    if (isPlaying) {
+      clearInterlude();
+      playCurrentTrack({ userInitiated: true });
+    } else {
+      updateTrackLabel();
+    }
+  };
+
+  const nextTrack = () => {
+    currentTrackIndex = (currentTrackIndex + 1) % order.length;
+  };
+
+  const prevTrack = () => {
+    currentTrackIndex = (currentTrackIndex - 1 + order.length) % order.length;
+  };
+
+  // ── Track label ───────────────────────────────────────────────────
   const updateTrackLabel = (prefix = 'Now transmitting') => {
     const item = currentTrack();
     trackNameEl.textContent = `${prefix}: ${item.name}`;
@@ -215,15 +263,10 @@
     [rain, crackle, rumble, cricket, cricketLfo, rainGain, crackleGain, rumbleGain, cricketGain].forEach((node) => activeNodes.push(node));
 
     interludeTimeout = window.setTimeout(() => {
+      nextTrack();
+      updateQueueActive();
       playCurrentTrack();
     }, duration * 1000);
-  };
-
-  const nextTrack = () => {
-    currentTrackIndex += 1;
-    if (currentTrackIndex >= order.length) {
-      prepareOrder();
-    }
   };
 
   const clearPlayStartWatchdog = () => {
@@ -271,6 +314,8 @@
       show_reposts: false,
       visual: false
     });
+    updateTrackLabel();
+    updateQueueActive();
   };
 
   const initWidget = () => {
@@ -280,6 +325,7 @@
     widget.bind(window.SC.Widget.Events.FINISH, () => {
       if (!isPlaying) return;
       nextTrack();
+      updateQueueActive();
       startInterlude();
     });
 
@@ -318,6 +364,30 @@
     isPlaying = false;
     playBtn.textContent = '▶';
     updateTrackLabel('Paused transmission');
+  };
+
+  const handlePrev = async () => {
+    await resumeAudioGraph();
+    prevTrack();
+    updateQueueActive();
+    if (isPlaying) {
+      if (!widget) initWidget();
+      playCurrentTrack({ userInitiated: true });
+    } else {
+      updateTrackLabel();
+    }
+  };
+
+  const handleNext = async () => {
+    await resumeAudioGraph();
+    nextTrack();
+    updateQueueActive();
+    if (isPlaying) {
+      if (!widget) initWidget();
+      playCurrentTrack({ userInitiated: true });
+    } else {
+      updateTrackLabel();
+    }
   };
 
   const loadSoundCloudApi = () => new Promise((resolve) => {
@@ -395,6 +465,9 @@
 
   playBtn.addEventListener('click', togglePlayback);
 
+  if (prevBtn) prevBtn.addEventListener('click', handlePrev);
+  if (nextBtn) nextBtn.addEventListener('click', handleNext);
+
   document.addEventListener('touchstart', () => {
     resumeAudioGraph();
   }, { once: true, passive: true });
@@ -414,6 +487,7 @@
   });
 
   prepareOrder();
+  buildQueue();
   updateTrackLabel('Ready to tune');
   loadSoundCloudApi().then((ready) => {
     if (!ready) {
