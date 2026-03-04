@@ -1,7 +1,16 @@
 (function () {
   'use strict';
 
+  /* ═══════════════════════════════════════════════════════════════
+   * COSMIC MAZE QUEST — STARMILK
+   * Fixed-timestep game loop, procedural SFX, expressive mascot,
+   * persistent minimap, mobile-responsive layout, score/timer,
+   * gradient trail, wall collision feedback, fog of war.
+   * ═══════════════════════════════════════════════════════════════ */
+
   const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ─── World constants ──────────────────────────────────────────
   const CELL = 360;
   const COLS = 14;
   const ROWS = 10;
@@ -13,6 +22,10 @@
   const PLAYER_MAX = 7;
   const WALL_MARGIN = 26;
 
+  // ─── Fixed timestep ───────────────────────────────────────────
+  const TICK_RATE = 1000 / 60; // 60 Hz physics
+
+  // ─── Track data (unchanged) ───────────────────────────────────
   const TRACKS = [
     {
       id: 'tribe',
@@ -54,13 +67,24 @@
     { id: 'milk-shield', title: 'Milk Shield', color: '#a78bfa', duration: 0, icon: '◍' },
   ];
 
+  // ─── Score constants ──────────────────────────────────────────
+  const SCORE_FRAGMENT = 250;
+  const SCORE_TRACK = 1000;
+  const SCORE_BOX = 150;
+  const SCORE_BONUS = 500;
+  const SCORE_POWERUP = 100;
+
+  // ─── Game state ───────────────────────────────────────────────
   const state = {
     active: false,
     maze: null,
     tracks: Object.fromEntries(TRACKS.map(t => [t.id, { discovered: false, frags: 0, wx: 0, wy: 0 }])),
     bonusFound: 0,
     boxesOpened: 0,
-    player: { x: CELL / 2, y: CELL / 2, vx: 0, vy: 0, trail: [] },
+    score: 0,
+    startTime: 0,
+    elapsedMs: 0,
+    player: { x: CELL / 2, y: CELL / 2, vx: 0, vy: 0, trail: [], facing: 0, idleTime: 0 },
     cam: { x: 0, y: 0 },
     keys: new Set(),
     joystick: { on: false, dx: 0, dy: 0 },
@@ -72,33 +96,101 @@
     bonusOrbs: [],
     energyPulses: [],
     lastTs: 0,
+    accumulator: 0,
     raf: null,
+    screenShake: { x: 0, y: 0, intensity: 0, decay: 0.88 },
+    minimapVisible: true,
+    isMobile: false,
+    musicPanelOpen: true,
   };
 
+  // ─── Audio engine ─────────────────────────────────────────────
+  let audioCtx = null;
+
+  function ensureAudio() {
+    if (audioCtx) return;
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (_) { /* silent */ }
+  }
+
+  function sfx(freq, dur, type, vol, ramp) {
+    if (!audioCtx || audioCtx.state === 'suspended') return;
+    try {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = type || 'sine';
+      o.frequency.value = freq;
+      if (ramp) o.frequency.exponentialRampToValueAtTime(ramp, audioCtx.currentTime + dur);
+      g.gain.value = vol || 0.04;
+      g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+      o.connect(g).connect(audioCtx.destination);
+      o.start();
+      o.stop(audioCtx.currentTime + dur);
+    } catch (_) { /* silent */ }
+  }
+
+  function sfxWallBump() { sfx(120, 0.15, 'sawtooth', 0.06, 60); }
+  function sfxCollectFragment() { sfx(660, 0.2, 'triangle', 0.07, 880); }
+  function sfxOpenBox() { sfx(440, 0.25, 'square', 0.05, 220); sfx(550, 0.2, 'sine', 0.04); }
+  function sfxDiscoverSong() { sfx(523, 0.35, 'sine', 0.08, 1046); setTimeout(() => sfx(659, 0.3, 'sine', 0.07), 120); }
+  function sfxPowerUp() { sfx(880, 0.3, 'triangle', 0.06, 440); }
+  function sfxAmbientHum() {
+    if (!audioCtx || audioCtx.state === 'suspended') return;
+    try {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sine';
+      o.frequency.value = 55;
+      g.gain.value = 0.008;
+      o.connect(g).connect(audioCtx.destination);
+      o.start();
+      o.stop(audioCtx.currentTime + 2);
+    } catch (_) { /* silent */ }
+  }
+
+  // ─── DOM references ───────────────────────────────────────────
   let overlay, playArea, canvas, ctx, hud, popup, mapScreen, musicPanel, musicFrame, playlist;
-  let powerPrompt;
-  let W = 0;
-  let H = 0;
+  let powerPrompt, minimapCanvas, minimapCtx, musicToggleBtn;
+  let W = 0, H = 0;
+
+  // ═══════════════════════════════════════════════════════════════
+  //  INITIALIZATION
+  // ═══════════════════════════════════════════════════════════════
 
   function init() {
+    state.isMobile = /Mobi|Android/i.test(navigator.userAgent) || window.innerWidth < 900;
     buildDOM();
     setupInput();
     generateRun();
     injectLaunch();
   }
 
+  // ─── DOM construction ─────────────────────────────────────────
+
   function buildDOM() {
     overlay = document.createElement('div');
     overlay.style.cssText = 'display:none;position:fixed;inset:0;z-index:9000;background:#040008;color:#e9ddff;font-family:Segoe UI,system-ui,sans-serif;';
 
     playArea = document.createElement('div');
-    playArea.style.cssText = 'position:absolute;inset:0 320px 0 0;overflow:hidden;';
+    // On mobile, the play area takes full width
+    playArea.style.cssText = state.isMobile
+      ? 'position:absolute;inset:0;overflow:hidden;'
+      : 'position:absolute;inset:0 320px 0 0;overflow:hidden;';
     overlay.appendChild(playArea);
 
     canvas = document.createElement('canvas');
     canvas.style.cssText = 'position:absolute;inset:0;';
     ctx = canvas.getContext('2d');
     playArea.appendChild(canvas);
+
+    // Minimap canvas (persistent, top-right corner of play area)
+    minimapCanvas = document.createElement('canvas');
+    minimapCanvas.width = 180;
+    minimapCanvas.height = 130;
+    minimapCanvas.style.cssText = 'position:absolute;right:4.5rem;top:3.2rem;z-index:10;border-radius:10px;border:1px solid rgba(147,51,234,.45);background:rgba(4,0,12,.78);pointer-events:none;';
+    minimapCtx = minimapCanvas.getContext('2d');
+    playArea.appendChild(minimapCanvas);
 
     const exit = floatingBtn('✕ Exit Cosmos', 'right:1rem;top:1rem;');
     exit.onclick = exitGame;
@@ -108,8 +200,15 @@
     mapBtn.onclick = toggleMap;
     playArea.appendChild(mapBtn);
 
+    const mmBtn = floatingBtn('◎ Mini Map', 'left:1rem;top:3.2rem;border-color:rgba(124,58,237,.5);font-size:.62rem;');
+    mmBtn.onclick = () => {
+      state.minimapVisible = !state.minimapVisible;
+      minimapCanvas.style.display = state.minimapVisible ? 'block' : 'none';
+    };
+    playArea.appendChild(mmBtn);
+
     hud = document.createElement('div');
-    hud.style.cssText = 'position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);padding:.7rem 1rem;background:rgba(8,0,16,.72);border:1px solid rgba(147,51,234,.45);border-radius:12px;letter-spacing:.08em;font-size:.72rem;text-transform:uppercase;';
+    hud.style.cssText = 'position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);padding:.7rem 1rem;background:rgba(8,0,16,.72);border:1px solid rgba(147,51,234,.45);border-radius:12px;letter-spacing:.08em;font-size:.72rem;text-transform:uppercase;max-width:96vw;text-align:center;';
     playArea.appendChild(hud);
 
     popup = document.createElement('div');
@@ -138,7 +237,9 @@
 
   function buildMusicPanel() {
     musicPanel = document.createElement('aside');
-    musicPanel.style.cssText = 'position:absolute;top:0;right:0;bottom:0;width:320px;background:linear-gradient(180deg,rgba(12,0,26,.98),rgba(6,0,16,.98));border-left:1px solid rgba(147,51,234,.4);padding:1rem;overflow:auto;';
+    musicPanel.style.cssText = state.isMobile
+      ? 'display:none;position:absolute;top:0;right:0;bottom:0;width:320px;background:linear-gradient(180deg,rgba(12,0,26,.98),rgba(6,0,16,.98));border-left:1px solid rgba(147,51,234,.4);padding:1rem;overflow:auto;z-index:20;'
+      : 'position:absolute;top:0;right:0;bottom:0;width:320px;background:linear-gradient(180deg,rgba(12,0,26,.98),rgba(6,0,16,.98));border-left:1px solid rgba(147,51,234,.4);padding:1rem;overflow:auto;';
     musicPanel.innerHTML = '<div style="font-weight:800;letter-spacing:.16em;font-size:.72rem;text-transform:uppercase;color:#fcd34d">Cosmic Player</div><h3 style="margin:.4rem 0 1rem;font-size:1rem">TRIBE STAR MILK — STARMILK</h3>';
 
     musicFrame = document.createElement('iframe');
@@ -165,10 +266,22 @@
     });
     musicPanel.appendChild(playlist);
     overlay.appendChild(musicPanel);
+
+    // Mobile music toggle button
+    if (state.isMobile) {
+      musicToggleBtn = document.createElement('button');
+      musicToggleBtn.textContent = '♪ Music';
+      musicToggleBtn.style.cssText = 'position:absolute;right:1rem;top:5.8rem;z-index:8;padding:.45rem .9rem;border-radius:999px;border:1px solid rgba(245,158,11,.5);background:rgba(8,0,16,.9);color:#fcd34d;cursor:pointer;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;';
+      musicToggleBtn.onclick = () => {
+        state.musicPanelOpen = !state.musicPanelOpen;
+        musicPanel.style.display = state.musicPanelOpen ? 'block' : 'none';
+      };
+      playArea.appendChild(musicToggleBtn);
+    }
   }
 
   function buildJoystick() {
-    if (!(/Mobi|Android/i.test(navigator.userAgent) || window.innerWidth < 900)) return;
+    if (!state.isMobile) return;
     const base = document.createElement('div');
     base.style.cssText = 'position:absolute;left:20px;bottom:22px;width:110px;height:110px;border-radius:50%;background:rgba(7,0,18,.5);border:1px solid rgba(147,51,234,.4);z-index:9;touch-action:none;';
     const knob = document.createElement('div');
@@ -180,6 +293,7 @@
     let cx = 0, cy = 0;
 
     base.addEventListener('touchstart', e => {
+      ensureAudio();
       tid = e.changedTouches[0].identifier;
       const r = base.getBoundingClientRect();
       cx = r.left + r.width / 2; cy = r.top + r.height / 2;
@@ -205,15 +319,20 @@
     }, { passive: true });
   }
 
+  // ─── Input ────────────────────────────────────────────────────
+
   function setupInput() {
     document.addEventListener('keydown', e => {
       if (!state.active) return;
+      ensureAudio();
       state.keys.add(e.code);
       if (e.code.startsWith('Arrow')) e.preventDefault();
     });
     document.addEventListener('keyup', e => state.keys.delete(e.code));
     window.addEventListener('resize', resize);
   }
+
+  // ─── Launch injection ─────────────────────────────────────────
 
   function injectLaunch() {
     attachLaunchTriggers();
@@ -236,6 +355,48 @@
     });
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  //  MAZE GENERATION
+  // ═══════════════════════════════════════════════════════════════
+
+  function createMaze(cols, rows) {
+    const maze = Array.from({ length: rows }, () => Array.from({ length: cols }, () => ({ n: false, e: false, s: false, w: false, v: false })));
+    const stack = [{ x: 0, y: 0 }];
+    maze[0][0].v = true;
+    while (stack.length) {
+      const cur = stack[stack.length - 1];
+      const neighbors = [
+        { x: cur.x, y: cur.y - 1, a: 'n', b: 's' },
+        { x: cur.x + 1, y: cur.y, a: 'e', b: 'w' },
+        { x: cur.x, y: cur.y + 1, a: 's', b: 'n' },
+        { x: cur.x - 1, y: cur.y, a: 'w', b: 'e' },
+      ].filter(n => n.x >= 0 && n.y >= 0 && n.x < cols && n.y < rows && !maze[n.y][n.x].v);
+
+      if (!neighbors.length) { stack.pop(); continue; }
+      const pick = neighbors[Math.floor(Math.random() * neighbors.length)];
+      maze[cur.y][cur.x][pick.a] = true;
+      maze[pick.y][pick.x][pick.b] = true;
+      maze[pick.y][pick.x].v = true;
+      stack.push({ x: pick.x, y: pick.y });
+    }
+    maze.flat().forEach(c => delete c.v);
+    return maze;
+  }
+
+  function getDeadEnds() {
+    const ends = [];
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = 0; x < COLS; x++) {
+        const c = state.maze[y][x];
+        const n = (c.n ? 1 : 0) + (c.e ? 1 : 0) + (c.s ? 1 : 0) + (c.w ? 1 : 0);
+        if (n === 1) ends.push({ x, y });
+      }
+    }
+    return ends;
+  }
+
+  // ─── Run generation ───────────────────────────────────────────
+
   function generateRun() {
     state.maze = createMaze(COLS, ROWS);
     const deadEnds = getDeadEnds();
@@ -245,6 +406,8 @@
       const c = deadEnds[i + 1] || { x: COLS - 1, y: ROWS - 1 };
       state.tracks[t.id].wx = c.x * CELL + CELL / 2;
       state.tracks[t.id].wy = c.y * CELL + CELL / 2;
+      state.tracks[t.id].discovered = false;
+      state.tracks[t.id].frags = 0;
     });
 
     state.bonusOrbs = deadEnds.slice(TRACKS.length + 1, TRACKS.length + 3).map((c, i) => ({
@@ -269,17 +432,34 @@
     state.player.x = CELL / 2;
     state.player.y = CELL / 2;
     state.player.vx = state.player.vy = 0;
+    state.player.trail = [];
+    state.player.facing = 0;
+    state.player.idleTime = 0;
+    state.score = 0;
+    state.startTime = 0;
+    state.elapsedMs = 0;
+    state.bonusFound = 0;
+    state.boxesOpened = 0;
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  //  GAME LIFECYCLE
+  // ═══════════════════════════════════════════════════════════════
+
   function launchGame() {
+    ensureAudio();
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     generateRun();
     state.active = true;
     overlay.style.display = 'block';
     resize();
     setTrack(TRACKS[0], true);
     state.lastTs = performance.now();
+    state.startTime = performance.now();
+    state.accumulator = 0;
     state.raf = requestAnimationFrame(loop);
     updateHud();
+    sfxAmbientHum();
   }
 
   function exitGame() {
@@ -293,20 +473,48 @@
 
   function resize() {
     if (!overlay) return;
+    state.isMobile = /Mobi|Android/i.test(navigator.userAgent) || window.innerWidth < 900;
+    if (state.isMobile) {
+      playArea.style.cssText = 'position:absolute;inset:0;overflow:hidden;';
+      if (musicPanel) musicPanel.style.display = state.musicPanelOpen ? 'none' : 'none'; // hidden by default on mobile
+    } else {
+      playArea.style.cssText = 'position:absolute;inset:0 320px 0 0;overflow:hidden;';
+      if (musicPanel) musicPanel.style.display = 'block';
+    }
     W = playArea.clientWidth;
     H = playArea.clientHeight;
     canvas.width = W;
     canvas.height = H;
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  //  GAME LOOP — Fixed timestep physics, variable render
+  // ═══════════════════════════════════════════════════════════════
+
   function loop(ts) {
     if (!state.active) return;
-    update(ts);
+
+    const delta = Math.min(ts - state.lastTs, 100); // Cap at 100ms to avoid spiral of death
+    state.lastTs = ts;
+    state.accumulator += delta;
+
+    // Fixed timestep physics updates
+    while (state.accumulator >= TICK_RATE) {
+      fixedUpdate(TICK_RATE);
+      state.accumulator -= TICK_RATE;
+    }
+
+    // Variable timestep visual updates
+    state.elapsedMs = ts - state.startTime;
+    updateVisualEffects(ts, delta);
     render(ts);
+
     state.raf = requestAnimationFrame(loop);
   }
 
-  function update(ts) {
+  // ─── Fixed-step physics (60 Hz) ───────────────────────────────
+
+  function fixedUpdate(dt) {
     const p = state.player;
     let ax = 0, ay = 0;
     if (state.keys.has('KeyA') || state.keys.has('ArrowLeft')) ax -= 1;
@@ -317,36 +525,86 @@
     const l = Math.hypot(ax, ay);
     if (l > 1) { ax /= l; ay /= l; }
 
-    const speedBoost = ts < state.activePowerUps.cosmicSpeedUntil ? 2 : 1;
+    const now = performance.now();
+    const speedBoost = now < state.activePowerUps.cosmicSpeedUntil ? 2 : 1;
     p.vx = p.vx * PLAYER_FRICTION + ax * PLAYER_ACCEL * speedBoost;
     p.vy = p.vy * PLAYER_FRICTION + ay * PLAYER_ACCEL * speedBoost;
     const sp = Math.hypot(p.vx, p.vy);
     const maxSpeed = PLAYER_MAX * speedBoost;
     if (sp > maxSpeed) { p.vx = (p.vx / sp) * maxSpeed; p.vy = (p.vy / sp) * maxSpeed; }
 
-    const nx = p.x + p.vx;
-    if (canMove(nx, p.y)) p.x = nx;
-    else if (consumeShieldCharge()) p.x = clamp(nx, PLAYER_R, WORLD_W - PLAYER_R);
-    else p.vx *= -0.15;
-    const ny = p.y + p.vy;
-    if (canMove(p.x, ny)) p.y = ny;
-    else if (consumeShieldCharge()) p.y = clamp(ny, PLAYER_R, WORLD_H - PLAYER_R);
-    else p.vy *= -0.15;
+    // Update facing direction
+    if (sp > 0.5) {
+      p.facing = Math.atan2(p.vy, p.vx);
+      p.idleTime = 0;
+    } else {
+      p.idleTime += dt;
+    }
 
+    // X movement + wall collision
+    const nx = p.x + p.vx;
+    if (canMove(nx, p.y)) {
+      p.x = nx;
+    } else if (consumeShieldCharge()) {
+      p.x = clamp(nx, PLAYER_R, WORLD_W - PLAYER_R);
+    } else {
+      p.vx *= -0.15;
+      triggerWallFeedback();
+    }
+
+    // Y movement + wall collision
+    const ny = p.y + p.vy;
+    if (canMove(p.x, ny)) {
+      p.y = ny;
+    } else if (consumeShieldCharge()) {
+      p.y = clamp(ny, PLAYER_R, WORLD_H - PLAYER_R);
+    } else {
+      p.vy *= -0.15;
+      triggerWallFeedback();
+    }
+
+    // Camera smoothing
     state.cam.x += (p.x - W / 2 - state.cam.x) * 0.1;
     state.cam.y += (p.y - H / 2 - state.cam.y) * 0.1;
 
-    p.trail.unshift({ x: p.x, y: p.y });
-    if (p.trail.length > 26) p.trail.pop();
+    // Trail
+    p.trail.unshift({ x: p.x, y: p.y, age: 0 });
+    if (p.trail.length > 36) p.trail.pop();
 
     checkCollectibles();
-    updateHud();
-
-    const dt = ts - state.lastTs;
-    state.lastTs = ts;
-    state.energyPulses.forEach(e => { e.t += dt * e.s; });
-    state.effects = state.effects.filter(e => ts < e.until);
   }
+
+  function triggerWallFeedback() {
+    state.screenShake.intensity = Math.min(state.screenShake.intensity + 5, 10);
+    sfxWallBump();
+  }
+
+  // ─── Variable visual updates ──────────────────────────────────
+
+  function updateVisualEffects(ts, dt) {
+    // Screen shake decay
+    const shake = state.screenShake;
+    if (shake.intensity > 0.3) {
+      shake.x = (Math.random() - 0.5) * shake.intensity;
+      shake.y = (Math.random() - 0.5) * shake.intensity;
+      shake.intensity *= shake.decay;
+    } else {
+      shake.x = 0; shake.y = 0; shake.intensity = 0;
+    }
+
+    // Energy pulses
+    state.energyPulses.forEach(e => { e.t += dt * e.s; });
+
+    // Expire effects
+    state.effects = state.effects.filter(e => ts < e.until);
+
+    // Update trail age
+    state.player.trail.forEach(t => { t.age += dt; });
+
+    updateHud();
+  }
+
+  // ─── Collision ────────────────────────────────────────────────
 
   function consumeShieldCharge() {
     if (state.activePowerUps.milkShieldCharges <= 0) return false;
@@ -370,12 +628,16 @@
     return true;
   }
 
+  // ─── Collectibles ─────────────────────────────────────────────
+
   function checkCollectibles() {
     const p = state.player;
     TRACKS.forEach(track => {
       const s = state.tracks[track.id];
       if (!s.discovered && dist(p.x, p.y, s.wx, s.wy) < 40) {
         s.discovered = true;
+        state.score += SCORE_TRACK;
+        sfxDiscoverSong();
         showPopup(`<h3 style="margin-bottom:.5rem">${track.title} discovered</h3><iframe allow="autoplay" width="100%" height="166" scrolling="no" frameborder="no" src="${track.embedBase}&auto_play=true"></iframe>`);
       }
     });
@@ -384,6 +646,8 @@
       if (!o.found && dist(p.x, p.y, o.wx, o.wy) < 34) {
         o.found = true;
         state.bonusFound++;
+        state.score += SCORE_BONUS;
+        sfxDiscoverSong();
         showPopup(`<h3 style="margin-bottom:.5rem;color:#fcd34d">Golden Orb: ${o.track.title}</h3><iframe allow="autoplay" width="100%" height="166" scrolling="no" frameborder="no" src="${o.track.embed}"></iframe>`);
       }
     });
@@ -392,6 +656,8 @@
       if (b.open || dist(p.x, p.y, b.wx, b.wy) > 45) return;
       b.open = true;
       state.boxesOpened++;
+      state.score += SCORE_BOX;
+      sfxOpenBox();
       const roll = Math.floor(Math.random() * 3);
       if (roll === 0) {
         const pick = BONUS_TRACKS[Math.floor(Math.random() * BONUS_TRACKS.length)];
@@ -402,6 +668,8 @@
       } else {
         const target = TRACKS[Math.floor(Math.random() * TRACKS.length)];
         state.tracks[target.id].frags = Math.min(target.fragsNeed, state.tracks[target.id].frags + 1);
+        state.score += SCORE_FRAGMENT;
+        sfxCollectFragment();
         showPopup(`<h3>Song fragment collectible</h3><p>+1 fragment for <strong>${target.title}</strong></p>`);
       }
     });
@@ -409,12 +677,21 @@
     state.powerUps.forEach(powerUp => {
       if (powerUp.collected || dist(p.x, p.y, powerUp.wx, powerUp.wy) > 42) return;
       powerUp.collected = true;
+      state.score += SCORE_POWERUP;
+      sfxPowerUp();
       offerPowerUpActivation(powerUp);
     });
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  //  RENDERING
+  // ═══════════════════════════════════════════════════════════════
+
   function render(ts) {
-    ctx.clearRect(0, 0, W, H);
+    ctx.save();
+    ctx.translate(state.screenShake.x, state.screenShake.y);
+
+    ctx.clearRect(-10, -10, W + 20, H + 20);
     const bg = ctx.createLinearGradient(0, 0, 0, H);
     bg.addColorStop(0, '#120026');
     bg.addColorStop(1, '#040008');
@@ -423,11 +700,19 @@
 
     renderParticles(ts);
     renderMaze(ts);
+    renderFogOfWar();
     renderCollectibles(ts);
     renderTrail();
     renderMascot(ts);
     renderActiveEffects(ts);
+
+    ctx.restore();
+
+    // Minimap (unaffected by screen shake)
+    if (state.minimapVisible) renderMinimap(ts);
   }
+
+  // ─── Background particles ─────────────────────────────────────
 
   function renderParticles(ts) {
     state.particles.forEach((p, i) => {
@@ -439,6 +724,8 @@
       ctx.beginPath(); ctx.arc(sx, sy, p.r, 0, Math.PI * 2); ctx.fill();
     });
   }
+
+  // ─── Maze walls ───────────────────────────────────────────────
 
   function renderMaze(ts) {
     for (let y = 0; y < ROWS; y++) {
@@ -475,6 +762,28 @@
     ctx.lineTo(x2, y2);
     ctx.stroke();
   }
+
+  // ─── Fog of war ───────────────────────────────────────────────
+
+  function renderFogOfWar() {
+    if (REDUCED) return;
+    const p = state.player;
+    const px = p.x - state.cam.x;
+    const py = p.y - state.cam.y;
+    const lightRadius = 320;
+    const now = performance.now();
+    const hasStarVision = now < state.activePowerUps.starVisionUntil;
+    if (hasStarVision) return; // No fog when star vision is active
+
+    const fog = ctx.createRadialGradient(px, py, lightRadius * 0.4, px, py, lightRadius);
+    fog.addColorStop(0, 'rgba(4,0,8,0)');
+    fog.addColorStop(0.6, 'rgba(4,0,8,0.15)');
+    fog.addColorStop(1, 'rgba(4,0,8,0.55)');
+    ctx.fillStyle = fog;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // ─── Collectibles ─────────────────────────────────────────────
 
   function renderCollectibles(ts) {
     TRACKS.forEach(track => {
@@ -556,29 +865,121 @@
     ctx.fill();
   }
 
+  // ─── Trail (smooth gradient) ──────────────────────────────────
+
   function renderTrail() {
-    state.player.trail.forEach((t, i) => {
+    const trail = state.player.trail;
+    if (trail.length < 2) return;
+
+    for (let i = trail.length - 1; i >= 0; i--) {
+      const t = trail[i];
       const sx = t.x - state.cam.x, sy = t.y - state.cam.y;
-      ctx.fillStyle = `rgba(124,58,237,${(1 - i / state.player.trail.length) * 0.25})`;
-      ctx.beginPath(); ctx.arc(sx, sy, 7 - i * 0.2, 0, Math.PI * 2); ctx.fill();
-    });
+      const progress = 1 - i / trail.length;
+      const alpha = progress * 0.3;
+      const radius = 8 * progress + 2;
+
+      const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, radius);
+      grad.addColorStop(0, `rgba(124,58,237,${alpha})`);
+      grad.addColorStop(0.5, `rgba(167,139,250,${alpha * 0.6})`);
+      grad.addColorStop(1, `rgba(124,58,237,0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath(); ctx.arc(sx, sy, radius, 0, Math.PI * 2); ctx.fill();
+    }
   }
+
+  // ─── Mascot (expressive) ──────────────────────────────────────
 
   function renderMascot(ts) {
     const p = state.player;
     const sx = p.x - state.cam.x, sy = p.y - state.cam.y;
     const bob = REDUCED ? 0 : Math.sin(ts * 0.004) * 3;
+    const speed = Math.hypot(p.vx, p.vy);
+
     ctx.save();
     ctx.translate(sx, sy + bob);
     ctx.rotate((p.vx / PLAYER_MAX) * 0.2);
+
+    // Pulsing aura
+    const auraPulse = 0.3 + Math.sin(ts * 0.003) * 0.15;
+    const auraRadius = PLAYER_R + 14 + Math.sin(ts * 0.004) * 4;
+    const aura = ctx.createRadialGradient(0, 0, PLAYER_R * 0.5, 0, 0, auraRadius);
+    aura.addColorStop(0, `rgba(124,58,237,${auraPulse})`);
+    aura.addColorStop(0.5, `rgba(167,139,250,${auraPulse * 0.4})`);
+    aura.addColorStop(1, 'rgba(124,58,237,0)');
+    ctx.fillStyle = aura;
+    ctx.beginPath(); ctx.arc(0, 0, auraRadius, 0, Math.PI * 2); ctx.fill();
+
+    // Body
     ctx.fillStyle = '#f7f1ff';
     ctx.beginPath(); ctx.roundRect(-16, -18, 32, 36, 8); ctx.fill();
-    ctx.fillStyle = '#111';
-    ctx.beginPath(); ctx.arc(-6, -4, 2, 0, Math.PI * 2); ctx.arc(6, -4, 2, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = '#7c3aed'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(-7, 7); ctx.quadraticCurveTo(0, 12, 7, 7); ctx.stroke();
+
+    // Subtle body border
+    ctx.strokeStyle = 'rgba(124,58,237,.35)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.roundRect(-16, -18, 32, 36, 8); ctx.stroke();
+
+    // Eyes that look in movement direction
+    const eyeOffsetX = Math.cos(p.facing) * 2.5;
+    const eyeOffsetY = Math.sin(p.facing) * 1.5;
+
+    // Eye whites
+    ctx.fillStyle = '#222';
+    ctx.beginPath();
+    ctx.ellipse(-6 + eyeOffsetX * 0.3, -5, 3.5, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(6 + eyeOffsetX * 0.3, -5, 3.5, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Pupils (follow direction more)
+    ctx.fillStyle = '#7c3aed';
+    ctx.beginPath();
+    ctx.arc(-6 + eyeOffsetX, -5 + eyeOffsetY, 1.8, 0, Math.PI * 2);
+    ctx.arc(6 + eyeOffsetX, -5 + eyeOffsetY, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Eye highlights
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(-6 + eyeOffsetX - 0.8, -6 + eyeOffsetY, 0.7, 0, Math.PI * 2);
+    ctx.arc(6 + eyeOffsetX - 0.8, -6 + eyeOffsetY, 0.7, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Mouth — changes based on state
+    ctx.strokeStyle = '#7c3aed';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    if (speed > 3) {
+      // Excited open mouth when moving fast
+      ctx.beginPath();
+      ctx.ellipse(0, 8, 5, 3, 0, 0, Math.PI);
+      ctx.stroke();
+    } else if (p.idleTime > 2000) {
+      // Sleepy when idle
+      const breathe = Math.sin(ts * 0.002) * 0.5;
+      ctx.beginPath();
+      ctx.moveTo(-5, 7 + breathe);
+      ctx.lineTo(5, 7 + breathe);
+      ctx.stroke();
+    } else {
+      // Normal smile
+      ctx.beginPath();
+      ctx.moveTo(-7, 7);
+      ctx.quadraticCurveTo(0, 12, 7, 7);
+      ctx.stroke();
+    }
+
+    // Blush when near collectibles
+    const nearCollectible = state.mysteryBoxes.some(b => !b.open && dist(p.x, p.y, b.wx, b.wy) < 120) ||
+      TRACKS.some(t => { const s = state.tracks[t.id]; return !s.discovered && dist(p.x, p.y, s.wx, s.wy) < 120; });
+    if (nearCollectible) {
+      ctx.fillStyle = 'rgba(245,158,11,.15)';
+      ctx.beginPath(); ctx.arc(-9, 3, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(9, 3, 4, 0, Math.PI * 2); ctx.fill();
+    }
+
     ctx.restore();
   }
+
+  // ─── Active effects overlay ───────────────────────────────────
 
   function renderActiveEffects(ts) {
     state.effects.forEach(effect => {
@@ -596,16 +997,83 @@
           ctx.stroke();
         }
       } else if (effect.type === 'milk-shield') {
-        const sx = state.player.x - state.cam.x;
-        const sy = state.player.y - state.cam.y;
+        const msx = state.player.x - state.cam.x;
+        const msy = state.player.y - state.cam.y;
         ctx.strokeStyle = `rgba(167,139,250,${0.6 * (1 - age)})`;
         ctx.lineWidth = 4;
         ctx.beginPath();
-        ctx.arc(sx, sy, PLAYER_R + 16 + age * 20, 0, Math.PI * 2);
+        ctx.arc(msx, msy, PLAYER_R + 16 + age * 20, 0, Math.PI * 2);
         ctx.stroke();
+      } else if (effect.type === 'wall-flash') {
+        ctx.fillStyle = `rgba(255,100,100,${0.12 * (1 - age)})`;
+        ctx.fillRect(0, 0, W, H);
       }
     });
   }
+
+  // ─── Persistent minimap ───────────────────────────────────────
+
+  function renderMinimap(ts) {
+    const mc = minimapCtx;
+    const mw = minimapCanvas.width;
+    const mh = minimapCanvas.height;
+    mc.clearRect(0, 0, mw, mh);
+
+    // Background
+    mc.fillStyle = 'rgba(4,0,12,.85)';
+    mc.fillRect(0, 0, mw, mh);
+
+    const sx = mw / WORLD_W;
+    const sy = mh / WORLD_H;
+
+    // Maze walls
+    mc.strokeStyle = 'rgba(80,180,255,.35)';
+    mc.lineWidth = 0.8;
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = 0; x < COLS; x++) {
+        const cell = state.maze[y][x];
+        const ox = x * CELL * sx;
+        const oy = y * CELL * sy;
+        if (!cell.n) { mc.beginPath(); mc.moveTo(ox, oy); mc.lineTo(ox + CELL * sx, oy); mc.stroke(); }
+        if (!cell.s) { mc.beginPath(); mc.moveTo(ox, oy + CELL * sy); mc.lineTo(ox + CELL * sx, oy + CELL * sy); mc.stroke(); }
+        if (!cell.w) { mc.beginPath(); mc.moveTo(ox, oy); mc.lineTo(ox, oy + CELL * sy); mc.stroke(); }
+        if (!cell.e) { mc.beginPath(); mc.moveTo(ox + CELL * sx, oy); mc.lineTo(ox + CELL * sx, oy + CELL * sy); mc.stroke(); }
+      }
+    }
+
+    // Collectibles
+    TRACKS.forEach(t => {
+      const s = state.tracks[t.id];
+      mc.fillStyle = s.discovered ? t.color : 'rgba(170,150,200,.45)';
+      mc.beginPath(); mc.arc(s.wx * sx, s.wy * sy, 3, 0, Math.PI * 2); mc.fill();
+    });
+
+    state.bonusOrbs.forEach(o => {
+      if (o.found) return;
+      mc.fillStyle = 'rgba(251,191,36,.6)';
+      mc.beginPath(); mc.arc(o.wx * sx, o.wy * sy, 2.5, 0, Math.PI * 2); mc.fill();
+    });
+
+    state.mysteryBoxes.forEach(b => {
+      if (b.open) return;
+      mc.fillStyle = 'rgba(147,51,234,.5)';
+      mc.fillRect(b.wx * sx - 2, b.wy * sy - 2, 4, 4);
+    });
+
+    // Player
+    const pulse = 0.8 + Math.sin(ts * 0.006) * 0.2;
+    mc.fillStyle = `rgba(255,255,255,${pulse})`;
+    mc.beginPath(); mc.arc(state.player.x * sx, state.player.y * sy, 3.5, 0, Math.PI * 2); mc.fill();
+
+    // Player light radius indicator
+    mc.strokeStyle = 'rgba(124,58,237,.3)';
+    mc.lineWidth = 1;
+    mc.beginPath(); mc.arc(state.player.x * sx, state.player.y * sy, 12, 0, Math.PI * 2); mc.stroke();
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  MUSIC & UI
+  // ═══════════════════════════════════════════════════════════════
 
   function setTrack(track, autoplay) {
     musicFrame.src = `${track.embedBase}&auto_play=${autoplay ? 'true' : 'false'}`;
@@ -618,18 +1086,27 @@
     title.textContent = `${track.title} — STARMILK`;
   }
 
+  function formatTime(ms) {
+    const s = Math.floor(ms / 1000);
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}:${sec < 10 ? '0' : ''}${sec}`;
+  }
+
   function updateHud() {
     const t = TRACKS.map(track => {
       const s = state.tracks[track.id];
       const done = s.discovered ? '✓' : '○';
       return `${done} ${track.title}: ${s.frags}/${track.fragsNeed}`;
     }).join(' | ');
-    const ts = performance.now();
-    const starVisionLeft = Math.max(0, Math.ceil((state.activePowerUps.starVisionUntil - ts) / 1000));
-    const speedLeft = Math.max(0, Math.ceil((state.activePowerUps.cosmicSpeedUntil - ts) / 1000));
-    const powerText = `Power-Ups: Vision ${starVisionLeft}s, Speed ${speedLeft}s, Shield ${state.activePowerUps.milkShieldCharges}`;
-    hud.textContent = `${t} | Golden Orbs: ${state.bonusFound}/${state.bonusOrbs.length} | Mystery Boxes: ${state.boxesOpened}/${state.mysteryBoxes.length} | ${powerText}`;
+    const now = performance.now();
+    const starVisionLeft = Math.max(0, Math.ceil((state.activePowerUps.starVisionUntil - now) / 1000));
+    const speedLeft = Math.max(0, Math.ceil((state.activePowerUps.cosmicSpeedUntil - now) / 1000));
+    const timeStr = formatTime(state.elapsedMs);
+    hud.textContent = `Score: ${state.score} | ⏱ ${timeStr} | ${t} | Orbs: ${state.bonusFound}/${state.bonusOrbs.length} | Boxes: ${state.boxesOpened}/${state.mysteryBoxes.length} | ✦${starVisionLeft}s ➤${speedLeft}s ◍${state.activePowerUps.milkShieldCharges}`;
   }
+
+  // ─── Power-up UI ──────────────────────────────────────────────
 
   function offerPowerUpActivation(powerUp) {
     const activateNow = () => {
@@ -659,6 +1136,8 @@
     }
   }
 
+  // ─── Star Map overlay ─────────────────────────────────────────
+
   function toggleMap() {
     if (mapScreen.style.display === 'flex') {
       mapScreen.style.display = 'none';
@@ -666,7 +1145,7 @@
     }
     const discovered = TRACKS.filter(t => state.tracks[t.id].discovered).length;
     const rows = TRACKS.map(t => `<li>${t.title}: ${state.tracks[t.id].discovered ? 'Discovered' : 'Hidden'} (${state.tracks[t.id].frags}/${t.fragsNeed} fragments)</li>`).join('');
-    mapScreen.innerHTML = `<div style="width:min(760px,95vw);background:rgba(10,0,22,.95);border:1px solid rgba(147,51,234,.5);border-radius:18px;padding:1rem;"><h2 style="margin-bottom:.5rem;letter-spacing:.12em;text-transform:uppercase">Star Map</h2><p style="color:#aa96d3;margin-bottom:.5rem">Constellation progress: ${discovered}/${TRACKS.length} songs found</p><canvas id="cq-map" width="700" height="360" style="width:100%;height:auto;border:1px solid rgba(147,51,234,.3);border-radius:12px"></canvas><ul style="margin:.8rem 0 0 1rem;line-height:1.6">${rows}</ul><button id="cq-close-map" style="margin-top:.8rem;border:1px solid rgba(245,158,11,.5);background:rgba(10,0,20,.7);color:#fcd34d;padding:.45rem .8rem;border-radius:10px;cursor:pointer">Close</button></div>`;
+    mapScreen.innerHTML = `<div style="width:min(760px,95vw);background:rgba(10,0,22,.95);border:1px solid rgba(147,51,234,.5);border-radius:18px;padding:1rem;"><h2 style="margin-bottom:.5rem;letter-spacing:.12em;text-transform:uppercase">Star Map</h2><p style="color:#aa96d3;margin-bottom:.5rem">Constellation progress: ${discovered}/${TRACKS.length} songs found | Score: ${state.score} | Time: ${formatTime(state.elapsedMs)}</p><canvas id="cq-map" width="700" height="360" style="width:100%;height:auto;border:1px solid rgba(147,51,234,.3);border-radius:12px"></canvas><ul style="margin:.8rem 0 0 1rem;line-height:1.6">${rows}</ul><button id="cq-close-map" style="margin-top:.8rem;border:1px solid rgba(245,158,11,.5);background:rgba(10,0,20,.7);color:#fcd34d;padding:.45rem .8rem;border-radius:10px;cursor:pointer">Close</button></div>`;
     mapScreen.style.display = 'flex';
     mapScreen.querySelector('#cq-close-map').onclick = toggleMap;
     drawMap();
@@ -706,47 +1185,17 @@
 
   function line(g, x1, y1, x2, y2) { g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); }
 
+  // ─── Popup ────────────────────────────────────────────────────
+
   function showPopup(inner) {
     popup.innerHTML = `${inner}<div style="margin-top:.7rem;text-align:right"><button id="cq-close-pop" style="border:1px solid rgba(147,51,234,.5);background:#130428;color:#e8dfff;padding:.35rem .7rem;border-radius:8px;cursor:pointer">Continue</button></div>`;
     popup.style.display = 'block';
     popup.querySelector('#cq-close-pop').onclick = () => { popup.style.display = 'none'; };
   }
 
-  function createMaze(cols, rows) {
-    const maze = Array.from({ length: rows }, () => Array.from({ length: cols }, () => ({ n: false, e: false, s: false, w: false, v: false })));
-    const stack = [{ x: 0, y: 0 }];
-    maze[0][0].v = true;
-    while (stack.length) {
-      const cur = stack[stack.length - 1];
-      const neighbors = [
-        { x: cur.x, y: cur.y - 1, a: 'n', b: 's' },
-        { x: cur.x + 1, y: cur.y, a: 'e', b: 'w' },
-        { x: cur.x, y: cur.y + 1, a: 's', b: 'n' },
-        { x: cur.x - 1, y: cur.y, a: 'w', b: 'e' },
-      ].filter(n => n.x >= 0 && n.y >= 0 && n.x < cols && n.y < rows && !maze[n.y][n.x].v);
-
-      if (!neighbors.length) { stack.pop(); continue; }
-      const pick = neighbors[Math.floor(Math.random() * neighbors.length)];
-      maze[cur.y][cur.x][pick.a] = true;
-      maze[pick.y][pick.x][pick.b] = true;
-      maze[pick.y][pick.x].v = true;
-      stack.push({ x: pick.x, y: pick.y });
-    }
-    maze.flat().forEach(c => delete c.v);
-    return maze;
-  }
-
-  function getDeadEnds() {
-    const ends = [];
-    for (let y = 0; y < ROWS; y++) {
-      for (let x = 0; x < COLS; x++) {
-        const c = state.maze[y][x];
-        const n = (c.n ? 1 : 0) + (c.e ? 1 : 0) + (c.s ? 1 : 0) + (c.w ? 1 : 0);
-        if (n === 1) ends.push({ x, y });
-      }
-    }
-    return ends;
-  }
+  // ═══════════════════════════════════════════════════════════════
+  //  UTILITIES
+  // ═══════════════════════════════════════════════════════════════
 
   function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
   function dist(x1, y1, x2, y2) { return Math.hypot(x2 - x1, y2 - y1); }
@@ -756,6 +1205,8 @@
     const r = parseInt(n.slice(0, 2), 16), g = parseInt(n.slice(2, 4), 16), b = parseInt(n.slice(4, 6), 16);
     return `rgba(${r},${g},${b},${a})`;
   }
+
+  // ─── Bootstrap ────────────────────────────────────────────────
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
