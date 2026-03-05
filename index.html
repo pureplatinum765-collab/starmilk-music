@@ -1347,7 +1347,7 @@
       position: fixed;
       right: 1rem;
       bottom: 1rem;
-      z-index: 350;
+      z-index: 390;
       width: min(92vw, 400px);
       border-radius: 18px;
       border: 1px solid rgba(245,158,11,.38);
@@ -1392,6 +1392,13 @@
       position: relative;
       z-index: 2;
       text-align: left;
+      -webkit-tap-highlight-color: rgba(245,158,11,.15);
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
     }
 
     .radio-floating.collapsed .radio-badge {
@@ -1660,7 +1667,7 @@
     </ul>
   </nav>
 
-  <!-- ═══ HERO ═══════════════════════════════════════════════ -->
+  <!-- ╠═══ HERO ═════════════════════════════════════════════════ -->
   <section id="hero" data-mood-section="going-round" aria-label="Hero">
     <div class="nebula" aria-hidden="true"></div>
 
@@ -1703,7 +1710,7 @@
 
   <div class="divider"></div>
 
-  <!-- ═══ RADIO ═════════════════════════════════════════════ -->
+  <!-- ╠═══ RADIO ═══════════════════════════════════════════════ -->
   <section id="radio" data-mood-section="going-round" aria-labelledby="radio-h">
     <div class="section-inner">
       <span class="label reveal">Continuous Transmission</span>
@@ -1714,7 +1721,7 @@
 
   <div class="divider"></div>
 
-  <!-- ═══ INSIDE OUT VIDEO ════════════════════════════════════ -->
+  <!-- ╠═══ INSIDE OUT VIDEO ══════════════════════════════════════ -->
   <section id="inside-out" data-mood-section="going-round" aria-labelledby="inside-out-h">
     <div class="section-inner">
       <span class="label reveal">Visual Scripture</span>
@@ -1737,7 +1744,7 @@
 
   <div class="divider"></div>
 
-  <!-- ═══ STREAM ═════════════════════════════════════════════ -->
+  <!-- ╠═══ STREAM ═══════════════════════════════════════════════ -->
   <section id="stream" data-mood-section="alive" aria-labelledby="stream-h">
     <div class="section-inner">
       <span class="label reveal">Listen Everywhere</span>
@@ -1835,7 +1842,7 @@
 
   <div class="divider"></div>
 
-  <!-- ═══ RIVER ════════════════════════════════════════════ -->
+  <!-- ╠═══ RIVER ════════════════════════════════════════════ -->
   <section id="river" data-mood-section="thawing" aria-labelledby="river-h">
     <div class="river-sticky">
       <canvas id="river-canvas" aria-hidden="true"></canvas>
@@ -1863,7 +1870,7 @@
 
   <div class="divider"></div>
 
-  <!-- ═══ LYRICS ═════════════════════════════════════════════ -->
+  <!-- ╠═══ LYRICS ═══════════════════════════════════════════ -->
   <section id="lyrics" data-temperature="tender" aria-labelledby="lyrics-h">
     <div class="lyrics-shell">
       <span class="label">Immersive Lyrics</span>
@@ -1880,7 +1887,7 @@
 
   <div class="divider"></div>
 
-  <!-- ═══ ORCHARD ══════════════════════════════════════════════ -->
+  <!-- ╠═══ ORCHARD ═════════════════════════════════════════════ -->
   <section id="orchard" data-mood-section="alive" aria-labelledby="orchard-h">
     <div class="section-inner">
       <span class="label reveal">Living Catalog</span>
@@ -1897,7 +1904,7 @@
 
   <div class="divider"></div>
 
-  <!-- ═══ GAMES ══════════════════════════════════════════════ -->
+  <!-- ╠═══ GAMES ═══════════════════════════════════════════════ -->
   <section id="games" data-mood-section="thawing" aria-labelledby="games-h">
     <div class="section-inner">
       <span class="label reveal">Arcade Portal</span>
@@ -1922,7 +1929,7 @@
 
   <div class="divider"></div>
 
-  <!-- ═══ SUPPORT ══════════════════════════════════════════════ -->
+  <!-- ╠═══ SUPPORT ═════════════════════════════════════════════ -->
   <section id="support" data-mood-section="heavy" aria-labelledby="support-h">
     <div class="section-inner">
       <span class="label reveal">Keep the Signal Alive</span>
@@ -2021,7 +2028,7 @@
 
   <div class="divider"></div>
 
-  <!-- ═══ CONNECT ══════════════════════════════════════════════ -->
+  <!-- ╠═══ CONNECT ════════════════════════════════════════════ -->
   <section id="connect" data-mood-section="tender" aria-labelledby="connect-h">
     <div class="section-inner">
       <span class="label reveal">Stay in the Signal</span>
@@ -2073,23 +2080,8 @@
   </section>
 
 
-  <div id="radio-floating" class="radio-floating collapsed" aria-live="polite">
-    <button type="button" id="radio-badge" class="radio-badge" aria-expanded="false">STARMILK RADIO ✦ tap to tune</button>
-    <div class="radio-panel" id="radio-panel">
-      <p class="radio-now">Now transmitting</p>
-      <p id="radio-track-name">Awaiting signal…</p>
-      <p id="radio-poem" class="radio-poem"></p>
-      <canvas id="radio-visualizer" width="380" height="68" aria-label="Audio visualizer"></canvas>
-      <div id="radio-embed-shell" aria-hidden="false"></div>
-      <div class="radio-controls">
-        <button type="button" id="radio-prev" aria-label="Previous track" class="radio-btn-sm">⏮</button>
-        <button type="button" id="radio-next" aria-label="Next track" class="radio-btn-sm">⏭</button>
-      </div>
-      <div id="radio-queue" class="radio-queue"></div>
-    </div>
-  </div>
 
-  <!-- ═══ FOOTER ═══════════════════════════════════════════════ -->
+  <!-- ╠═══ FOOTER ═════════════════════════════════════════════ -->
   <footer>
     <div class="footer-name">STARMILK</div>
     <p class="footer-sub">Electronic Music &nbsp;&bull;&nbsp; Direct to Fans &nbsp;&bull;&nbsp; No Middlemen</p>
@@ -2097,6 +2089,22 @@
   </footer>
 
 </div><!-- /wrap -->
+
+<div id="radio-floating" class="radio-floating collapsed" aria-live="polite">
+  <button type="button" id="radio-badge" class="radio-badge" aria-expanded="false">STARMILK RADIO ✦ tap to tune</button>
+  <div class="radio-panel" id="radio-panel">
+    <p class="radio-now">Now transmitting</p>
+    <p id="radio-track-name">Awaiting signal…</p>
+    <p id="radio-poem" class="radio-poem"></p>
+    <canvas id="radio-visualizer" width="380" height="68" aria-label="Audio visualizer"></canvas>
+    <div id="radio-embed-shell" aria-hidden="false"></div>
+    <div class="radio-controls">
+      <button type="button" id="radio-prev" aria-label="Previous track" class="radio-btn-sm">⏮</button>
+      <button type="button" id="radio-next" aria-label="Next track" class="radio-btn-sm">⏭</button>
+    </div>
+    <div id="radio-queue" class="radio-queue"></div>
+  </div>
+</div>
 
 <div id="mood-ring-overlay" class="mood-ring-overlay" aria-hidden="true"></div>
 
@@ -2122,8 +2130,8 @@ Stay as long as you like.</p>
       <div class="bb-powers" id="brick-breaker-powerups"></div>
       <p>Controls: ←/→ or A/D, swipe/touch to move paddle, Space to launch ball.</p>
       <div class="bb-mobile" id="brick-breaker-mobile-controls">
-        <button data-dir="left">◄ Left</button>
-        <button data-dir="right">Right ►</button>
+        <button data-dir="left">◀ Left</button>
+        <button data-dir="right">Right ▶</button>
       </div>
     </div>
   </div>
@@ -2143,9 +2151,9 @@ Stay as long as you like.</p>
   const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const isMobile = window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent);
 
-  /* ═══════════════════════════════════════════════════════════════
+  /* ╠═══════════════════════════════════════════════════════════════
      WebGL COSMIC BACKGROUND — Van Gogh domain-warped nebula shader
-     ═══════════════════════════════════════════════════════════════ */
+     ╠═══════════════════════════════════════════════════════════════ */
 
   const starfield = document.getElementById('starfield');
   let gl = null, useWebGL = false;
@@ -2331,11 +2339,11 @@ void main(){
     }
   }
 
-  /* ═══════════════════════════════════════════════════════════════
+  /* ╠═══════════════════════════════════════════════════════════════
      2D PARTICLE LAYER — stars (lavender + gold) with gold drips
      Runs on a separate canvas layered above WebGL,
      or falls back to #starfield if WebGL unavailable.
-     ═══════════════════════════════════════════════════════════════ */
+     ╠═══════════════════════════════════════════════════════════════ */
 
   let pc, ctx;
 
@@ -2552,9 +2560,9 @@ void main(){
     })(0);
   }
 
-  /* ═══════════════════════════════════════════════════════════════
+  /* ╠═══════════════════════════════════════════════════════════════
      NAV — opacity on scroll
-     ═══════════════════════════════════════════════════════════════ */
+     ╠═══════════════════════════════════════════════════════════════ */
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => {
     nav.style.background = window.scrollY > 55
@@ -2562,9 +2570,9 @@ void main(){
       : 'rgba(10,0,16,.72)';
   }, { passive: true });
 
-  /* ═══════════════════════════════════════════════════════════════
+  /* ╠═══════════════════════════════════════════════════════════════
      PARALLAX — hero nebula follows scroll
-     ═══════════════════════════════════════════════════════════════ */
+     ╠═══════════════════════════════════════════════════════════════ */
   if (!REDUCED) {
     const neb = document.querySelector('.nebula');
     let ticking = false;
@@ -2579,9 +2587,9 @@ void main(){
     }, { passive: true });
   }
 
-  /* ═══════════════════════════════════════════════════════════════
+  /* ╠═══════════════════════════════════════════════════════════════
      INTERSECTION OBSERVER — reveal on scroll
-     ═══════════════════════════════════════════════════════════════ */
+     ╠═══════════════════════════════════════════════════════════════ */
   if (!REDUCED) {
     const io = new IntersectionObserver(entries => {
       entries.forEach(e => {
@@ -2606,7 +2614,7 @@ void main(){
 
 <script src="brick-breaker-game.js" defer></script>
 
-<!-- ═══ STARMILK COSMIC QUEST ════════════════════════════════════════════════════ -->
+<!-- ╠═══ STARMILK COSMIC QUEST ══════════════════════════════════════════════ -->
 <script src="cosmic-game.js" defer></script>
 
 <script>
