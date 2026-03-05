@@ -1348,7 +1348,7 @@
       right: 1rem;
       bottom: 1rem;
       z-index: 350;
-      width: min(92vw, 360px);
+      width: min(92vw, 400px);
       border-radius: 18px;
       border: 1px solid rgba(245,158,11,.38);
       background: linear-gradient(160deg, rgba(7,3,16,.96), rgba(18,9,32,.94));
@@ -1511,19 +1511,18 @@
     .radio-queue-item:hover { background: rgba(147,51,234,.12); color: var(--text); }
     .radio-queue-item.active { background: rgba(245,158,11,.12); color: var(--gold-light); border-color: rgba(245,158,11,.3); }
 
-    #radio-volume {
+    #radio-embed-shell {
       width: 100%;
-      accent-color: #f59e0b;
+      border-radius: 10px;
+      overflow: hidden;
     }
 
-    #radio-embed-shell {
-      position: absolute;
-      inset: 0;
-      width: 0;
-      height: 0;
-      overflow: hidden;
-      pointer-events: none;
-      opacity: 0;
+    #radio-embed-shell iframe {
+      display: block;
+      width: 100%;
+      height: 120px;
+      border: 0;
+      border-radius: 10px;
     }
 
     @media (max-width: 680px) {
@@ -1532,7 +1531,7 @@
       .radio-floating {
         right: .6rem;
         bottom: .6rem;
-        width: min(95vw, 320px);
+        width: min(95vw, 360px);
       }
       .radio-floating.collapsed { max-width: calc(100vw - 1.2rem); }
       .radio-badge { font-size: .65rem; letter-spacing: .1em; }
@@ -1590,6 +1589,36 @@
       .gstar, .gstar::after { animation: none !important; }
       .gstar { opacity: .5; }
     }
+
+    /* ── Inside Out video section ── */
+    #inside-out {
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 40%, rgba(124,58,237,.12) 0%, transparent 68%),
+        radial-gradient(ellipse 40% 35% at 15% 75%, rgba(245,158,11,.06) 0%, transparent 55%);
+    }
+
+    .video-showcase {
+      max-width: 800px;
+      margin: 0 auto;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--glow-sm), 0 0 0 1px rgba(147,51,234,.35), 0 8px 48px rgba(99,102,241,.22);
+    }
+
+    .video-showcase iframe {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16/9;
+      border: 0;
+    }
+
+    .video-sub {
+      font-size: .98rem;
+      color: var(--muted);
+      font-style: italic;
+      margin-top: .5rem;
+      letter-spacing: .04em;
+    }
   </style>
 </head>
 <body>
@@ -1620,6 +1649,7 @@
     <ul class="nav-links">
       <li><a href="#stream">Stream</a></li>
       <li><a href="#radio">Radio</a></li>
+      <li><a href="#inside-out">Film</a></li>
       <li><a href="#orchard">Orchard</a></li>
       <li><a href="#river">River</a></li>
       <li><a href="#lyrics">Lyrics</a></li>
@@ -1673,12 +1703,35 @@
 
   <div class="divider"></div>
 
-  <!-- ═══ RADIO ═════════════════════════════════════════ -->
+  <!-- ═══ RADIO ═════════════════════════════════════════════ -->
   <section id="radio" data-mood-section="going-round" aria-labelledby="radio-h">
     <div class="section-inner">
       <span class="label reveal">Continuous Transmission</span>
       <h2 class="section-title reveal" id="radio-h">STARMILK Radio</h2>
       <p class="radio-section-copy reveal">Tune into a single infinite stream: songs, ambient textures, and spoken-word messages from the river between frequencies.</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══ INSIDE OUT VIDEO ════════════════════════════════════ -->
+  <section id="inside-out" data-mood-section="going-round" aria-labelledby="inside-out-h">
+    <div class="section-inner">
+      <span class="label reveal">Visual Scripture</span>
+      <h2 class="section-title reveal" id="inside-out-h">Inside Out</h2>
+      <p class="video-sub reveal">A STARMILK Film</p>
+
+      <div class="video-showcase reveal" style="margin-top:2rem">
+        <iframe
+          width="100%"
+          style="aspect-ratio:16/9"
+          src="https://www.youtube.com/embed/Xu6kcAi5-9o"
+          title="STARMILK — Inside Out"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen>
+        </iframe>
+      </div>
     </div>
   </section>
 
@@ -1782,7 +1835,7 @@
 
   <div class="divider"></div>
 
-  <!-- ═══ RIVER ══════════════════════════════════════════ -->
+  <!-- ═══ RIVER ════════════════════════════════════════════ -->
   <section id="river" data-mood-section="thawing" aria-labelledby="river-h">
     <div class="river-sticky">
       <canvas id="river-canvas" aria-hidden="true"></canvas>
@@ -1810,7 +1863,7 @@
 
   <div class="divider"></div>
 
-  <!-- ═══ LYRICS ═══════════════════════════════════════════ -->
+  <!-- ═══ LYRICS ═════════════════════════════════════════════ -->
   <section id="lyrics" data-temperature="tender" aria-labelledby="lyrics-h">
     <div class="lyrics-shell">
       <span class="label">Immersive Lyrics</span>
@@ -1827,7 +1880,7 @@
 
   <div class="divider"></div>
 
-  <!-- ═══ ORCHARD ════════════════════════════════════════════ -->
+  <!-- ═══ ORCHARD ══════════════════════════════════════════════ -->
   <section id="orchard" data-mood-section="alive" aria-labelledby="orchard-h">
     <div class="section-inner">
       <span class="label reveal">Living Catalog</span>
@@ -1869,7 +1922,7 @@
 
   <div class="divider"></div>
 
-  <!-- ═══ SUPPORT ════════════════════════════════════════════ -->
+  <!-- ═══ SUPPORT ══════════════════════════════════════════════ -->
   <section id="support" data-mood-section="heavy" aria-labelledby="support-h">
     <div class="section-inner">
       <span class="label reveal">Keep the Signal Alive</span>
@@ -1968,7 +2021,7 @@
 
   <div class="divider"></div>
 
-  <!-- ═══ CONNECT ════════════════════════════════════════════ -->
+  <!-- ═══ CONNECT ══════════════════════════════════════════════ -->
   <section id="connect" data-mood-section="tender" aria-labelledby="connect-h">
     <div class="section-inner">
       <span class="label reveal">Stay in the Signal</span>
@@ -2026,19 +2079,17 @@
       <p class="radio-now">Now transmitting</p>
       <p id="radio-track-name">Awaiting signal…</p>
       <p id="radio-poem" class="radio-poem"></p>
-      <canvas id="radio-visualizer" width="330" height="68" aria-label="Audio visualizer"></canvas>
+      <canvas id="radio-visualizer" width="380" height="68" aria-label="Audio visualizer"></canvas>
+      <div id="radio-embed-shell" aria-hidden="false"></div>
       <div class="radio-controls">
         <button type="button" id="radio-prev" aria-label="Previous track" class="radio-btn-sm">⏮</button>
-        <button type="button" id="radio-play" aria-label="Play radio">▶</button>
         <button type="button" id="radio-next" aria-label="Next track" class="radio-btn-sm">⏭</button>
-        <label>Volume <input type="range" id="radio-volume" min="0" max="100" value="70"></label>
       </div>
       <div id="radio-queue" class="radio-queue"></div>
-      <div id="radio-embed-shell" aria-hidden="true"></div>
     </div>
   </div>
 
-  <!-- ═══ FOOTER ═════════════════════════════════════════════ -->
+  <!-- ═══ FOOTER ═══════════════════════════════════════════════ -->
   <footer>
     <div class="footer-name">STARMILK</div>
     <p class="footer-sub">Electronic Music &nbsp;&bull;&nbsp; Direct to Fans &nbsp;&bull;&nbsp; No Middlemen</p>
@@ -2555,7 +2606,7 @@ void main(){
 
 <script src="brick-breaker-game.js" defer></script>
 
-<!-- ═══ STARMILK COSMIC QUEST ════════════════════════════════════════════ -->
+<!-- ═══ STARMILK COSMIC QUEST ════════════════════════════════════════════════════ -->
 <script src="cosmic-game.js" defer></script>
 
 <script>
