@@ -142,12 +142,21 @@
   };
 
   // ── Badge toggle ──────────────────────────────────────────────────
-  badge.addEventListener('click', () => {
+  badge.addEventListener('click', (e) => {
+    e.stopPropagation();
     const collapsed = floating.classList.toggle('collapsed');
     badge.setAttribute('aria-expanded', String(!collapsed));
     badge.textContent = collapsed ? 'STARMILK RADIO ✦ tap to tune' : 'STARMILK RADIO ✦ collapse';
-    if (collapsed) stopVisualizerLoop();
-    else ensureVisualizerLoop();
+    if (collapsed) {
+      stopVisualizerLoop();
+    } else {
+      // Lazy-load iframe on first open to avoid iOS touch issues
+      if (!hasOpened) {
+        hasOpened = true;
+        ensureIframe().src = embedUrl(tracks[0]);
+      }
+      ensureVisualizerLoop();
+    }
   });
 
   if (prevBtn) prevBtn.addEventListener('click', prevTrack);
@@ -159,10 +168,11 @@
   });
 
   // ── Init ──────────────────────────────────────────────────────────
+  let hasOpened = false;
+
   buildQueue();
   trackNameEl.textContent = tracks[0].name;
-  // Initialise iframe with first track on load
-  ensureIframe().src = embedUrl(tracks[0]);
+  // Don't create iframe until panel is first opened (avoids iOS touch issues)
 
   drawVisualizer();
   ensureVisualizerLoop();
