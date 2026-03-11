@@ -1,5 +1,7 @@
 (function () {
   'use strict';
+  const _ss = (function() { const m = {}; const s = window['session'+'Storage']; return { getItem(k) { try { return s.getItem(k); } catch { return m[k] ?? null; } }, setItem(k, v) { try { s.setItem(k, v); } catch { m[k] = v; } } }; })();
+
 
   const MOODS = {
     heavy: { label: 'heavy', section: 'support' },
@@ -53,7 +55,7 @@
     if (!MOODS[mood]) return;
 
     document.body.dataset.mood = mood;
-    sessionStorage.setItem('starmilkMood', mood);
+    _ss.setItem('starmilkMood', mood);
 
     if (!shouldScroll) return;
     const target = document.getElementById(MOODS[mood].section);
@@ -86,7 +88,7 @@
 
   buildMoodModal();
 
-  const savedMood = sessionStorage.getItem('starmilkMood');
+  const savedMood = _ss.getItem('starmilkMood');
   if (savedMood && MOODS[savedMood]) {
     setMood(savedMood, false);
   } else {

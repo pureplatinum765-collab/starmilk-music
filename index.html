@@ -1184,6 +1184,120 @@
 
     .note strong { color: var(--teal-light); }
 
+    /* ── VIP / Patreon ── */
+    #vip {
+      background: radial-gradient(ellipse 60% 50% at 50% 40%, rgba(168,85,247,.08) 0%, transparent 70%);
+    }
+
+    .vip-card {
+      border-radius: var(--radius);
+      border: 1px solid rgba(168,85,247,.3);
+      background: linear-gradient(175deg, rgba(12,3,24,.92), rgba(7,1,16,.95));
+      box-shadow: 0 0 0 1px rgba(168,85,247,.12), 0 6px 36px rgba(147,51,234,.1);
+      padding: 1.6rem 1.8rem;
+      max-width: 600px;
+      margin: 1.8rem 0;
+    }
+
+    .vip-card h3 {
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: #c084fc;
+      font-size: .92rem;
+      margin-bottom: .4rem;
+    }
+
+    .vip-card .vip-price {
+      color: var(--gold-light);
+      font-size: .82rem;
+      margin-bottom: 1rem;
+      opacity: .85;
+    }
+
+    .vip-perks {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.2rem;
+    }
+
+    .vip-perks li {
+      position: relative;
+      padding-left: 1.4rem;
+      margin-bottom: .55rem;
+      font-size: .88rem;
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    .vip-perks li::before {
+      content: '✦';
+      position: absolute;
+      left: 0;
+      color: #c084fc;
+      font-size: .7rem;
+      top: .18em;
+    }
+
+    .vip-bonus {
+      padding: .75rem 1rem;
+      border-radius: 10px;
+      background: rgba(245,158,11,.06);
+      border: 1px solid rgba(245,158,11,.18);
+      font-size: .82rem;
+      color: var(--gold-light);
+      line-height: 1.6;
+      margin-top: .8rem;
+    }
+
+    .vip-tier2 {
+      margin-top: 1.5rem;
+      padding: 1rem 1.2rem;
+      border-radius: var(--radius);
+      border: 1px dashed rgba(147,51,234,.25);
+      background: rgba(7,1,16,.6);
+    }
+
+    .vip-tier2 h4 {
+      font-size: .82rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+      margin-bottom: .35rem;
+    }
+
+    .vip-tier2 p {
+      font-size: .82rem;
+      color: var(--muted);
+      line-height: 1.6;
+      opacity: .75;
+    }
+
+    .btn-patreon {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      margin-top: 1.2rem;
+      padding: .65rem 1.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(168,85,247,.5);
+      background: linear-gradient(135deg, rgba(168,85,247,.18), rgba(147,51,234,.12));
+      color: #e2d9f3;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: .82rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      transition: var(--t);
+    }
+
+    .btn-patreon:hover {
+      border-color: rgba(168,85,247,.85);
+      background: linear-gradient(135deg, rgba(168,85,247,.3), rgba(147,51,234,.2));
+      box-shadow: 0 0 20px rgba(168,85,247,.25);
+    }
+
+    .btn-patreon svg { flex-shrink: 0; }
+
     /* ── Connect ── */
     #connect .section-inner { text-align: center; }
 
@@ -1266,6 +1380,12 @@
     }
 
     #cosmic-maze-launch {
+      width: 100%;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    #worm-game-launch {
       width: 100%;
       justify-content: center;
       margin-top: 1rem;
@@ -1657,6 +1777,7 @@
       <li><a href="#lyrics">Lyrics</a></li>
       <li><a href="#games" class="game-link">Games</a></li>
       <li><a href="#support">Support</a></li>
+      <li><a href="#vip">VIP</a></li>
       <li><a href="#connect">Connect</a></li>
       <li><button type="button" id="mood-ring-trigger" class="mood-ring-trigger" aria-label="Change mood"></button></li>
     </ul>
@@ -1904,7 +2025,7 @@
     <div class="section-inner">
       <span class="label reveal">Arcade Portal</span>
       <h2 class="section-title reveal" id="games-h">Cosmic Games Terminal</h2>
-      <p class="sub reveal">Pick your portal: race through the maze of stars or smash luminous constellations in retro arcade mode.</p>
+      <p class="sub reveal">Pick your portal: race through a living maze, smash luminous constellations, or grow a cosmic worm that unlocks songs as it feeds.</p>
 
       <div class="game-grid">
         <div class="game-shell game-card reveal">
@@ -1917,6 +2038,12 @@
           <h3>Arcade Brick Breaker</h3>
           <p>Destroy constellations of glowing bricks, climb through increasing levels, and trigger free power-ups. Optional tips support STARMILK, but every boost is playable at no cost.</p>
           <button class="btn" id="brick-breaker-launch">Launch Brick Breaker</button>
+        </div>
+
+        <div class="game-shell game-card reveal">
+          <h3>Cosmic Worm</h3>
+          <p>Guide a glowing cosmic worm through the void. Eat energy orbs to grow — as you get longer, special song orbs appear with radiant auras. Eat one to unlock and play the STARMILK track trapped inside.</p>
+          <button class="btn" id="worm-game-launch">Launch Cosmic Worm</button>
         </div>
       </div>
     </div>
@@ -2024,6 +2151,45 @@
   <div class="divider"></div>
 
   <!-- ═══ CONNECT ════════════════════════════════════════════════ -->
+  <!-- ═══ VIP / PATREON ═══════════════════════════════════════ -->
+  <section id="vip" data-mood-section="tender" aria-labelledby="vip-h">
+    <div class="section-inner">
+      <span class="label reveal">Inner Frequency</span>
+      <h2 class="section-title reveal" id="vip-h">VIP Supporter</h2>
+      <p class="sub reveal">You're not just a listener — you're part of what STARMILK is becoming.</p>
+
+      <div class="vip-card reveal">
+        <h3>Tier 1 — VIP Supporter</h3>
+        <p class="vip-price">Pay what you want — suggested $5/month</p>
+        <ul class="vip-perks">
+          <li>5-minute personal conversation with me (chat form) — ask anything</li>
+          <li>Early access to new tracks before they go public</li>
+          <li>Behind-the-scenes studio sessions &amp; work-in-progress updates</li>
+          <li>Exclusive voting power on upcoming projects</li>
+          <li>Ad-free content</li>
+        </ul>
+        <div class="vip-bonus">
+          ✦ Bonus — Every VIP Supporter gets a free month of Tier 2 when it launches, with surprise features inside.
+        </div>
+
+        <a class="btn-patreon" href="https://patreon.com/STARMILKLABZ" target="_blank" rel="noopener noreferrer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="14" cy="8" r="5" fill="#c084fc"/>
+            <rect x="3" y="3" width="3" height="18" rx="1.5" fill="#c084fc"/>
+          </svg>
+          Join on Patreon
+        </a>
+      </div>
+
+      <div class="vip-tier2 reveal">
+        <h4>Tier 2 — The Inner Orchard (Coming Soon)</h4>
+        <p>Something special is growing. Interactive experiences, unreleased archives, and things that haven't been dreamed up yet. Current VIP Supporters get their first month free.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
   <section id="connect" data-mood-section="tender" aria-labelledby="connect-h">
     <div class="section-inner">
       <span class="label reveal">Stay in the Signal</span>
@@ -2614,6 +2780,8 @@ void main(){
 <!-- ═══ STARMILK COSMIC QUEST ════════════════════════════════════════════ -->
 <script src="cosmic-game.js" defer></script>
 
+<!-- ═══ COSMIC WORM ═════════════════════════════════════════════════════ -->
+<script src="worm-game.js" defer></script>
 <script>
 document.getElementById('nav-hamburger')?.addEventListener('click', function() {
   const links = document.querySelector('.nav-links');

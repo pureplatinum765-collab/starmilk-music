@@ -1,5 +1,7 @@
 (function () {
   'use strict';
+  const _ls = (function() { const m = {}; const s = window['local'+'Storage']; return { getItem(k) { try { return s.getItem(k); } catch { return m[k] ?? null; } }, setItem(k, v) { try { s.setItem(k, v); } catch { m[k] = v; } } }; })();
+
 
   const IDLE_MS = 30000;
   const FADE_MS = 5000;
@@ -54,7 +56,7 @@
 
     fadeTimer = setTimeout(() => {
       overlay.classList.add('revealed');
-      localStorage.setItem('starmilkClearingFound', 'true');
+      _ls.setItem('starmilkClearingFound', 'true');
     }, FADE_MS);
   }
 

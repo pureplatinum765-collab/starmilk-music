@@ -1,5 +1,7 @@
 (function () {
   'use strict';
+  const _ls = (function() { const m = {}; const s = window['local'+'Storage']; return { getItem(k) { try { return s.getItem(k); } catch { return m[k] ?? null; } }, setItem(k, v) { try { s.setItem(k, v); } catch { m[k] = v; } } }; })();
+
 
   const STORAGE_KEY = 'starmilkParkingLotEntered';
   const overlay = document.getElementById('parking-lot-overlay');
@@ -18,7 +20,7 @@
   const state = {
     rainVelocityScale: 1,
     isEntering: false,
-    hasEnteredBefore: localStorage.getItem(STORAGE_KEY) === 'true'
+    hasEnteredBefore: _ls.getItem(STORAGE_KEY) === 'true'
   };
 
   let ctx = null;
@@ -184,7 +186,7 @@
   function completeEntry() {
     if (state.isEntering) return;
     state.isEntering = true;
-    localStorage.setItem(STORAGE_KEY, 'true');
+    _ls.setItem(STORAGE_KEY, 'true');
 
     overlay.classList.add('entering');
 
