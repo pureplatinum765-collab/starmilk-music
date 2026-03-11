@@ -4,8 +4,8 @@
   "description": "Born from the trembling. Raised by rivers. Electronic music direct to fans.",
   "start_url": "/starmilk-music/",
   "display": "standalone",
-  "background_color": "#0a0010",
-  "theme_color": "#0a0010",
+  "background_color": "#0b0e1a",
+  "theme_color": "#0b0e1a",
   "orientation": "any",
   "icons": [
     {
