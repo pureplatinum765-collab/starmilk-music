@@ -1,6 +1,9 @@
 (() => {
+  'use strict';
+
   const SC_PROFILE = 'https://soundcloud.com/star-milk-645735333';
   const EMBED_COLOR = '%23f59e0b';
+  const SC_API_URL = 'https://w.soundcloud.com/player/api.js';
 
   const poems = [
     'The river knows your name',
@@ -30,10 +33,38 @@
   let currentTrackIndex = 0;
   let hasOpened = false;
   let poemCooldown = false;
+  let scWidget = null;
+  let scAPILoaded = false;
+  let userHasInteracted = false;
+
+  // Track user interaction for autoplay policy compliance
+  const markInteracted = () => { userHasInteracted = true; };
+  document.addEventListener('click', markInteracted, { once: true });
+  document.addEventListener('touchstart', markInteracted, { once: true });
+  document.addEventListener('keydown', markInteracted, { once: true });
+
+  // ── Load SC Widget API once
+  const loadSCAPI = () => new Promise((resolve) => {
+    if (scAPILoaded && typeof SC !== 'undefined' && SC.Widget) {
+      resolve(true);
+      return;
+    }
+    const existing = document.querySelector(`script[src="${SC_API_URL}"]`);
+    if (existing) {
+      existing.addEventListener('load', () => { scAPILoaded = true; resolve(true); });
+      if (scAPILoaded) resolve(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = SC_API_URL;
+    script.onload = () => { scAPILoaded = true; resolve(true); };
+    script.onerror = () => resolve(false);
+    document.head.appendChild(script);
+  });
 
   // ── Embed URL builder
-  const embedUrl = (track) =>
-    `https://w.soundcloud.com/player/?url=${encodeURIComponent(track.url)}&color=${EMBED_COLOR}&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false`;
+  const embedUrl = (track, autoplay = false) =>
+    `https://w.soundcloud.com/player/?url=${encodeURIComponent(track.url)}&color=${EMBED_COLOR}&auto_play=${autoplay}&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false`;
 
   // ── Iframe management
   const ensureIframe = () => {
@@ -50,6 +81,28 @@
     return iframe;
   };
 
+  // ── SC Widget API integration for auto-advance
+  const bindWidgetEvents = async (iframe) => {
+    try {
+      await loadSCAPI();
+      if (typeof SC === 'undefined' || !SC.Widget) return;
+
+      scWidget = SC.Widget(iframe);
+
+      scWidget.bind(SC.Widget.Events.FINISH, () => {
+        // Auto-advance to next track when current one finishes
+        nextTrack(true);
+      });
+
+      scWidget.bind(SC.Widget.Events.ERROR, () => {
+        // Skip to next on error (e.g. region-blocked track)
+        setTimeout(() => nextTrack(true), 1500);
+      });
+    } catch (_) {
+      // SC API unavailable — graceful degradation, user can still click next
+    }
+  };
+
   // ── Track loading
   const loadTracks = async () => {
     try {
@@ -57,7 +110,7 @@
       if (res.ok) {
         allTracks = await res.json();
       }
-    } catch (e) {
+    } catch (_) {
       // fetch failed, use fallback
     }
     if (allTracks.length === 0) {
@@ -74,57 +127,57 @@
       trackNameEl.textContent = allTracks[0].name;
     }
 
-    // Try SoundCloud profile embed for new tracks
+    // Try to discover any new tracks from SC profile
     tryDiscoverNewTracks();
   };
 
   // ── Discover new tracks via SC profile embed
-  const tryDiscoverNewTracks = () => {
+  const tryDiscoverNewTracks = async () => {
     try {
-      const scScript = document.createElement('script');
-      scScript.src = 'https://w.soundcloud.com/player/api.js';
-      scScript.onload = () => {
-        const profileIframe = document.createElement('iframe');
-        profileIframe.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(SC_PROFILE)}&auto_play=false&show_playcount=false`;
-        profileIframe.style.cssText = 'position:absolute;width:0;height:0;opacity:0;pointer-events:none;';
-        document.body.appendChild(profileIframe);
+      const loaded = await loadSCAPI();
+      if (!loaded || typeof SC === 'undefined' || !SC.Widget) return;
 
-        if (typeof SC === 'undefined' || !SC.Widget) return;
-        const widget = SC.Widget(profileIframe);
-        widget.bind(SC.Widget.Events.READY, () => {
-          widget.getSounds((sounds) => {
-            if (!sounds || sounds.length === 0) return;
-            const existingUrls = new Set(allTracks.map(t => t.url));
-            const newTracks = sounds
-              .filter(s => s.permalink_url && !existingUrls.has(s.permalink_url))
-              .map(s => ({ name: s.title, url: s.permalink_url }));
-            if (newTracks.length > 0) {
-              allTracks = [...newTracks, ...allTracks];
-              filteredTracks = [...allTracks];
-              buildQueue();
-              updateCount();
-            }
-            // Clean up
-            profileIframe.remove();
-          });
+      const profileIframe = document.createElement('iframe');
+      profileIframe.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(SC_PROFILE)}&auto_play=false&show_playcount=false`;
+      profileIframe.style.cssText = 'position:absolute;width:0;height:0;opacity:0;pointer-events:none;';
+      document.body.appendChild(profileIframe);
+
+      const widget = SC.Widget(profileIframe);
+      widget.bind(SC.Widget.Events.READY, () => {
+        widget.getSounds((sounds) => {
+          if (!sounds || sounds.length === 0) { profileIframe.remove(); return; }
+          const existingUrls = new Set(allTracks.map(t => t.url));
+          const newTracks = sounds
+            .filter(s => s.permalink_url && !existingUrls.has(s.permalink_url))
+            .map(s => ({ name: s.title, url: s.permalink_url }));
+          if (newTracks.length > 0) {
+            allTracks = [...newTracks, ...allTracks];
+            filteredTracks = [...allTracks];
+            buildQueue();
+            updateCount();
+          }
+          profileIframe.remove();
         });
-      };
-      document.head.appendChild(scScript);
-    } catch (e) {
+      });
+    } catch (_) {
       // SC discovery failed silently, we have the JSON tracks
     }
   };
 
-  // ── Search/filter
+  // ── Search/filter with debounce
+  let searchTimeout = null;
   const handleSearch = () => {
-    const q = (searchInput?.value || '').toLowerCase().trim();
-    if (!q) {
-      filteredTracks = [...allTracks];
-    } else {
-      filteredTracks = allTracks.filter(t => t.name.toLowerCase().includes(q));
-    }
-    buildQueue();
-    updateCount();
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      const q = (searchInput?.value || '').toLowerCase().trim();
+      if (!q) {
+        filteredTracks = [...allTracks];
+      } else {
+        filteredTracks = allTracks.filter(t => t.name.toLowerCase().includes(q));
+      }
+      buildQueue();
+      updateCount();
+    }, 180);
   };
 
   const updateCount = () => {
@@ -136,10 +189,11 @@
     }
   };
 
-  // ── Queue building
+  // ── Queue building (virtualized for large lists)
   const buildQueue = () => {
     if (!queueEl) return;
     queueEl.innerHTML = '';
+    const fragment = document.createDocumentFragment();
     filteredTracks.forEach((track) => {
       const item = document.createElement('button');
       item.type = 'button';
@@ -150,10 +204,11 @@
       item.setAttribute('aria-label', `Play ${track.name}`);
       item.addEventListener('click', () => {
         currentTrackIndex = allTracks.indexOf(track);
-        swapTrack();
+        swapTrack(true);
       });
-      queueEl.appendChild(item);
+      fragment.appendChild(item);
     });
+    queueEl.appendChild(fragment);
   };
 
   const updateQueueActive = () => {
@@ -167,34 +222,44 @@
     if (activeItem) activeItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   };
 
-  // ── Track swapping
-  const swapTrack = () => {
+  // ── Track swapping (core logic)
+  const swapTrack = (shouldAutoplay = false) => {
     if (allTracks.length === 0) return;
     const track = allTracks[currentTrackIndex];
     trackNameEl.textContent = track.name;
+
     const iframe = ensureIframe();
-    iframe.src = embedUrl(track);
+    // Only autoplay if user has interacted (browser policy compliance)
+    const autoplay = shouldAutoplay && userHasInteracted;
+    iframe.src = embedUrl(track, autoplay);
+
+    // Re-bind widget events after src change
+    bindWidgetEvents(iframe);
+
     updateQueueActive();
     maybeShowPoem();
   };
 
   // ── Navigation
-  const nextTrack = () => {
+  const nextTrack = (autoplay = false) => {
     if (allTracks.length === 0) return;
     currentTrackIndex = (currentTrackIndex + 1) % allTracks.length;
-    swapTrack();
+    swapTrack(autoplay);
   };
 
   const prevTrack = () => {
     if (allTracks.length === 0) return;
     currentTrackIndex = (currentTrackIndex - 1 + allTracks.length) % allTracks.length;
-    swapTrack();
+    swapTrack(true);
   };
 
   const shufflePlay = () => {
     if (allTracks.length === 0) return;
-    currentTrackIndex = Math.floor(Math.random() * allTracks.length);
-    swapTrack();
+    let newIdx;
+    do { newIdx = Math.floor(Math.random() * allTracks.length); }
+    while (newIdx === currentTrackIndex && allTracks.length > 1);
+    currentTrackIndex = newIdx;
+    swapTrack(true);
   };
 
   // ── Poems
@@ -216,14 +281,24 @@
     if (!collapsed && !hasOpened) {
       hasOpened = true;
       if (allTracks.length > 0) {
-        ensureIframe().src = embedUrl(allTracks[0]);
+        swapTrack(userHasInteracted);
       }
+    }
+  });
+
+  // ── Keyboard navigation for radio controls
+  floating.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !floating.classList.contains('collapsed')) {
+      floating.classList.add('collapsed');
+      badge.setAttribute('aria-expanded', 'false');
+      badge.textContent = 'STARMILK RADIO ✦';
+      badge.focus();
     }
   });
 
   // ── Event listeners
   if (prevBtn) prevBtn.addEventListener('click', prevTrack);
-  if (nextBtn) nextBtn.addEventListener('click', nextTrack);
+  if (nextBtn) nextBtn.addEventListener('click', () => nextTrack(true));
   if (shuffleBtn) shuffleBtn.addEventListener('click', shufflePlay);
   if (searchInput) searchInput.addEventListener('input', handleSearch);
 

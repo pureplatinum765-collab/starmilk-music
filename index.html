@@ -23,6 +23,58 @@
   <meta name="twitter:description" content="Where quantum physics meets childhood trauma and decides to dance." />
   <meta name="twitter:image" content="https://pureplatinum765-collab.github.io/starmilk-music/star-wizard.jpg" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23c9944a'/%3E%3Cstop offset='50%25' stop-color='%236b5b8a'/%3E%3Cstop offset='100%25' stop-color='%234a5578'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpolygon points='50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35' fill='url(%23g)'/%3E%3C/svg%3E" />
+
+  <!-- JSON-LD Structured Data for SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "MusicGroup",
+    "name": "STARMILK",
+    "url": "https://pureplatinum765-collab.github.io/starmilk-music/",
+    "image": "https://pureplatinum765-collab.github.io/starmilk-music/star-wizard.jpg",
+    "description": "Born from the trembling. Raised by rivers. Cosmic electronic music direct to fans.",
+    "genre": ["Electronic", "Ambient", "Experimental"],
+    "sameAs": [
+      "https://soundcloud.com/star-milk-645735333",
+      "https://www.youtube.com/@STARMILK-s5u",
+      "https://open.spotify.com/artist/6ZJBd6IllHctGDa3GhbQnK",
+      "https://music.apple.com/us/artist/starmilk/1849551724",
+      "https://www.instagram.com/starmilk_labz",
+      "https://www.tiktok.com/@starmilk1",
+      "https://patreon.com/STARMILKLABZ"
+    ],
+    "creator": {
+      "@type": "SoftwareApplication",
+      "name": "Perplexity Computer",
+      "url": "https://www.perplexity.ai/computer"
+    }
+  }
+  </script>
+
+  <style>
+    /* Skip-to-content link (accessibility) */
+    .skip-to-content {
+      position: fixed;
+      top: -100%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10000;
+      padding: .75rem 1.5rem;
+      background: var(--gold);
+      color: #0b0e1a;
+      font-weight: 700;
+      font-size: .85rem;
+      border-radius: 0 0 8px 8px;
+      text-decoration: none;
+      transition: top .2s ease;
+    }
+    .skip-to-content:focus {
+      top: 0;
+      outline: 2px solid #fff;
+      outline-offset: 2px;
+    }
+  </style>
+
   <script src="parking-lot.js" defer></script>
 
   <style>
@@ -474,6 +526,12 @@
     }
 
     /* ── Shared section ── */
+    /* content-visibility for offscreen rendering perf */
+    section:not(#hero) {
+      content-visibility: auto;
+      contain-intrinsic-size: auto 600px;
+    }
+
     .section-inner {
       max-width: 1100px;
       margin: 0 auto;
@@ -1611,8 +1669,8 @@
       background: rgba(255,255,255,.03);
       color: rgba(220,210,240,.6);
       border-radius: 50%;
-      width: 32px;
-      height: 32px;
+      width: 44px;
+      height: 44px;
       font-size: .9rem;
       cursor: pointer;
       transition: background .3s, color .3s, border-color .3s;
@@ -1847,9 +1905,70 @@
       margin-top: .5rem;
       letter-spacing: .04em;
     }
+
+    /* ── YouTube Lite Facade ── */
+    .yt-facade-btn {
+      position: relative;
+      display: block;
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: #000;
+      cursor: pointer;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .yt-facade-btn img {
+      transition: opacity .3s ease;
+    }
+    .yt-facade-btn:hover img { opacity: .85; }
+    .yt-play-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 68px;
+      height: 48px;
+      opacity: .85;
+      transition: opacity .2s ease, transform .2s ease;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,.5));
+    }
+    .yt-facade-btn:hover .yt-play-icon { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+
+    /* ── Focus-visible improvements ── */
+    :focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+    }
+    button:focus:not(:focus-visible),
+    a:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    /* ── Active states for touch feedback ── */
+    .card:active { transform: translateY(-2px) scale(1.005); }
+    .btn:active, .btn-patreon:active, .soc-btn:active { transform: scale(.97); }
+    .radio-btn-sm:active { transform: scale(.92); }
+    .radio-queue-item:active { background: rgba(201,148,74,.12); }
+
+    /* ── Smooth transitions for mood changes ── */
+    body { transition: background 1.2s ease; }
+    nav { transition: background var(--t); }
+
   </style>
 </head>
 <body>
+
+<!-- Skip to content for accessibility -->
+<a href="#stream" class="skip-to-content">Skip to content</a>
+
+<noscript>
+  <div style="padding:2rem;text-align:center;background:#121827;color:#d5cfc2;font-family:sans-serif">
+    <h1>STARMILK</h1>
+    <p>This site requires JavaScript for the full experience. Please enable JavaScript or visit
+    <a href="https://soundcloud.com/star-milk-645735333" style="color:#c9944a">STARMILK on SoundCloud</a>.</p>
+  </div>
+</noscript>
 
 <div id="parking-lot-overlay" role="dialog" aria-modal="true" aria-label="Entry experience">
   <img id="parking-lot-wizard" class="parking-lot-wizard" src="star-wizard.jpg" alt="" aria-hidden="true" />
@@ -1868,7 +1987,7 @@
 <canvas id="starfield" aria-hidden="true"></canvas>
 <!-- 2D particle overlay (stars + gold particles) — created in JS if WebGL available -->
 
-<div class="wrap">
+<div class="wrap" role="main">
 
   <!-- Nav -->
   <nav id="nav" aria-label="Main navigation">
@@ -1981,16 +2100,11 @@
       <h2 class="section-title reveal" id="inside-out-h">Inside Out</h2>
       <p class="video-sub reveal">A STARMILK Film</p>
 
-      <div class="video-showcase reveal" style="margin-top:2rem">
-        <iframe
-          width="100%"
-          style="aspect-ratio:16/9"
-          src="https://www.youtube.com/embed/Xu6kcAi5-9o"
-          title="STARMILK — Inside Out"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen>
-        </iframe>
+      <div class="video-showcase reveal" style="margin-top:2rem" id="yt-facade">
+        <button type="button" class="yt-facade-btn" aria-label="Play STARMILK — Inside Out video" data-yt-id="Xu6kcAi5-9o">
+          <img src="https://i.ytimg.com/vi/Xu6kcAi5-9o/hqdefault.jpg" alt="STARMILK — Inside Out video thumbnail" loading="lazy" decoding="async" width="800" height="450" style="width:100%;height:auto;display:block;border-radius:var(--radius);" />
+          <svg class="yt-play-icon" viewBox="0 0 68 48" aria-hidden="true"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55C3.97 2.33 2.26 4.81 1.48 7.74.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24 27 14v20" fill="#fff"/></svg>
+        </button>
       </div>
     </div>
   </section>
@@ -2278,6 +2392,7 @@
           title="STARMILK on SoundCloud"
           src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/star-milk-645735333&color=%239333ea&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=true"
           allow="autoplay"
+          loading="lazy"
           seamless>
         </iframe>
         <a class="btn" href="https://soundcloud.com/star-milk-645735333" target="_blank" rel="noopener noreferrer">Open on SoundCloud</a>
@@ -2384,6 +2499,9 @@
     <div class="footer-name">STARMILK</div>
     <p class="footer-sub">Electronic Music &nbsp;&bull;&nbsp; Direct to Fans &nbsp;&bull;&nbsp; No Middlemen</p>
     <p class="footer-copy">&copy; 2026 STARMILK. All rights reserved.</p>
+    <p class="footer-copy" style="margin-top:.5rem;opacity:.35">
+      <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none">Created with Perplexity Computer</a>
+    </p>
   </footer>
 
 </div><!-- /wrap -->
@@ -2400,7 +2518,7 @@
       <button type="button" id="radio-next" aria-label="Next track" class="radio-btn-sm">⏭</button>
       <button type="button" id="radio-shuffle" aria-label="Shuffle" class="radio-btn-sm">🔀</button>
     </div>
-    <input type="search" id="radio-search" class="radio-search" placeholder="Search tracks…">
+    <input type="search" id="radio-search" class="radio-search" placeholder="Search tracks…" aria-label="Search tracks">
     <p id="radio-count" class="radio-count"></p>
     <div id="radio-queue" class="radio-queue"></div>
   </div>
@@ -2934,6 +3052,38 @@ document.querySelectorAll('.nav-links a, .nav-links button').forEach(el => {
     if (hamburger) { hamburger.textContent = '☰'; hamburger.setAttribute('aria-label', 'Open menu'); }
   });
 });
+</script>
+
+
+<script>
+// YouTube Lite Facade — load iframe only on click
+document.querySelector('.yt-facade-btn')?.addEventListener('click', function() {
+  const ytId = this.dataset.ytId;
+  if (!ytId) return;
+  const showcase = this.parentElement;
+  showcase.innerHTML = '<iframe width="100%" style="aspect-ratio:16/9" src="https://www.youtube.com/embed/' + ytId + '?autoplay=1" title="STARMILK — Inside Out" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+});
+
+// Lazy load the vision video — only play when in viewport
+(function() {
+  const visionVideo = document.querySelector('.vision-player');
+  if (!visionVideo) return;
+  // Remove autoplay attr, we'll control it via IntersectionObserver
+  visionVideo.removeAttribute('autoplay');
+  visionVideo.pause();
+  
+  const videoObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.play().catch(() => {});
+      } else {
+        entry.target.pause();
+      }
+    });
+  }, { threshold: 0.25 });
+  
+  videoObserver.observe(visionVideo);
+})();
 </script>
 
 <script>

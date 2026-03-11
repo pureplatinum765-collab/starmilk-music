@@ -6,6 +6,28 @@
   <title>STARMILK | Visualizer</title>
   <meta name="description" content="Ambient visual listening experience — loop STARMILK art while the music plays." />
   <meta name="theme-color" content="#0b0e1a" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23c9944a'/%3E%3Cstop offset='50%25' stop-color='%236b5b8a'/%3E%3Cstop offset='100%25' stop-color='%234a5578'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpolygon points='50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35' fill='url(%23g)'/%3E%3C/svg%3E" />
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "STARMILK Visualizer",
+    "description": "Ambient visual listening experience — loop STARMILK art while the music plays.",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "STARMILK",
+      "url": "https://pureplatinum765-collab.github.io/starmilk-music/"
+    },
+    "creator": {
+      "@type": "SoftwareApplication",
+      "name": "Perplexity Computer",
+      "url": "https://www.perplexity.ai/computer"
+    }
+  }
+  </script>
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -138,6 +160,8 @@
       color: var(--gold-light);
     }
 
+    .viz-toggle:active { transform: scale(.96); }
+
     .viz-controls {
       display: flex;
       justify-content: center;
@@ -163,6 +187,7 @@
     }
 
     .viz-btn:hover { border-color: var(--gold); color: var(--gold-light); }
+    .viz-btn:active { transform: scale(.96); }
 
     .viz-back {
       position: fixed;
@@ -181,6 +206,9 @@
       transition: all .3s ease;
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
     }
     .viz-back:hover { color: var(--gold-light); border-color: var(--gold); }
 
@@ -239,6 +267,16 @@
       color: var(--muted);
     }
 
+    /* ── Focus-visible improvements ── */
+    :focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+    }
+    button:focus:not(:focus-visible),
+    a:focus:not(:focus-visible) {
+      outline: none;
+    }
+
     @media (max-width: 640px) {
       .viz-ui { padding: .8rem .8rem 1rem; gap: .6rem; }
       .viz-toggle { font-size: .62rem; padding: .4rem .7rem; min-height: 38px; }
@@ -248,49 +286,56 @@
       .viz-title { font-size: .58rem; }
       .viz-player iframe { height: 90px; }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
   </style>
 </head>
 <body>
 
   <!-- Video visuals -->
-  <video id="viz-vision" class="viz-video active" autoplay loop muted playsinline>
+  <video id="viz-vision" class="viz-video active" loop muted playsinline>
     <source src="starmilk-vision.mp4" type="video/mp4" />
   </video>
 
   <!-- Image visual (star wizard as static option) -->
-  <img id="viz-wizard" class="viz-image" src="star-wizard.jpg" alt="" />
+  <img id="viz-wizard" class="viz-image" src="star-wizard.jpg" alt="STARMILK Star Wizard ambient visual" loading="lazy" decoding="async" />
 
   <!-- Dark void (no visual, just particles) -->
-  <div id="viz-void" class="viz-image" style="background:var(--bg);"></div>
+  <div id="viz-void" class="viz-image" style="background:var(--bg);" role="presentation"></div>
 
-  <div class="vignette"></div>
-  <canvas id="viz-particles"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+  <canvas id="viz-particles" aria-hidden="true"></canvas>
 
-  <a href="index.html" class="viz-back">&larr; Back</a>
-  <span class="viz-logo">STARMILK</span>
+  <a href="index.html" class="viz-back" aria-label="Back to main site">&larr; Back</a>
+  <span class="viz-logo" aria-hidden="true">STARMILK</span>
 
-  <div class="viz-hint" id="viz-hint">
+  <div class="viz-hint" id="viz-hint" aria-hidden="true">
     <p>tap anywhere to toggle controls</p>
   </div>
 
-  <div class="viz-ui" id="viz-ui">
+  <div class="viz-ui" id="viz-ui" role="region" aria-label="Visualizer controls">
     <p class="viz-title">Visual Listening Room</p>
 
     <!-- Visual toggles -->
-    <div class="viz-toggles">
-      <button class="viz-toggle active" data-visual="vision">Chalice Dance</button>
-      <button class="viz-toggle" data-visual="wizard">Star Wizard</button>
-      <button class="viz-toggle" data-visual="void">Deep Void</button>
+    <div class="viz-toggles" role="radiogroup" aria-label="Visual selection">
+      <button class="viz-toggle active" data-visual="vision" role="radio" aria-checked="true">Chalice Dance</button>
+      <button class="viz-toggle" data-visual="wizard" role="radio" aria-checked="false">Star Wizard</button>
+      <button class="viz-toggle" data-visual="void" role="radio" aria-checked="false">Deep Void</button>
     </div>
 
     <!-- Track controls -->
-    <p class="viz-track" id="viz-track-name">Loading...</p>
+    <p class="viz-track" id="viz-track-name" aria-live="polite">Loading...</p>
 
-    <div class="viz-controls">
-      <button class="viz-btn" id="viz-prev">⏮ Prev</button>
-      <button class="viz-btn" id="viz-play">▶ Play</button>
-      <button class="viz-btn" id="viz-next">Next ⏭</button>
-      <button class="viz-btn" id="viz-shuffle">🔀 Shuffle</button>
+    <div class="viz-controls" role="toolbar" aria-label="Playback controls">
+      <button class="viz-btn" id="viz-prev" aria-label="Previous track">&#x23EE; Prev</button>
+      <button class="viz-btn" id="viz-play" aria-label="Play">&#x25B6; Play</button>
+      <button class="viz-btn" id="viz-next" aria-label="Next track">Next &#x23ED;</button>
+      <button class="viz-btn" id="viz-shuffle" aria-label="Shuffle tracks">&#x1F500; Shuffle</button>
     </div>
 
     <!-- SoundCloud embed -->
@@ -303,6 +348,23 @@
   (function() {
     'use strict';
 
+    const SC_API_URL = 'https://w.soundcloud.com/player/api.js';
+    const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let scAPILoaded = false;
+    let scWidget = null;
+
+    // ── Load SC Widget API
+    const loadSCAPI = () => new Promise((resolve) => {
+      if (scAPILoaded && typeof SC !== 'undefined' && SC.Widget) {
+        resolve(true); return;
+      }
+      const script = document.createElement('script');
+      script.src = SC_API_URL;
+      script.onload = () => { scAPILoaded = true; resolve(true); };
+      script.onerror = () => resolve(false);
+      document.head.appendChild(script);
+    });
+
     /* ── Visual Toggling ── */
     const visuals = {
       vision: document.getElementById('viz-vision'),
@@ -312,6 +374,9 @@
 
     let currentVisual = 'vision';
 
+    // Start playing the initial video
+    visuals.vision.play().catch(() => {});
+
     document.querySelectorAll('.viz-toggle').forEach(btn => {
       btn.addEventListener('click', () => {
         const target = btn.dataset.visual;
@@ -319,11 +384,15 @@
 
         // Deactivate all
         Object.values(visuals).forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.viz-toggle').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.viz-toggle').forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-checked', 'false');
+        });
 
         // Activate selected
         visuals[target].classList.add('active');
         btn.classList.add('active');
+        btn.setAttribute('aria-checked', 'true');
         currentVisual = target;
 
         // Pause/play videos as needed
@@ -363,9 +432,23 @@
       }
     });
 
+    // Keyboard: Escape to toggle UI
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (uiVisible) {
+          ui.classList.add('hidden');
+          uiVisible = false;
+        } else {
+          ui.classList.remove('hidden');
+          uiVisible = true;
+          scheduleHide();
+        }
+      }
+    });
+
     scheduleHide();
 
-    /* ── Music Player (SoundCloud) ── */
+    /* ── Music Player (SoundCloud) with SC Widget API ── */
     let tracks = [];
     let currentIndex = 0;
     let isPlaying = false;
@@ -390,11 +473,25 @@
         trackName.textContent = 'Could not load tracks';
       });
 
+    async function bindWidgetAutoAdvance(iframe) {
+      try {
+        await loadSCAPI();
+        if (typeof SC === 'undefined' || !SC.Widget) return;
+        scWidget = SC.Widget(iframe);
+        scWidget.bind(SC.Widget.Events.FINISH, () => {
+          loadTrack(currentIndex + 1);
+        });
+        scWidget.bind(SC.Widget.Events.ERROR, () => {
+          setTimeout(() => loadTrack(currentIndex + 1), 1500);
+        });
+      } catch (_) {}
+    }
+
     function loadTrack(index) {
       if (!tracks.length) return;
       currentIndex = ((index % tracks.length) + tracks.length) % tracks.length;
       const track = tracks[currentIndex];
-      trackName.textContent = track.title || 'Unknown Track';
+      trackName.textContent = track.name || track.title || 'Unknown Track';
 
       // Build SoundCloud embed
       const url = track.url || track.permalink_url;
@@ -404,8 +501,12 @@
           scrolling="no"
           frameborder="no"
           allow="autoplay"
+          title="Now playing: ${(track.name || track.title || '').replace(/"/g, '&quot;')}"
           src="https://w.soundcloud.com/player/?url=${encoded}&color=%23c9944a&auto_play=${isPlaying}&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
         ></iframe>`;
+
+        const iframe = embedShell.querySelector('iframe');
+        if (iframe) bindWidgetAutoAdvance(iframe);
       }
     }
 
@@ -420,7 +521,8 @@
     });
     playBtn.addEventListener('click', () => {
       isPlaying = !isPlaying;
-      playBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+      playBtn.textContent = isPlaying ? '\u23F8 Pause' : '\u25B6 Play';
+      playBtn.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
       loadTrack(currentIndex);
     });
 
@@ -451,25 +553,37 @@
     buildParticles();
     window.addEventListener('resize', buildParticles);
 
-    function drawParticles(ts) {
-      ctx.clearRect(0, 0, W, H);
-      particles.forEach(p => {
-        p.x += p.dx;
-        p.y += p.dy;
-        if (p.x < -2) p.x = W + 2;
-        if (p.x > W + 2) p.x = -2;
-        if (p.y < -2) p.y = H + 2;
-        if (p.y > H + 2) p.y = -2;
+    if (REDUCED) {
+      // Draw once, static
+      (function drawOnce() {
+        ctx.clearRect(0, 0, W, H);
+        particles.forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, TAU);
+          ctx.fillStyle = `rgba(213,207,194,${p.a * 0.6})`;
+          ctx.fill();
+        });
+      })();
+    } else {
+      (function drawParticles(ts) {
+        ctx.clearRect(0, 0, W, H);
+        particles.forEach(p => {
+          p.x += p.dx;
+          p.y += p.dy;
+          if (p.x < -2) p.x = W + 2;
+          if (p.x > W + 2) p.x = -2;
+          if (p.y < -2) p.y = H + 2;
+          if (p.y > H + 2) p.y = -2;
 
-        const tw = p.a * (0.5 + 0.5 * Math.sin(ts * p.spd + p.ph));
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, TAU);
-        ctx.fillStyle = `rgba(213,207,194,${tw})`;
-        ctx.fill();
-      });
-      requestAnimationFrame(drawParticles);
+          const tw = p.a * (0.5 + 0.5 * Math.sin(ts * p.spd + p.ph));
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, TAU);
+          ctx.fillStyle = `rgba(213,207,194,${tw})`;
+          ctx.fill();
+        });
+        requestAnimationFrame(drawParticles);
+      })(0);
     }
-    requestAnimationFrame(drawParticles);
 
   })();
   </script>
