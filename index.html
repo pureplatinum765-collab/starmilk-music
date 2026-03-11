@@ -822,6 +822,26 @@
       box-shadow: var(--gold-glow), 0 10px 45px rgba(201,148,74,.4);
     }
 
+    /* ── Mobile hero polish ── */
+    @media (max-width: 480px) {
+      .hero-title {
+        font-size: clamp(3.2rem, 14vw, 5rem);
+        letter-spacing: .06em;
+      }
+      .hero-tagline {
+        font-size: .88rem;
+        padding: 0 .5rem;
+      }
+      .hero-cta-group {
+        flex-direction: column;
+        gap: .8rem;
+      }
+      .hero-cta-group .btn {
+        font-size: .82rem;
+        padding: .85rem 1.8rem;
+      }
+    }
+
     /* ── Gold dripping stars in hero ── */
     .hero-gstars {
       position: absolute;
@@ -1466,6 +1486,9 @@
       background: radial-gradient(circle at 20% 20%, rgba(74,85,120,.18), transparent 52%),
                   radial-gradient(circle at 80% 65%, rgba(74,124,111,.13), transparent 48%);
     }
+    #radio .section-inner {
+      padding: 3.5rem 1.5rem;
+    }
 
     .radio-section-copy {
       max-width: 760px;
@@ -1913,6 +1936,7 @@
       <span class="label reveal">Continuous Transmission</span>
       <h2 class="section-title reveal" id="radio-h">STARMILK Radio</h2>
       <p class="radio-section-copy reveal">Tune into a single infinite stream: songs, ambient textures, and spoken-word messages from the river between frequencies.</p>
+      <p class="radio-section-copy reveal" style="margin-top:.8rem;font-size:.88rem;opacity:.7">Open STARMILK Radio in the corner to begin listening. 302 tracks. Infinite shuffle. No ads.</p>
     </div>
   </section>
 
