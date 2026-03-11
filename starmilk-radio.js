@@ -1,41 +1,41 @@
 (() => {
-  const tracks = [
-    { name: 'TRIBE STAR MILK', url: 'https://soundcloud.com/star-milk-645735333/tribe-star-milk' },
-    { name: 'HONEY IN THE WOUND', url: 'https://soundcloud.com/star-milk-645735333/honey-in-the-wound' },
-    { name: 'Shifting', url: 'https://soundcloud.com/star-milk-645735333/shifting' },
-    { name: 'Rivers Pull', url: 'https://soundcloud.com/star-milk-645735333/rivers-pull-new-version' },
-    { name: 'VELVET HONEY THUNDER', url: 'https://soundcloud.com/star-milk-645735333/velvet-honey-thunder' },
-    { name: 'COSMIC FLOWS', url: 'https://soundcloud.com/star-milk-645735333/cosmic-flows' }
-  ];
+  const SC_PROFILE = 'https://soundcloud.com/star-milk-645735333';
+  const EMBED_COLOR = '%23f59e0b';
 
   const poems = [
     'The river knows your name',
     'What they called breaking was the universe teaching you how to shine',
-    'Born from the trembling, raised by rivers'
+    'Born from the trembling, raised by rivers',
+    'Honey in the wound becomes the medicine',
+    'The orchard remembers what you planted in the dark'
   ];
 
-  const floating   = document.getElementById('radio-floating');
-  const badge      = document.getElementById('radio-badge');
-  const prevBtn    = document.getElementById('radio-prev');
-  const nextBtn    = document.getElementById('radio-next');
+  // DOM refs
+  const floating = document.getElementById('radio-floating');
+  const badge = document.getElementById('radio-badge');
+  const prevBtn = document.getElementById('radio-prev');
+  const nextBtn = document.getElementById('radio-next');
+  const shuffleBtn = document.getElementById('radio-shuffle');
   const trackNameEl = document.getElementById('radio-track-name');
-  const poemEl     = document.getElementById('radio-poem');
-  const canvas     = document.getElementById('radio-visualizer');
-  const queueEl    = document.getElementById('radio-queue');
-  const shell      = document.getElementById('radio-embed-shell');
-  const ctx        = canvas?.getContext('2d');
+  const poemEl = document.getElementById('radio-poem');
+  const queueEl = document.getElementById('radio-queue');
+  const shell = document.getElementById('radio-embed-shell');
+  const searchInput = document.getElementById('radio-search');
+  const countEl = document.getElementById('radio-count');
 
-  if (!floating || !badge || !trackNameEl || !canvas || !ctx || !shell) return;
+  if (!floating || !badge || !trackNameEl || !shell) return;
 
+  let allTracks = [];
+  let filteredTracks = [];
   let currentTrackIndex = 0;
+  let hasOpened = false;
   let poemCooldown = false;
-  let visualizerRaf = 0;
 
-  // ── Embed URL builder ──────────────────────────────────────────────
+  // ── Embed URL builder
   const embedUrl = (track) =>
-    `https://w.soundcloud.com/player/?url=${encodeURIComponent(track.url)}&color=%239333ea&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false`;
+    `https://w.soundcloud.com/player/?url=${encodeURIComponent(track.url)}&color=${EMBED_COLOR}&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false`;
 
-  // ── Create or update the visible iframe ───────────────────────────
+  // ── Iframe management
   const ensureIframe = () => {
     let iframe = shell.querySelector('iframe');
     if (!iframe) {
@@ -50,10 +50,127 @@
     return iframe;
   };
 
-  // ── Swap track ────────────────────────────────────────────────────
-  const swapTrack = (index) => {
-    currentTrackIndex = index;
-    const track = tracks[currentTrackIndex];
+  // ── Track loading
+  const loadTracks = async () => {
+    try {
+      const res = await fetch('starmilk-tracks.json');
+      if (res.ok) {
+        allTracks = await res.json();
+      }
+    } catch (e) {
+      // fetch failed, use fallback
+    }
+    if (allTracks.length === 0) {
+      allTracks = [
+        { name: 'TRIBE STAR MILK', url: 'https://soundcloud.com/star-milk-645735333/tribe-star-milk' },
+        { name: 'HONEY IN THE WOUND', url: 'https://soundcloud.com/star-milk-645735333/honey-in-the-wound' },
+        { name: 'COSMIC FLOWS', url: 'https://soundcloud.com/star-milk-645735333/cosmic-flows' }
+      ];
+    }
+    filteredTracks = [...allTracks];
+    buildQueue();
+    updateCount();
+    if (allTracks.length > 0) {
+      trackNameEl.textContent = allTracks[0].name;
+    }
+
+    // Try SoundCloud profile embed for new tracks
+    tryDiscoverNewTracks();
+  };
+
+  // ── Discover new tracks via SC profile embed
+  const tryDiscoverNewTracks = () => {
+    try {
+      const scScript = document.createElement('script');
+      scScript.src = 'https://w.soundcloud.com/player/api.js';
+      scScript.onload = () => {
+        const profileIframe = document.createElement('iframe');
+        profileIframe.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(SC_PROFILE)}&auto_play=false&show_playcount=false`;
+        profileIframe.style.cssText = 'position:absolute;width:0;height:0;opacity:0;pointer-events:none;';
+        document.body.appendChild(profileIframe);
+
+        if (typeof SC === 'undefined' || !SC.Widget) return;
+        const widget = SC.Widget(profileIframe);
+        widget.bind(SC.Widget.Events.READY, () => {
+          widget.getSounds((sounds) => {
+            if (!sounds || sounds.length === 0) return;
+            const existingUrls = new Set(allTracks.map(t => t.url));
+            const newTracks = sounds
+              .filter(s => s.permalink_url && !existingUrls.has(s.permalink_url))
+              .map(s => ({ name: s.title, url: s.permalink_url }));
+            if (newTracks.length > 0) {
+              allTracks = [...newTracks, ...allTracks];
+              filteredTracks = [...allTracks];
+              buildQueue();
+              updateCount();
+            }
+            // Clean up
+            profileIframe.remove();
+          });
+        });
+      };
+      document.head.appendChild(scScript);
+    } catch (e) {
+      // SC discovery failed silently, we have the JSON tracks
+    }
+  };
+
+  // ── Search/filter
+  const handleSearch = () => {
+    const q = (searchInput?.value || '').toLowerCase().trim();
+    if (!q) {
+      filteredTracks = [...allTracks];
+    } else {
+      filteredTracks = allTracks.filter(t => t.name.toLowerCase().includes(q));
+    }
+    buildQueue();
+    updateCount();
+  };
+
+  const updateCount = () => {
+    if (!countEl) return;
+    if (filteredTracks.length === allTracks.length) {
+      countEl.textContent = `${allTracks.length} tracks`;
+    } else {
+      countEl.textContent = `${filteredTracks.length} of ${allTracks.length} tracks`;
+    }
+  };
+
+  // ── Queue building
+  const buildQueue = () => {
+    if (!queueEl) return;
+    queueEl.innerHTML = '';
+    filteredTracks.forEach((track) => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'radio-queue-item';
+      const globalIdx = allTracks.indexOf(track);
+      if (globalIdx === currentTrackIndex) item.classList.add('active');
+      item.textContent = track.name;
+      item.setAttribute('aria-label', `Play ${track.name}`);
+      item.addEventListener('click', () => {
+        currentTrackIndex = allTracks.indexOf(track);
+        swapTrack();
+      });
+      queueEl.appendChild(item);
+    });
+  };
+
+  const updateQueueActive = () => {
+    if (!queueEl) return;
+    const currentTrack = allTracks[currentTrackIndex];
+    queueEl.querySelectorAll('.radio-queue-item').forEach((item) => {
+      const isActive = item.textContent === currentTrack?.name;
+      item.classList.toggle('active', isActive);
+    });
+    const activeItem = queueEl.querySelector('.radio-queue-item.active');
+    if (activeItem) activeItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  };
+
+  // ── Track swapping
+  const swapTrack = () => {
+    if (allTracks.length === 0) return;
+    const track = allTracks[currentTrackIndex];
     trackNameEl.textContent = track.name;
     const iframe = ensureIframe();
     iframe.src = embedUrl(track);
@@ -61,119 +178,55 @@
     maybeShowPoem();
   };
 
-  // ── Queue ─────────────────────────────────────────────────────────
-  const buildQueue = () => {
-    if (!queueEl) return;
-    queueEl.innerHTML = '';
-    tracks.forEach((track, idx) => {
-      const item = document.createElement('button');
-      item.type = 'button';
-      item.className = 'radio-queue-item' + (idx === currentTrackIndex ? ' active' : '');
-      item.textContent = track.name;
-      item.setAttribute('aria-label', `Play ${track.name}`);
-      item.addEventListener('click', () => swapTrack(idx));
-      queueEl.appendChild(item);
-    });
+  // ── Navigation
+  const nextTrack = () => {
+    if (allTracks.length === 0) return;
+    currentTrackIndex = (currentTrackIndex + 1) % allTracks.length;
+    swapTrack();
   };
 
-  const updateQueueActive = () => {
-    if (!queueEl) return;
-    queueEl.querySelectorAll('.radio-queue-item').forEach((item, idx) => {
-      item.classList.toggle('active', idx === currentTrackIndex);
-    });
-    const activeItem = queueEl.querySelector('.radio-queue-item.active');
-    if (activeItem) activeItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  const prevTrack = () => {
+    if (allTracks.length === 0) return;
+    currentTrackIndex = (currentTrackIndex - 1 + allTracks.length) % allTracks.length;
+    swapTrack();
   };
 
-  // ── Prev / Next ───────────────────────────────────────────────────
-  const nextTrack = () => swapTrack((currentTrackIndex + 1) % tracks.length);
-  const prevTrack = () => swapTrack((currentTrackIndex - 1 + tracks.length) % tracks.length);
+  const shufflePlay = () => {
+    if (allTracks.length === 0) return;
+    currentTrackIndex = Math.floor(Math.random() * allTracks.length);
+    swapTrack();
+  };
 
-  // ── Poem display ─────────────────────────────────────────────────
+  // ── Poems
   const maybeShowPoem = () => {
-    if (poemCooldown || Math.random() < 0.5) return;
+    if (!poemEl || poemCooldown || Math.random() < 0.6) return;
     poemCooldown = true;
     poemEl.textContent = poems[Math.floor(Math.random() * poems.length)];
     poemEl.classList.add('visible');
     setTimeout(() => poemEl.classList.remove('visible'), 6000);
-    setTimeout(() => { poemCooldown = false; }, 9000);
+    setTimeout(() => { poemCooldown = false; }, 10000);
   };
 
-  // ── Visualizer (ambient sine-wave animation) ──────────────────────
-  const drawVisualizer = () => {
-    const width  = canvas.width;
-    const height = canvas.height;
-    const bars   = 32;
-
-    ctx.clearRect(0, 0, width, height);
-
-    const gradient = ctx.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0,   'rgba(147,51,234,.92)');
-    gradient.addColorStop(0.5, 'rgba(34,211,238,.85)');
-    gradient.addColorStop(1,   'rgba(245,158,11,.95)');
-
-    const spacing = width / bars;
-    for (let i = 0; i < bars; i++) {
-      const value     = (Math.sin((Date.now() / 280) + i) + 1) * 24;
-      const barHeight = Math.max(4, (value / 255) * height * 0.96);
-      const x = i * spacing + 1;
-      const y = (height - barHeight) / 2;
-      ctx.fillStyle   = gradient;
-      ctx.shadowBlur  = 9;
-      ctx.shadowColor = 'rgba(147,51,234,.7)';
-      ctx.fillRect(x, y, Math.max(2, spacing - 3), barHeight);
-    }
-  };
-
-  const canAnimate = () => !document.hidden && !floating.classList.contains('collapsed');
-
-  const stopVisualizerLoop = () => {
-    if (visualizerRaf) { cancelAnimationFrame(visualizerRaf); visualizerRaf = 0; }
-  };
-
-  const ensureVisualizerLoop = () => {
-    if (!canAnimate() || visualizerRaf) return;
-    const tick = () => {
-      if (!canAnimate()) { visualizerRaf = 0; return; }
-      drawVisualizer();
-      visualizerRaf = requestAnimationFrame(tick);
-    };
-    visualizerRaf = requestAnimationFrame(tick);
-  };
-
-  // ── Badge toggle ──────────────────────────────────────────────────
+  // ── Badge toggle
   badge.addEventListener('click', (e) => {
     e.stopPropagation();
     const collapsed = floating.classList.toggle('collapsed');
     badge.setAttribute('aria-expanded', String(!collapsed));
-    badge.textContent = collapsed ? 'STARMILK RADIO ✦ tap to tune' : 'STARMILK RADIO ✦ collapse';
-    if (collapsed) {
-      stopVisualizerLoop();
-    } else {
-      // Lazy-load iframe on first open to avoid iOS touch issues
-      if (!hasOpened) {
-        hasOpened = true;
-        ensureIframe().src = embedUrl(tracks[0]);
+    badge.textContent = collapsed ? 'STARMILK RADIO ✦' : '✕ close';
+    if (!collapsed && !hasOpened) {
+      hasOpened = true;
+      if (allTracks.length > 0) {
+        ensureIframe().src = embedUrl(allTracks[0]);
       }
-      ensureVisualizerLoop();
     }
   });
 
+  // ── Event listeners
   if (prevBtn) prevBtn.addEventListener('click', prevTrack);
   if (nextBtn) nextBtn.addEventListener('click', nextTrack);
+  if (shuffleBtn) shuffleBtn.addEventListener('click', shufflePlay);
+  if (searchInput) searchInput.addEventListener('input', handleSearch);
 
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) stopVisualizerLoop();
-    else ensureVisualizerLoop();
-  });
-
-  // ── Init ──────────────────────────────────────────────────────────
-  let hasOpened = false;
-
-  buildQueue();
-  trackNameEl.textContent = tracks[0].name;
-  // Don't create iframe until panel is first opened (avoids iOS touch issues)
-
-  drawVisualizer();
-  ensureVisualizerLoop();
+  // ── Init
+  loadTracks();
 })();
