@@ -451,10 +451,12 @@
         backdrop-filter: blur(20px);
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        gap: 1.5rem;
-        padding: 2rem;
+        justify-content: flex-start;
+        gap: 1rem;
+        padding: 2rem 2rem 4rem;
         z-index: 199;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
       .nav-links.mobile-open {
         display: flex;
