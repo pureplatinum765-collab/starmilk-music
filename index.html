@@ -3094,8 +3094,14 @@ document.querySelector('.yt-facade-btn')?.addEventListener('click', function() {
 </script>
 
 <script>
+// Remove any old service workers — they cause stale cache issues
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(r => r.unregister());
+  });
+  caches.keys().then(names => {
+    names.forEach(n => caches.delete(n));
+  });
 }
 </script>
 
