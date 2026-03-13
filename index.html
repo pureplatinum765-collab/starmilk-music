@@ -1564,11 +1564,14 @@
       bottom: 1rem;
       z-index: 9990;
       width: min(92vw, 420px);
+      max-height: calc(100vh - 2rem);
       border-radius: 14px;
       border: 1px solid rgba(140,133,120,.12);
       background: rgba(18,24,39,.97);
       box-shadow: 0 4px 20px rgba(11,14,26,.5);
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
       transition: all .4s cubic-bezier(.4,0,.2,1);
     }
 
@@ -1599,6 +1602,7 @@
       min-height: 44px;
       display: flex;
       align-items: center;
+      flex-shrink: 0;
       transition: color .3s ease;
     }
 
@@ -1616,6 +1620,9 @@
       padding: .7rem .85rem .85rem;
       display: grid;
       gap: .5rem;
+      overflow-y: auto;
+      min-height: 0;
+      flex: 1;
     }
 
     .radio-floating.collapsed .radio-panel { display: none; }
