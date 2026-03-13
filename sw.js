@@ -1,6 +1,6 @@
 // STARMILK Service Worker — network-first with offline fallback
 // Bump CACHE_VERSION any time you deploy to force old caches out
-const CACHE_VERSION = 'starmilk-v4';
+const CACHE_VERSION = 'starmilk-v5';
 
 const SHELL_ASSETS = [
   '/starmilk-music/',
