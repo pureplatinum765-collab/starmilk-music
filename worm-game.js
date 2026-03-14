@@ -55,7 +55,7 @@
   const CPU_RESPAWN_DELAY = 3000; // ms
 
   // ─── Visual ─────────────────────────────────────────────────────────
-  const MINIMAP_SIZE = 160;
+  const MINIMAP_SIZE = 132;
   const MINIMAP_MARGIN = 12;
   const STAR_COUNT = 200;
 
@@ -134,6 +134,8 @@
   let orbsEaten = 0;
   let songsUnlocked = [];
   let songNotification = null;
+  let showMinimap = true;
+  let minimalHud = true;
 
   // Audio
   let audioCtx = null;
@@ -910,21 +912,25 @@
   }
 
   function drawMinimap() {
+    if (!showMinimap) return;
     const mm = MINIMAP_SIZE;
-    const mx = viewW - mm - MINIMAP_MARGIN;
-    const my = viewH - mm - MINIMAP_MARGIN;
-    const scale = mm / ARENA_W;
+    const safeW = Math.min(viewW * 0.2, mm);
+    const safeH = Math.min(viewH * 0.2, mm);
+    const mmSize = Math.max(88, Math.min(safeW, safeH));
+    const mx = viewW - mmSize - MINIMAP_MARGIN;
+    const my = MINIMAP_MARGIN;
+    const scale = mmSize / ARENA_W;
 
     // Background
     ctx.fillStyle = 'rgba(4,1,10,0.85)';
     ctx.strokeStyle = C.border;
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.roundRect(mx, my, mm, mm * (ARENA_H / ARENA_W), 6);
+    ctx.roundRect(mx, my, mmSize, mmSize * (ARENA_H / ARENA_W), 6);
     ctx.fill();
     ctx.stroke();
 
-    const mmH = mm * (ARENA_H / ARENA_W);
+    const mmH = mmSize * (ARENA_H / ARENA_W);
 
     // Food dots
     ctx.fillStyle = C.orbEnergy + '60';
@@ -994,6 +1000,7 @@
   }
 
   function drawHUDCanvas() {
+    if (minimalHud) return;
     // Score + length display on canvas
     ctx.font = '600 14px system-ui, sans-serif';
     ctx.textAlign = 'left';
@@ -1265,6 +1272,7 @@
     camera.y = player.head.y - viewH / 2;
 
     gameRunning = true;
+    showMinimap = window.innerWidth > 720;
     updateHUD();
     hideNowPlaying();
   }
@@ -1422,7 +1430,7 @@
     /* ── HUD bar ── */
     const hud = document.createElement('div');
     hud.id = 'worm-hud';
-    hud.style.cssText = `display:flex;justify-content:space-between;align-items:center;margin-top:.4rem;font-size:.78rem;color:${C.muted};flex-wrap:wrap;gap:.3rem;`;
+    hud.style.cssText = `display:${minimalHud ? 'none' : 'flex'};justify-content:space-between;align-items:center;margin-top:.4rem;font-size:.78rem;color:${C.muted};flex-wrap:wrap;gap:.3rem;`;
     hud.innerHTML = `
       <span id="worm-score">Score: 0</span>
       <span id="worm-songs">Songs: 0</span>
@@ -1466,9 +1474,33 @@
 
     /* ── Controls hint ── */
     const hint = document.createElement('p');
-    hint.style.cssText = `font-size:.7rem;color:${C.muted};margin-top:.3rem;text-align:center;opacity:.6;`;
+    hint.style.cssText = `font-size:.7rem;color:${C.muted};margin-top:.3rem;text-align:center;opacity:${minimalHud ? '.42' : '.6'};`;
     hint.textContent = 'Mouse to steer • Hold click/space to boost • Eat orbs to grow • Avoid other worms';
     panel.appendChild(hint);
+
+    const compactControls = document.createElement('div');
+    compactControls.style.cssText = 'display:flex;gap:.45rem;margin-top:.45rem;justify-content:center;flex-wrap:wrap;';
+
+    const mapToggle = document.createElement('button');
+    mapToggle.textContent = 'Mini-Map';
+    mapToggle.style.cssText = 'border:1px solid rgba(147,51,234,.45);background:rgba(12,3,24,.75);color:#d8c8ff;border-radius:999px;padding:.28rem .7rem;cursor:pointer;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;';
+    mapToggle.addEventListener('click', () => {
+      showMinimap = !showMinimap;
+      mapToggle.style.opacity = showMinimap ? '1' : '.65';
+    });
+
+    const hudToggle = document.createElement('button');
+    hudToggle.textContent = 'HUD';
+    hudToggle.style.cssText = 'border:1px solid rgba(147,51,234,.45);background:rgba(12,3,24,.75);color:#d8c8ff;border-radius:999px;padding:.28rem .7rem;cursor:pointer;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;opacity:.65;';
+    hudToggle.addEventListener('click', () => {
+      minimalHud = !minimalHud;
+      hud.style.display = minimalHud ? 'none' : 'flex';
+      hudToggle.style.opacity = minimalHud ? '.65' : '1';
+    });
+
+    compactControls.appendChild(mapToggle);
+    compactControls.appendChild(hudToggle);
+    panel.appendChild(compactControls);
 
     overlay.appendChild(panel);
     document.body.appendChild(overlay);

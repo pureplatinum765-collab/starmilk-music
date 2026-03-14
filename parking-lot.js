@@ -73,7 +73,7 @@
     orbs = [];
 
     // Create multiple orbs per mood (scattered across screen)
-    const orbsPerMood = isMobile ? 4 : 7;
+    const orbsPerMood = isMobile ? 7 : 12;
     for (let mi = 0; mi < MOODS.length; mi++) {
       const mood = MOODS[mi];
       for (let j = 0; j < orbsPerMood; j++) {
@@ -148,8 +148,8 @@
     // Phase timing
     const appearDuration = 2.5;    // orbs fade in over 2.5s
     const spiralStart = 1.8;       // spiral begins at 1.8s
-    const spiralDuration = 8.0;    // spiral takes 8s to fully converge
-    const wizardStart = 7.0;       // wizard starts fading in at 7s
+    const spiralDuration = 7.0;    // spiral takes 7s to fully converge
+    const wizardStart = 5.8;       // wizard starts fading in earlier for layered reveal
 
     // Compute progress values
     const appearProgress = Math.min(elapsed / appearDuration, 1);
@@ -192,7 +192,7 @@
       // Trail (short fading trail during spiral)
       if (spiralT > 0.05 && spiralT < 0.95) {
         orb.trail.push({ x: orb.x, y: orb.y, a: orb.alpha * 0.3 });
-        if (orb.trail.length > 6) orb.trail.shift();
+        if (orb.trail.length > 12) orb.trail.shift();
       } else {
         if (orb.trail.length > 0) orb.trail.shift();
       }
@@ -269,6 +269,39 @@
       vigGrad.addColorStop(1, `rgba(11,14,26,${vigAlpha})`);
       ctx.fillStyle = vigGrad;
       ctx.fillRect(0, 0, w, h);
+    }
+
+    // Convergence halo + release pulse for a fuller reveal moment
+    if (spiralT > 0.72) {
+      const haloT = (spiralT - 0.72) / 0.28;
+      const pulse = 0.45 + Math.sin(elapsed * 3.6) * 0.2;
+      const radius = 48 + haloT * 120;
+      const ringGrad = ctx.createRadialGradient(cx, cy, Math.max(10, radius * 0.4), cx, cy, radius);
+      ringGrad.addColorStop(0, `rgba(201,148,74,${0.18 * pulse})`);
+      ringGrad.addColorStop(0.7, `rgba(126,184,164,${0.11 * pulse})`);
+      ringGrad.addColorStop(1, 'rgba(11,14,26,0)');
+      ctx.globalAlpha = Math.min(1, haloT * 1.15);
+      ctx.fillStyle = ringGrad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      if (haloT > 0.55) {
+        const rays = isMobile ? 8 : 14;
+        const rayAlpha = (haloT - 0.55) * 0.35;
+        ctx.strokeStyle = `rgba(219,184,122,${rayAlpha})`;
+        ctx.lineWidth = 1.2;
+        for (let i = 0; i < rays; i++) {
+          const a = (Math.PI * 2 / rays) * i + elapsed * 0.35;
+          const r1 = 32 + Math.sin(elapsed * 1.2 + i) * 5;
+          const r2 = 68 + haloT * 140;
+          ctx.beginPath();
+          ctx.moveTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
+          ctx.lineTo(cx + Math.cos(a) * r2, cy + Math.sin(a) * r2);
+          ctx.stroke();
+        }
+      }
     }
 
     rafId = requestAnimationFrame(draw);
