@@ -7,7 +7,7 @@
     heavy: { label: 'heavy', section: 'support' },
     thawing: { label: 'thawing', section: 'games' },
     tender: { label: 'tender', section: 'connect' },
-    alive: { label: 'alive', section: 'stream' },
+    alive: { label: 'alive', section: 'orchard' },
     'going-round': { label: "going 'round", section: 'hero' }
   };
 

@@ -441,6 +441,25 @@
     body[data-mood='alive'] nav { background: rgba(18,22,16,.85); }
     body[data-mood='going-round'] nav { background: rgba(16,14,22,.85); }
 
+    body[data-mood='heavy'] #river { filter: saturate(.82) contrast(1.06); }
+    body[data-mood='heavy'] #lyrics { box-shadow: inset 0 0 160px rgba(58,34,92,.28); }
+    body[data-mood='heavy'] .card { border-color: rgba(122,110,165,.28); }
+
+    body[data-mood='thawing'] #river { filter: saturate(1.1) brightness(1.04); }
+    body[data-mood='thawing'] #lyrics { box-shadow: inset 0 0 180px rgba(65,120,165,.2); }
+    body[data-mood='thawing'] .divider { box-shadow: 0 0 14px rgba(130,190,225,.22); }
+
+    body[data-mood='tender'] #lyrics { box-shadow: inset 0 0 220px rgba(176,118,124,.18); }
+    body[data-mood='tender'] .section-title { letter-spacing: .05em; }
+    body[data-mood='tender'] .card { background: linear-gradient(180deg, rgba(24,18,31,.95), rgba(12,10,22,.9)); }
+
+    body[data-mood='alive'] #orchard { filter: saturate(1.08) brightness(1.03); }
+    body[data-mood='alive'] #games { background: radial-gradient(ellipse 70% 50% at 50% 40%, rgba(104,138,84,.16) 0%, transparent 70%); }
+    body[data-mood='alive'] .mood-orb[data-mood='alive'] { transform: scale(1.05); }
+
+    body[data-mood='going-round'] #river,
+    body[data-mood='going-round'] #lyrics { filter: saturate(1.04); }
+
     .clearing-overlay {
       position: fixed;
       inset: 0;
@@ -530,6 +549,14 @@
     section:not(#hero) {
       content-visibility: auto;
       contain-intrinsic-size: auto 600px;
+      --section-progress: 0;
+      --section-shift: 24px;
+      transition: background .45s ease, transform .45s ease, filter .45s ease;
+    }
+
+    section.in-view {
+      transform: translateY(calc((1 - var(--section-progress)) * 10px));
+      filter: saturate(calc(0.96 + var(--section-progress) * 0.08));
     }
 
     .section-inner {
@@ -1172,7 +1199,7 @@
       display: grid;
       place-items: center;
       background: #140f1d;
-      transition: background 1.3s ease;
+      transition: background .8s ease;
       overflow: hidden;
       position: relative;
     }
@@ -1194,33 +1221,100 @@
     .lyrics-shell {
       position: relative;
       z-index: 2;
+      width: min(96vw, 1040px);
+      padding: 2.5rem 1rem;
+    }
+
+    .lyrics-head {
       text-align: center;
-      width: min(92vw, 760px);
-      padding: 3rem 1rem;
+      max-width: 720px;
+      margin: 0 auto 1.25rem;
+    }
+
+    .lyrics-intro {
+      color: rgba(235,220,180,.85);
+      font-size: .92rem;
+      line-height: 1.7;
+    }
+
+    .lyrics-layout {
+      display: grid;
+      grid-template-columns: minmax(200px, 260px) minmax(0, 1fr);
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .lyrics-songs {
+      border-radius: 14px;
+      border: 1px solid rgba(255,230,170,.22);
+      background: rgba(8,12,20,.4);
+      padding: .7rem;
+      display: flex;
+      flex-direction: column;
+      gap: .45rem;
+    }
+
+    .lyrics-song {
+      border: 1px solid rgba(212,160,23,.25);
+      background: rgba(0,0,0,.22);
+      color: rgba(255,225,170,.9);
+      border-radius: 10px;
+      padding: .55rem .65rem;
+      text-align: left;
+      cursor: pointer;
+      transition: background .35s ease, border-color .35s ease, transform .35s ease;
+      font-size: .78rem;
+      line-height: 1.4;
+    }
+
+    .lyrics-song strong { display: block; letter-spacing: .08em; text-transform: uppercase; font-size: .66rem; color: rgba(255,235,185,.92); }
+    .lyrics-song span { opacity: .75; font-size: .72rem; }
+    .lyrics-song:hover,
+    .lyrics-song:focus-visible { transform: translateY(-2px); border-color: rgba(212,160,23,.65); outline: none; }
+    .lyrics-song.active { background: rgba(212,160,23,.16); border-color: rgba(255,214,125,.85); }
+
+    .lyrics-stage {
+      border-radius: 16px;
+      border: 1px solid rgba(212,160,23,.25);
+      background: linear-gradient(180deg, rgba(8,12,20,.55), rgba(8,12,20,.35));
+      padding: clamp(1rem, 2vw, 1.4rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 320px;
     }
 
     .honey-line {
-      min-height: 3.5em;
-      color: #d4a017;
-      font-size: clamp(1.4rem, 4.5vw, 2.9rem);
-      line-height: 1.3;
-      text-shadow: 0 0 18px rgba(212,160,23,.35);
+      min-height: 2.9em;
+      color: #f0c061;
+      font-size: clamp(1.3rem, 3.9vw, 2.55rem);
+      line-height: 1.25;
+      text-shadow: 0 0 16px rgba(212,160,23,.28);
       opacity: 0;
-      transform: translateY(-36px) scaleY(1.12);
+      transform: translateY(-22px) scaleY(1.08);
       transform-origin: top center;
+      text-align: center;
+    }
+
+    .lyric-subline {
+      min-height: 2.2em;
+      color: rgba(235,220,185,.82);
+      font-size: clamp(.95rem, 2.3vw, 1.1rem);
+      text-align: center;
+      margin-top: .5rem;
     }
 
     .honey-line.is-dripping {
-      animation: honeyDrip 3s ease forwards;
+      animation: honeyDrip 2.2s ease forwards;
     }
 
     @keyframes honeyDrip {
-      0% { opacity: 0; transform: translateY(-36px) scaleY(1.15) scaleX(.94); color: #c8963e; }
-      58% { opacity: 1; transform: translateY(15px) scaleY(.88) scaleX(1.03); color: #d9aa33; }
-      100% { opacity: 1; transform: translateY(0) scaleY(1) scaleX(1); color: #d4a017; }
+      0% { opacity: 0; transform: translateY(-24px) scaleY(1.08) scaleX(.97); color: #c8963e; }
+      58% { opacity: 1; transform: translateY(9px) scaleY(.92) scaleX(1.02); color: #d9aa33; }
+      100% { opacity: 1; transform: translateY(0) scaleY(1) scaleX(1); color: #f0c061; }
     }
 
-    .lyrics-controls { margin-top: 1.4rem; display: flex; gap: .8rem; justify-content: center; align-items: center; flex-wrap: wrap; }
+    .lyrics-controls { margin-top: 1rem; display: flex; gap: .8rem; justify-content: center; align-items: center; flex-wrap: wrap; }
     .lyrics-controls button {
       border: 1px solid rgba(212,160,23,.45);
       background: rgba(0,0,0,.28);
@@ -1230,15 +1324,20 @@
       letter-spacing: .08em;
       text-transform: uppercase;
       cursor: pointer;
-      font-size: .75rem;
+      font-size: .73rem;
+      transition: all .35s ease;
     }
+    .lyrics-controls button:hover,
+    .lyrics-controls button:focus-visible { border-color: rgba(255,215,130,.85); background: rgba(212,160,23,.16); outline: none; }
 
     .lyrics-count { color: rgba(255,226,162,.84); font-size: .78rem; letter-spacing: .1em; }
-
     @media (max-width: 850px) {
       .tributary.left { left: 3vw; }
       .tributary.right { right: 3vw; }
       .river-leaf { font-size: .68rem; }
+      .lyrics-layout { grid-template-columns: 1fr; }
+      .lyrics-songs { order: 2; }
+      .lyrics-stage { min-height: 280px; }
     }
 
     /* ── Support ── */
@@ -1525,6 +1624,9 @@
     .bb-canvas-wrap { border-radius: 14px; border: 1px solid rgba(74,85,120,.45); overflow: hidden; background: #0b0e1a; }
     #brick-breaker-canvas { width: 100%; display: block; touch-action: none; }
     .bb-ui { display: grid; grid-template-columns: 1fr; gap: .8rem; margin-top: .85rem; font-size: .82rem; color: var(--muted); }
+    .bb-assist { border: 1px solid rgba(107,91,138,.35); border-radius: 12px; padding: .45rem .55rem; background: rgba(11,14,26,.55); }
+    .bb-assist summary { cursor: pointer; letter-spacing: .08em; text-transform: uppercase; font-size: .68rem; color: var(--text); }
+    .bb-assist[open] summary { margin-bottom: .55rem; }
     .bb-powers { display: flex; flex-wrap: wrap; gap: .5rem; }
     .bb-powers button, .bb-powers a { border-radius: 999px; border: 1px solid rgba(107,91,138,.4); background: rgba(18,24,39,.85); color: var(--text); text-decoration: none; padding: .45rem .85rem; font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
     .bb-mobile { display: none; gap: .6rem; }
@@ -1800,7 +1902,7 @@
     .reveal {
       opacity: 0;
       transform: translateY(38px);
-      transition: opacity .7s ease, transform .7s ease;
+      transition: opacity .5s ease, transform .5s ease, filter .5s ease;
     }
 
     .reveal.vis {
@@ -1809,7 +1911,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .reveal { opacity: 1; transform: none; }
+      .reveal { opacity: 1; transform: none; filter: none; }
       .gstar, .gstar::after { animation: none !important; }
       .gstar { opacity: .5; }
     }
@@ -2247,13 +2349,22 @@
   <!-- ═══ LYRICS ═══════════════════════════════════════════════ -->
   <section id="lyrics" data-temperature="tender" aria-labelledby="lyrics-h">
     <div class="lyrics-shell">
-      <span class="label">Immersive Lyrics</span>
-      <h2 id="lyrics-h" class="section-title">Honey Drip — HONEY IN THE WOUND</h2>
-      <p class="honey-line is-dripping" data-lyric-line></p>
-      <div class="lyrics-controls">
-        <button type="button" data-lyrics-play aria-pressed="true">Pause Flow</button>
-        <button type="button" data-lyrics-next>Drip Next Line</button>
-        <span class="lyrics-count" data-lyric-count>1 / 6</span>
+      <div class="lyrics-head">
+        <span class="label">Immersive Lyrics</span>
+        <h2 id="lyrics-h" class="section-title">Honey Drip Lyric River</h2>
+        <p class="lyrics-intro">Move through wound, thaw, bloom, and tide. Choose a song or let the stream carry you.</p>
+      </div>
+      <div class="lyrics-layout">
+        <aside class="lyrics-songs" aria-label="Song selection" data-lyrics-songs></aside>
+        <div class="lyrics-stage">
+          <p class="honey-line is-dripping" data-lyric-line></p>
+          <p class="lyric-subline" data-lyric-subline></p>
+          <div class="lyrics-controls">
+            <button type="button" data-lyrics-play aria-pressed="true">Pause Flow</button>
+            <button type="button" data-lyrics-next>Drip Next Line</button>
+            <span class="lyrics-count" data-lyric-count>1 / 1</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -2552,12 +2663,15 @@ Stay as long as you like.</p>
     </div>
     <div class="bb-ui">
       <div id="brick-breaker-stats">Score: 0 • Lives: 3 • Level: 1</div>
-      <div class="bb-powers" id="brick-breaker-powerups"></div>
-      <p>Controls: ←/→ or A/D, swipe/touch to move paddle, Space to launch ball.</p>
-      <div class="bb-mobile" id="brick-breaker-mobile-controls">
-        <button data-dir="left">◀ Left</button>
-        <button data-dir="right">Right ▶</button>
-      </div>
+      <details class="bb-assist">
+        <summary>Assist & Controls</summary>
+        <div class="bb-powers" id="brick-breaker-powerups"></div>
+        <p>Controls: ←/→ or A/D, swipe/touch to move paddle, Space to launch ball.</p>
+        <div class="bb-mobile" id="brick-breaker-mobile-controls">
+          <button data-dir="left">◀ Left</button>
+          <button data-dir="right">Right ▶</button>
+        </div>
+      </details>
     </div>
   </div>
 </div>
@@ -3011,6 +3125,27 @@ void main(){
       }
     }, { passive: true });
   }
+
+
+  /* ═══════════════════════════════════════════════════════════════
+     SECTION PROGRESS — smooth section-level motion and atmosphere
+     ═══════════════════════════════════════════════════════════════ */
+  const sections = Array.from(document.querySelectorAll('main section, section[id]'))
+    .filter(sec => sec.id && sec.id !== 'hero');
+
+  function updateSectionProgress() {
+    const vh = window.innerHeight || 1;
+    sections.forEach((sec) => {
+      const r = sec.getBoundingClientRect();
+      const entry = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
+      sec.style.setProperty('--section-progress', entry.toFixed(3));
+      sec.classList.toggle('in-view', entry > 0.03 && r.bottom > 0);
+    });
+  }
+
+  window.addEventListener('scroll', () => requestAnimationFrame(updateSectionProgress), { passive: true });
+  window.addEventListener('resize', updateSectionProgress, { passive: true });
+  updateSectionProgress();
 
   /* ═══════════════════════════════════════════════════════════════
      INTERSECTION OBSERVER — reveal on scroll

@@ -151,7 +151,7 @@
 
   // ─── DOM references ───────────────────────────────────────────────
   let overlay, playArea, canvas, ctx, hud, popup, mapScreen, musicPanel, musicFrame, playlist;
-  let powerPrompt, minimapCanvas, minimapCtx, musicToggleBtn;
+  let powerPrompt, minimapCanvas, minimapCtx, musicToggleBtn, controlsTray;
   let W = 0, H = 0;
 
   // ═══════════════════════════════════════════════════════════════
@@ -196,16 +196,29 @@
     exit.onclick = exitGame;
     playArea.appendChild(exit);
 
-    const mapBtn = floatingBtn('★ Star Map', 'left:1rem;top:1rem;border-color:rgba(245,158,11,.5);');
-    mapBtn.onclick = toggleMap;
-    playArea.appendChild(mapBtn);
+    const controlsBtn = floatingBtn('☰ Controls', 'left:1rem;top:1rem;border-color:rgba(124,58,237,.5);');
+    controlsTray = document.createElement('div');
+    controlsTray.style.cssText = 'display:none;position:absolute;left:1rem;top:3.35rem;z-index:11;background:rgba(8,0,18,.9);border:1px solid rgba(124,58,237,.45);border-radius:12px;padding:.4rem;gap:.35rem;flex-direction:column;';
 
-    const mmBtn = floatingBtn('◎ Mini Map', 'left:1rem;top:3.2rem;border-color:rgba(124,58,237,.5);font-size:.62rem;');
+    const mapBtn = floatingBtn('★ Star Map', 'position:static;border-color:rgba(245,158,11,.5);font-size:.62rem;padding:.34rem .72rem;');
+    mapBtn.onclick = toggleMap;
+
+    const mmBtn = floatingBtn('◎ Mini Map', 'position:static;border-color:rgba(124,58,237,.5);font-size:.62rem;padding:.34rem .72rem;');
     mmBtn.onclick = () => {
       state.minimapVisible = !state.minimapVisible;
       minimapCanvas.style.display = state.minimapVisible ? 'block' : 'none';
+      mmBtn.style.opacity = state.minimapVisible ? '1' : '.62';
     };
-    playArea.appendChild(mmBtn);
+
+    controlsBtn.onclick = () => {
+      const open = controlsTray.style.display !== 'flex';
+      controlsTray.style.display = open ? 'flex' : 'none';
+    };
+
+    controlsTray.appendChild(mapBtn);
+    controlsTray.appendChild(mmBtn);
+    playArea.appendChild(controlsBtn);
+    playArea.appendChild(controlsTray);
 
     hud = document.createElement('div');
     hud.style.cssText = 'position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);padding:.7rem 1rem;background:rgba(8,0,16,.72);border:1px solid rgba(147,51,234,.45);border-radius:12px;letter-spacing:.08em;font-size:.72rem;text-transform:uppercase;max-width:96vw;text-align:center;';
@@ -276,7 +289,7 @@
         state.musicPanelOpen = !state.musicPanelOpen;
         musicPanel.style.display = state.musicPanelOpen ? 'block' : 'none';
       };
-      playArea.appendChild(musicToggleBtn);
+      controlsTray.appendChild(musicToggleBtn);
     }
   }
 
