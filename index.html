@@ -2064,6 +2064,85 @@
     body { transition: background 1.2s ease; }
     nav { transition: background var(--t); }
 
+    .guidebot {
+      position: fixed;
+      right: 1rem;
+      bottom: 1rem;
+      z-index: 920;
+      width: min(92vw, 360px);
+      border-radius: 18px;
+      border: 1px solid rgba(126, 184, 164, .25);
+      background: linear-gradient(180deg, rgba(18, 24, 39, .93), rgba(11, 14, 26, .95));
+      box-shadow: 0 8px 34px rgba(11, 14, 26, .4), 0 0 0 1px rgba(74, 124, 111, .15);
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+    }
+    .guidebot.collapsed .guidebot-body { display: none; }
+    .guidebot-toggle {
+      width: 100%;
+      border: 0;
+      color: var(--text);
+      font: inherit;
+      cursor: pointer;
+      text-align: left;
+      background: linear-gradient(135deg, rgba(74, 124, 111, .35), rgba(75, 65, 100, .35));
+      padding: .72rem .9rem;
+      letter-spacing: .03em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .75rem;
+    }
+    .guidebot-toggle strong { color: #d9d4cb; font-size: .84rem; }
+    .guidebot-status { color: var(--teal-light); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; }
+    .guidebot-body { padding: .8rem; }
+    .guidebot-log {
+      background: rgba(10, 13, 24, .65);
+      border: 1px solid rgba(123, 105, 152, .25);
+      border-radius: 12px;
+      padding: .65rem;
+      max-height: 220px;
+      overflow: auto;
+      font-size: .85rem;
+    }
+    .guidebot-msg + .guidebot-msg { margin-top: .55rem; }
+    .guidebot-msg.user { color: #e1dbcd; }
+    .guidebot-msg.bot { color: #b6c7bd; }
+    .guidebot-actions { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .55rem; }
+    .guidebot-chip {
+      border: 1px solid rgba(201, 148, 74, .35);
+      background: rgba(201, 148, 74, .08);
+      color: #e3d2b3;
+      font-size: .72rem;
+      border-radius: 999px;
+      padding: .25rem .55rem;
+      cursor: pointer;
+    }
+    .guidebot-form { margin-top: .55rem; display: flex; gap: .4rem; }
+    .guidebot-input {
+      flex: 1;
+      border-radius: 10px;
+      border: 1px solid rgba(126, 184, 164, .35);
+      background: rgba(11, 14, 26, .8);
+      color: var(--text);
+      font: inherit;
+      font-size: .8rem;
+      padding: .42rem .52rem;
+    }
+    .guidebot-send {
+      border: 1px solid rgba(201, 148, 74, .4);
+      border-radius: 10px;
+      padding: .35rem .65rem;
+      background: rgba(201, 148, 74, .16);
+      color: #f5e5c9;
+      cursor: pointer;
+      font-size: .8rem;
+    }
+    .guidebot-link { color: var(--gold-light); text-decoration: underline; text-underline-offset: 2px; }
+    @media (max-width: 700px) {
+      .guidebot { right: .5rem; bottom: .5rem; width: calc(100vw - 1rem); }
+    }
+
   </style>
 </head>
 <body>
@@ -2642,6 +2721,21 @@
   </div>
 </div>
 
+<section id="guidebot" class="guidebot collapsed" aria-label="Starmilk guide assistant">
+  <button type="button" id="guidebot-toggle" class="guidebot-toggle" aria-expanded="false">
+    <span><strong>STAR GUIDE</strong><br><span class="guidebot-status">local ai concierge</span></span>
+    <span aria-hidden="true">✦</span>
+  </button>
+  <div class="guidebot-body">
+    <div class="guidebot-log" id="guidebot-log" aria-live="polite"></div>
+    <div class="guidebot-actions" id="guidebot-actions"></div>
+    <form class="guidebot-form" id="guidebot-form">
+      <input class="guidebot-input" id="guidebot-input" type="text" placeholder="Ask: where do I listen?" aria-label="Ask Star Guide">
+      <button class="guidebot-send" type="submit">Send</button>
+    </form>
+  </div>
+</section>
+
 <div id="mood-ring-overlay" class="mood-ring-overlay" aria-hidden="true"></div>
 
 <div id="the-clearing" class="clearing-overlay" aria-hidden="true">
@@ -2682,6 +2776,7 @@ Stay as long as you like.</p>
 <script src="the-river.js" defer></script>
 <script src="honey-drip.js" defer></script>
 <script src="starmilk-radio.js" defer></script>
+<script src="starmilk-guide-bot.js" defer></script>
 
 <script>
 (function () {
