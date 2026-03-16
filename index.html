@@ -76,6 +76,8 @@
   </style>
 
   <script src="parking-lot.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -309,7 +311,17 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(201,148,74,.1);
-      transition: background var(--t);
+      transition: background var(--t), transform .4s ease, border-color .4s ease, box-shadow .4s ease;
+    }
+
+    nav.is-scrolled {
+      transform: translateY(0) scale(0.985);
+      border-bottom-color: rgba(219,184,122,.22);
+      box-shadow: 0 12px 36px rgba(7,8,18,.55);
+    }
+
+    .nav-logo, .nav-links a, .btn, .card, .soc-btn, .radio-btn-sm, .mood-ring-trigger {
+      will-change: transform;
     }
 
     .nav-logo {
@@ -1864,6 +1876,53 @@
       .radio-queue { max-height: 40vh; }
     }
 
+    .bandcamp-shell {
+      border: 1px solid rgba(219,184,122,.2);
+      background: linear-gradient(165deg, rgba(23,18,38,.9), rgba(11,15,30,.9));
+      box-shadow: 0 12px 32px rgba(5,8,18,.35);
+    }
+    .bandcamp-frame {
+      border: 1px solid rgba(219,184,122,.18);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+
+    .radio-eq {
+      display: flex;
+      align-items: flex-end;
+      gap: .35rem;
+      min-height: 20px;
+      margin-top: .15rem;
+      opacity: .6;
+      transition: opacity .35s ease;
+    }
+    .radio-eq-bar {
+      flex: 1;
+      height: 5px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(219,184,122,.95), rgba(123,105,152,.25));
+      transform-origin: bottom;
+      transform: scaleY(.4);
+      animation: eqFloat 1.2s ease-in-out infinite;
+      animation-play-state: paused;
+    }
+    .radio-eq-bar:nth-child(2) { animation-delay: .12s; }
+    .radio-eq-bar:nth-child(3) { animation-delay: .25s; }
+    .radio-eq-bar:nth-child(4) { animation-delay: .38s; }
+    .radio-eq-bar:nth-child(5) { animation-delay: .5s; }
+    .radio-floating.playing .radio-eq { opacity: 1; }
+    .radio-floating.playing .radio-eq-bar { animation-play-state: running; }
+    .radio-btn-sm.is-active {
+      border-color: rgba(219,184,122,.45);
+      color: rgba(255,233,184,.95);
+      background: rgba(219,184,122,.14);
+      transform: scale(1.04);
+    }
+    @keyframes eqFloat {
+      0%, 100% { transform: scaleY(.35); }
+      40% { transform: scaleY(1); }
+      70% { transform: scaleY(.55); }
+    }
+
     /* ── Footer ── */
     footer {
       text-align: center;
@@ -2183,7 +2242,7 @@
 
       <!-- Star wizard art -->
       <div class="vision-art reveal">
-        <img src="star-wizard.jpg" alt="STARMILK Star Wizard — a celestial being draped in starry robes, dripping golden light" class="vision-wizard" loading="lazy" />
+        <img src="star-wizard.jpg" alt="STARMILK Star Wizard — a celestial being draped in starry robes, dripping golden light" class="vision-wizard parallax-item" loading="lazy" />
       </div>
 
       <!-- STARMILK vision video -->
@@ -2230,7 +2289,7 @@
       <div class="grid">
 
         <!-- YouTube — gold accent -->
-        <a class="card card-gold reveal" href="https://www.youtube.com/@STARMILK-s5u" target="_blank" rel="noopener noreferrer">
+        <a class="card parallax-item card-gold reveal" href="https://www.youtube.com/@STARMILK-s5u" target="_blank" rel="noopener noreferrer">
           <div class="card-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M22.54 6.42A2.78 2.78 0 0 0 20.59 4.5C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.5C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" fill="#FF0000"/>
@@ -2244,7 +2303,7 @@
         </a>
 
         <!-- SoundCloud — teal accent -->
-        <a class="card card-teal reveal" href="https://soundcloud.com/starmilk" target="_blank" rel="noopener noreferrer">
+        <a class="card parallax-item card-teal reveal" href="https://soundcloud.com/starmilk" target="_blank" rel="noopener noreferrer">
           <div class="card-icon">
             <svg width="28" height="20" viewBox="0 0 120 50" aria-hidden="true">
               <path d="M0 35c0 8.3 6.7 15 15 15s15-6.7 15-15V20C30 11.7 23.3 5 15 5 7.8 5 1.8 10 .3 17 .1 18 0 19 0 20v15z" fill="#FF5500"/>
@@ -2263,7 +2322,7 @@
         </a>
 
         <!-- Spotify -->
-        <a class="card reveal" href="https://open.spotify.com/artist/6ZJBd6IllHctGDa3GhbQnK?si=hmxemmVfSZaoB15C4Gd4Uw" target="_blank" rel="noopener noreferrer">
+        <a class="card parallax-item reveal" href="https://open.spotify.com/artist/6ZJBd6IllHctGDa3GhbQnK?si=hmxemmVfSZaoB15C4Gd4Uw" target="_blank" rel="noopener noreferrer">
           <div class="card-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
               <circle cx="12" cy="12" r="12" fill="#1DB954"/>
@@ -2277,7 +2336,7 @@
         </a>
 
         <!-- Apple Music -->
-        <a class="card reveal" href="https://music.apple.com/us/artist/starmilk/1849551724" target="_blank" rel="noopener noreferrer">
+        <a class="card parallax-item reveal" href="https://music.apple.com/us/artist/starmilk/1849551724" target="_blank" rel="noopener noreferrer">
           <div class="card-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
               <defs>
@@ -2298,7 +2357,7 @@
         </a>
 
         <!-- Other Platforms — teal accent -->
-        <a class="card card-teal reveal" href="https://distrokid.com/" target="_blank" rel="noopener noreferrer">
+        <a class="card parallax-item card-teal reveal" href="https://distrokid.com/" target="_blank" rel="noopener noreferrer">
           <div class="card-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <circle cx="12" cy="12" r="10" stroke="#0d9488" stroke-width="1.5"/>
@@ -2397,19 +2456,19 @@
       <p class="sub reveal">Pick your portal: race through a living maze, smash luminous constellations, or grow a cosmic worm that unlocks songs as it feeds.</p>
 
       <div class="game-grid">
-        <div class="game-shell game-card reveal">
+        <div class="game-shell game-card reveal parallax-item">
           <h3>Cosmic Maze Quest</h3>
           <p>Navigate the living star maze, unlock hidden tracks, and collect mystery relics in the full STARMILK cosmic quest experience.</p>
           <button class="btn" id="cosmic-maze-launch" data-cosmic-launch>Launch Cosmic Maze</button>
         </div>
 
-        <div class="game-shell game-card reveal">
+        <div class="game-shell game-card reveal parallax-item">
           <h3>Arcade Brick Breaker</h3>
           <p>Destroy constellations of glowing bricks, climb through increasing levels, and trigger free power-ups. Optional tips support STARMILK, but every boost is playable at no cost.</p>
           <button class="btn" id="brick-breaker-launch">Launch Brick Breaker</button>
         </div>
 
-        <div class="game-shell game-card reveal">
+        <div class="game-shell game-card reveal parallax-item">
           <h3>Cosmic Worm</h3>
           <p>Slither through a vast cosmic arena — steer with your mouse and eat glowing orbs to grow. CPU worms roam the void alongside you. If your head hits another worm, you restart. Grow long enough and song orbs appear — eat one to unlock a STARMILK track.</p>
           <button class="btn" id="worm-game-launch">Launch Cosmic Worm</button>
@@ -2434,7 +2493,7 @@
       <div class="grid">
 
         <!-- Buy Me a Coffee — gold accent -->
-        <a class="card card-gold reveal" href="https://buymeacoffee.com/pureplatinb" target="_blank" rel="noopener noreferrer">
+        <a class="card parallax-item card-gold reveal" href="https://buymeacoffee.com/pureplatinb" target="_blank" rel="noopener noreferrer">
           <div class="card-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M18 8h1a4 4 0 0 1 0 8h-1" stroke="#c9944a" stroke-width="2" stroke-linecap="round"/>
@@ -2449,7 +2508,7 @@
         </a>
 
         <!-- PayPal -->
-        <a class="card reveal" href="https://paypal.me/RaphaelJacobs" target="_blank" rel="noopener noreferrer">
+        <a class="card parallax-item reveal" href="https://paypal.me/RaphaelJacobs" target="_blank" rel="noopener noreferrer">
           <div class="card-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <defs>
@@ -2469,7 +2528,7 @@
         </a>
 
         <!-- Venmo — teal accent -->
-        <a class="card card-teal reveal" href="https://www.venmo.com/u/STARMILKLABS" target="_blank" rel="noopener noreferrer">
+        <a class="card parallax-item card-teal reveal" href="https://www.venmo.com/u/STARMILKLABS" target="_blank" rel="noopener noreferrer">
           <div class="card-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <rect width="24" height="24" rx="6" fill="#3D95CE"/>
@@ -2483,7 +2542,7 @@
         </a>
 
         <!-- SoundCloud Support -->
-        <a class="card reveal" href="https://on.soundcloud.com/FU4YTMfLTxsTTly2Ku" target="_blank" rel="noopener noreferrer">
+        <a class="card parallax-item reveal" href="https://on.soundcloud.com/FU4YTMfLTxsTTly2Ku" target="_blank" rel="noopener noreferrer">
           <div class="card-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M12 21.6C6.1 15.9 1 11.2 1 7.3 1 3.7 3.9 2 6 2c1.4 0 4.2.5 6 4.6C13.7 2.6 16.6 2 18 2c2.4 0 5 1.6 5 5.3 0 3.9-4.9 8.6-11 14.3z" fill="#FF5500" opacity=".85"/>
@@ -2630,9 +2689,11 @@
     <p class="radio-now">Now transmitting</p>
     <p id="radio-track-name">Awaiting signal…</p>
     <p id="radio-poem" class="radio-poem"></p>
+    <div class="radio-eq" aria-hidden="true"><span class="radio-eq-bar"></span><span class="radio-eq-bar"></span><span class="radio-eq-bar"></span><span class="radio-eq-bar"></span><span class="radio-eq-bar"></span></div>
     <div id="radio-embed-shell" aria-hidden="false"></div>
     <div class="radio-controls">
       <button type="button" id="radio-prev" aria-label="Previous track" class="radio-btn-sm">⏮</button>
+      <button type="button" id="radio-play" aria-label="Play radio" class="radio-btn-sm">▶</button>
       <button type="button" id="radio-next" aria-label="Next track" class="radio-btn-sm">⏭</button>
       <button type="button" id="radio-shuffle" aria-label="Shuffle" class="radio-btn-sm">🔀</button>
     </div>
@@ -3100,32 +3161,29 @@ void main(){
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     NAV — opacity on scroll
+     NAV + COSMIC PARALLAX
      ═══════════════════════════════════════════════════════════════ */
   const nav = document.getElementById('nav');
+  const hero = document.getElementById('hero');
+  const neb = document.querySelector('.nebula');
+  const prefersFinePointer = window.matchMedia('(pointer:fine)').matches;
+
   window.addEventListener('scroll', () => {
-    nav.style.background = window.scrollY > 55
-      ? 'rgba(10,0,16,.97)'
-      : 'rgba(10,0,16,.72)';
+    const scrolled = window.scrollY > 55;
+    nav.style.background = scrolled ? 'rgba(10,0,16,.97)' : 'rgba(10,0,16,.72)';
+    nav.classList.toggle('is-scrolled', scrolled);
+    if (!REDUCED && neb) neb.style.transform = `translateY(${window.scrollY * 0.2}px)`;
   }, { passive: true });
 
-  /* ═══════════════════════════════════════════════════════════════
-     PARALLAX — hero nebula follows scroll
-     ═══════════════════════════════════════════════════════════════ */
-  if (!REDUCED) {
-    const neb = document.querySelector('.nebula');
-    let ticking = false;
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          if (neb) neb.style.transform = `translateY(${window.scrollY * 0.2}px)`;
-          ticking = false;
-        });
-        ticking = true;
-      }
+  if (!REDUCED && prefersFinePointer) {
+    window.addEventListener('pointermove', (e) => {
+      const px = (e.clientX / window.innerWidth - 0.5) * 2;
+      const py = (e.clientY / window.innerHeight - 0.5) * 2;
+      starfield.style.transform = `translate3d(${px * -10}px, ${py * -8}px, 0)`;
+      if (pc && pc !== starfield) pc.style.transform = `translate3d(${px * -16}px, ${py * -12}px, 0)`;
+      if (hero) hero.style.transform = `translate3d(${px * 4}px, ${py * 3}px, 0)`;
     }, { passive: true });
   }
-
 
   /* ═══════════════════════════════════════════════════════════════
      SECTION PROGRESS — smooth section-level motion and atmosphere
@@ -3148,25 +3206,59 @@ void main(){
   updateSectionProgress();
 
   /* ═══════════════════════════════════════════════════════════════
-     INTERSECTION OBSERVER — reveal on scroll
+     GSAP SCROLL REVEALS + PARALLAX DEPTH
      ═══════════════════════════════════════════════════════════════ */
-  if (!REDUCED) {
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          const siblings = Array.from(
-            e.target.parentElement.querySelectorAll('.reveal')
-          );
-          e.target.style.transitionDelay = (siblings.indexOf(e.target) % 5) * 0.085 + 's';
-          e.target.classList.add('vis');
-          io.unobserve(e.target);
+  const revealEls = document.querySelectorAll('.reveal');
+  if (!REDUCED && window.gsap && window.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+
+    revealEls.forEach((el, idx) => {
+      gsap.fromTo(el,
+        { autoAlpha: 0, y: 34, filter: 'blur(8px)' },
+        {
+          autoAlpha: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          duration: 1,
+          ease: 'power3.out',
+          delay: (idx % 4) * 0.04,
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 88%',
+            toggleActions: 'play none none none'
+          },
+          onStart: () => el.classList.add('vis')
+        }
+      );
+    });
+
+    document.querySelectorAll('section[id]').forEach((section) => {
+      gsap.fromTo(section, { autoAlpha: .78 }, {
+        autoAlpha: 1,
+        duration: .9,
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 92%',
+          end: 'bottom 10%',
+          scrub: true
         }
       });
-    }, { threshold: 0.1 });
+    });
 
-    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    document.querySelectorAll('.parallax-item').forEach((item) => {
+      gsap.to(item, {
+        yPercent: -8,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: item,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 0.6
+        }
+      });
+    });
   } else {
-    document.querySelectorAll('.reveal').forEach(el => el.classList.add('vis'));
+    revealEls.forEach(el => el.classList.add('vis'));
   }
 
 })();
@@ -3196,6 +3288,32 @@ document.querySelectorAll('.nav-links a, .nav-links button').forEach(el => {
 });
 </script>
 
+
+<script>
+// Subtle UI sound cues (Web Audio API, no external assets)
+(function () {
+  let ctx;
+  const ping = (f = 520, t = 0.07) => {
+    try {
+      ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state === 'suspended') ctx.resume();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'triangle';
+      o.frequency.value = f;
+      g.gain.value = 0.0001;
+      g.gain.exponentialRampToValueAtTime(0.025, ctx.currentTime + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + t);
+      o.connect(g).connect(ctx.destination);
+      o.start();
+      o.stop(ctx.currentTime + t);
+    } catch (_) {}
+  };
+  ['cosmic-maze-launch', 'brick-breaker-launch', 'worm-game-launch', 'mood-ring-trigger'].forEach((id, i) => {
+    document.getElementById(id)?.addEventListener('click', () => ping(460 + i * 120));
+  });
+})();
+</script>
 
 <script>
 // YouTube Lite Facade — load iframe only on click
