@@ -18,6 +18,7 @@
   const badge = document.getElementById('radio-badge');
   const prevBtn = document.getElementById('radio-prev');
   const nextBtn = document.getElementById('radio-next');
+  const playBtn = document.getElementById('radio-play');
   const shuffleBtn = document.getElementById('radio-shuffle');
   const trackNameEl = document.getElementById('radio-track-name');
   const poemEl = document.getElementById('radio-poem');
@@ -36,6 +37,7 @@
   let scWidget = null;
   let scAPILoaded = false;
   let userHasInteracted = false;
+  let isPlaying = false;
 
   // Track user interaction for autoplay policy compliance
   const markInteracted = () => { userHasInteracted = true; };
@@ -88,6 +90,15 @@
       if (typeof SC === 'undefined' || !SC.Widget) return;
 
       scWidget = SC.Widget(iframe);
+
+      scWidget.bind(SC.Widget.Events.READY, () => {
+        if (userHasInteracted && isPlaying) {
+          scWidget.play();
+        }
+      });
+
+      scWidget.bind(SC.Widget.Events.PLAY, () => setPlayingState(true));
+      scWidget.bind(SC.Widget.Events.PAUSE, () => setPlayingState(false));
 
       scWidget.bind(SC.Widget.Events.FINISH, () => {
         // Auto-advance to next track when current one finishes
@@ -211,6 +222,18 @@
     queueEl.appendChild(fragment);
   };
 
+
+
+  const setPlayingState = (playing) => {
+    isPlaying = Boolean(playing);
+    floating.classList.toggle('playing', isPlaying);
+    if (playBtn) {
+      playBtn.textContent = isPlaying ? '⏸' : '▶';
+      playBtn.setAttribute('aria-label', isPlaying ? 'Pause radio' : 'Play radio');
+      playBtn.classList.toggle('is-active', isPlaying);
+    }
+  };
+
   const updateQueueActive = () => {
     if (!queueEl) return;
     const currentTrack = allTracks[currentTrackIndex];
@@ -231,6 +254,7 @@
     const iframe = ensureIframe();
     // Only autoplay if user has interacted (browser policy compliance)
     const autoplay = shouldAutoplay && userHasInteracted;
+    setPlayingState(autoplay);
     iframe.src = embedUrl(track, autoplay);
 
     // Re-bind widget events after src change
@@ -251,6 +275,22 @@
     if (allTracks.length === 0) return;
     currentTrackIndex = (currentTrackIndex - 1 + allTracks.length) % allTracks.length;
     swapTrack(true);
+  };
+
+
+
+  const togglePlayPause = () => {
+    if (!scWidget || !userHasInteracted) {
+      if (!floating.classList.contains('collapsed')) swapTrack(true);
+      return;
+    }
+    if (isPlaying) {
+      scWidget.pause();
+      setPlayingState(false);
+    } else {
+      scWidget.play();
+      setPlayingState(true);
+    }
   };
 
   const shufflePlay = () => {
@@ -281,6 +321,7 @@
     if (!collapsed && !hasOpened) {
       hasOpened = true;
       if (allTracks.length > 0) {
+        setPlayingState(userHasInteracted);
         swapTrack(userHasInteracted);
       }
     }
@@ -299,9 +340,11 @@
   // ── Event listeners
   if (prevBtn) prevBtn.addEventListener('click', prevTrack);
   if (nextBtn) nextBtn.addEventListener('click', () => nextTrack(true));
+  if (playBtn) playBtn.addEventListener('click', togglePlayPause);
   if (shuffleBtn) shuffleBtn.addEventListener('click', shufflePlay);
   if (searchInput) searchInput.addEventListener('input', handleSearch);
 
   // ── Init
+  setPlayingState(false);
   loadTracks();
 })();
