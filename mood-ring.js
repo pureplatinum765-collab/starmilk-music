@@ -16,7 +16,7 @@
   const overlay = document.getElementById('mood-ring-overlay');
   if (!overlay || !trigger) return;
 
-  let hasShownInitialPrompt = false;
+  let hasShownInitialPrompt = !!_ss.getItem('starmilkMoodPromptShown');
 
   function buildMoodModal() {
     overlay.innerHTML = `
@@ -69,6 +69,7 @@
     const showPrompt = () => {
       if (hasShownInitialPrompt) return;
       hasShownInitialPrompt = true;
+      _ss.setItem('starmilkMoodPromptShown', '1');
       setTimeout(openMoodSelector, 350);
     };
 

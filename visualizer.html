@@ -502,7 +502,13 @@
           src="https://w.soundcloud.com/player/?url=${encoded}&color=%23c9944a&auto_play=${isPlaying}&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
         ></iframe>`;
         const iframe = embedShell.querySelector('iframe');
-        if (iframe) bindWidgetAutoAdvance(iframe);
+        if (iframe) {
+          bindWidgetAutoAdvance(iframe);
+          // Fallback: if iframe fails to load, show direct link
+          iframe.addEventListener('error', () => {
+            embedShell.innerHTML = `<a href="${url}" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:underline;font-size:.85rem;">Open on SoundCloud &rarr;</a>`;
+          });
+        }
       }
     }
 
