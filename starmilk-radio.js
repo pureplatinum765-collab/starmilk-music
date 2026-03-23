@@ -352,10 +352,16 @@
       const slug = slugify(track.name);
       const url = `${window.location.origin}${window.location.pathname}?radio=1&track=${slug}`;
 
-      navigator.clipboard.writeText(url).then(() => {
+      const showCopied = () => {
         shareBtn.classList.add('copied');
-        setTimeout(() => shareBtn.classList.remove('copied'), 2000);
-      }).catch(() => {
+        shareBtn.textContent = '\u2713';
+        setTimeout(() => {
+          shareBtn.classList.remove('copied');
+          shareBtn.textContent = '\uD83D\uDD17';
+        }, 2000);
+      };
+
+      navigator.clipboard.writeText(url).then(showCopied).catch(() => {
         // Fallback for older browsers
         const ta = document.createElement('textarea');
         ta.value = url;
@@ -364,8 +370,7 @@
         ta.select();
         document.execCommand('copy');
         ta.remove();
-        shareBtn.classList.add('copied');
-        setTimeout(() => shareBtn.classList.remove('copied'), 2000);
+        showCopied();
       });
     });
   };
