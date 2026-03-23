@@ -302,6 +302,66 @@
   if (shuffleBtn) shuffleBtn.addEventListener('click', shufflePlay);
   if (searchInput) searchInput.addEventListener('input', handleSearch);
 
+  // ── Slugify helper
+  const slugify = (str) =>
+    str.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
+  // ── Deep-link: open radio and optionally play a specific track
+  const handleDeepLink = () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('radio') !== '1') return;
+
+    // Open the radio panel
+    floating.classList.remove('collapsed');
+    badge.setAttribute('aria-expanded', 'true');
+    badge.textContent = '\u2715 close';
+    hasOpened = true;
+
+    // Find matching track by slug
+    const trackSlug = params.get('track');
+    if (trackSlug && allTracks.length > 0) {
+      const idx = allTracks.findIndex(t => slugify(t.name) === trackSlug);
+      if (idx !== -1) {
+        currentTrackIndex = idx;
+      }
+    }
+
+    swapTrack(userHasInteracted);
+  };
+
+  // ── Share button: copy deep-link URL to clipboard
+  const createShareButton = () => {
+    const shareBtn = document.getElementById('radio-share');
+    if (!shareBtn) return;
+
+    shareBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const track = allTracks[currentTrackIndex];
+      if (!track) return;
+
+      const slug = slugify(track.name);
+      const url = `${window.location.origin}${window.location.pathname}?radio=1&track=${slug}`;
+
+      navigator.clipboard.writeText(url).then(() => {
+        shareBtn.classList.add('copied');
+        setTimeout(() => shareBtn.classList.remove('copied'), 2000);
+      }).catch(() => {
+        // Fallback for older browsers
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        ta.style.cssText = 'position:fixed;opacity:0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        shareBtn.classList.add('copied');
+        setTimeout(() => shareBtn.classList.remove('copied'), 2000);
+      });
+    });
+  };
+
+  createShareButton();
+
   // ── Init
-  loadTracks();
+  loadTracks().then(handleDeepLink);
 })();

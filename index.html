@@ -1800,11 +1800,55 @@
       color: rgba(245,180,80,.6);
     }
 
+    .radio-now-playing-row {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
     #radio-track-name {
       font-size: .88rem;
       color: rgba(235,225,245,.85);
       line-height: 1.3;
       font-weight: 500;
+      flex: 1;
+      margin: 0;
+    }
+    .radio-share-btn {
+      position: relative;
+      background: none;
+      border: 1px solid rgba(107,91,138,.25);
+      border-radius: 6px;
+      color: rgba(180,170,200,.5);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color .3s, border-color .3s;
+      flex-shrink: 0;
+    }
+    .radio-share-btn:hover {
+      color: rgba(245,200,140,.9);
+      border-color: rgba(201,148,74,.4);
+    }
+    .radio-share-btn::after {
+      content: 'Link copied!';
+      position: absolute;
+      bottom: calc(100% + 6px);
+      right: 0;
+      background: rgba(201,148,74,.9);
+      color: #0e1325;
+      font-size: .65rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
+    }
+    .radio-share-btn.copied::after {
+      opacity: 1;
     }
 
     .radio-poem {
@@ -2930,7 +2974,12 @@
   <button type="button" id="radio-badge" class="radio-badge" aria-expanded="false">STARMILK RADIO ✦</button>
   <div class="radio-panel" id="radio-panel">
     <p class="radio-now">Now transmitting</p>
-    <p id="radio-track-name">Awaiting signal…</p>
+    <div class="radio-now-playing-row">
+      <p id="radio-track-name">Awaiting signal…</p>
+      <button type="button" id="radio-share" class="radio-share-btn" aria-label="Copy share link" title="Copy share link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      </button>
+    </div>
     <p id="radio-poem" class="radio-poem"></p>
     <div id="radio-embed-shell" aria-hidden="false"></div>
     <div class="radio-controls">
