@@ -36,6 +36,7 @@
   let scWidget = null;
   let scAPILoaded = false;
   let userHasInteracted = false;
+  let deepLinkedTrackName = null;
 
   // Track user interaction for autoplay policy compliance
   const markInteracted = () => { userHasInteracted = true; };
@@ -151,7 +152,13 @@
             .filter(s => s.permalink_url && !existingUrls.has(s.permalink_url))
             .map(s => ({ name: s.title, url: s.permalink_url }));
           if (newTracks.length > 0) {
+            // Preserve current track index when prepending
+            const currentTrackName = allTracks[currentTrackIndex]?.name;
             allTracks = [...newTracks, ...allTracks];
+            if (currentTrackName) {
+              const newIdx = allTracks.findIndex(t => t.name === currentTrackName);
+              if (newIdx !== -1) currentTrackIndex = newIdx;
+            }
             filteredTracks = [...allTracks];
             buildQueue();
             updateCount();
@@ -323,10 +330,13 @@
       const idx = allTracks.findIndex(t => slugify(t.name) === trackSlug);
       if (idx !== -1) {
         currentTrackIndex = idx;
+        deepLinkedTrackName = allTracks[idx].name;
       }
     }
 
-    swapTrack(userHasInteracted);
+    if (allTracks.length > 0) {
+      swapTrack(userHasInteracted);
+    }
   };
 
   // ── Share button: copy deep-link URL to clipboard
