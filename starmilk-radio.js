@@ -121,11 +121,16 @@
             .filter(s => s.permalink_url && !existingUrls.has(s.permalink_url))
             .map(s => ({ name: s.title, url: s.permalink_url }));
           if (newTracks.length > 0) {
-            const currentTrackName = allTracks[currentTrackIndex]?.name;
+            // Prefer deep-linked track name for re-anchoring, fall back to current
+            const anchorName = deepLinkedTrackName || allTracks[currentTrackIndex]?.name;
             allTracks = [...newTracks, ...allTracks];
-            if (currentTrackName) {
-              const newIdx = allTracks.findIndex(t => t.name === currentTrackName);
-              if (newIdx !== -1) currentTrackIndex = newIdx;
+            if (anchorName) {
+              const newIdx = allTracks.findIndex(t => t.name === anchorName);
+              if (newIdx !== -1) {
+                currentTrackIndex = newIdx;
+                // Re-swap to the correct track if deep link was active
+                if (deepLinkedTrackName) { swapTrack(false); }
+              }
             }
             filteredTracks = [...allTracks];
             buildQueue();
@@ -269,12 +274,25 @@
     setTimeout(() => toast.remove(), 2200);
   };
 
-  // Deep-link: open radio and optionally seek to a specific track
+  // Deep-link: handle ?radio=1&track=<slug> and ?section=<id>
   const handleDeepLink = () => {
     try {
       const params = new URLSearchParams(window.location.search);
+
+      // Section deep-link: scroll to any section (e.g., ?section=games)
+      const sectionId = params.get('section');
+      if (sectionId) {
+        const sectionEl = document.getElementById(sectionId);
+        if (sectionEl) {
+          // Small delay to allow mood/page init to settle
+          setTimeout(() => {
+            sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 600);
+        }
+      }
+
+      // Radio deep-link: open panel and optionally seek to a specific track
       if (params.get('radio') !== '1') return;
-      // Open the radio panel
       floating.classList.remove('collapsed');
       badge.setAttribute('aria-expanded', 'true');
       badge.textContent = '✕ close';
@@ -303,7 +321,17 @@
       const track = allTracks[currentTrackIndex];
       if (!track) return;
       const slug = slugify(track.name);
-      const url = `${window.location.origin}${window.location.pathname}?radio=1&track=${slug}`;
+      // Include current section in the share link if user scrolled to one
+      const sections = document.querySelectorAll('section[id]');
+      let visibleSection = '';
+      sections.forEach((sec) => {
+        const rect = sec.getBoundingClientRect();
+        if (rect.top <= window.innerHeight / 2 && rect.bottom > 0) {
+          visibleSection = sec.id;
+        }
+      });
+      const sectionParam = visibleSection && visibleSection !== 'hero' ? `&section=${visibleSection}` : '';
+      const url = `${window.location.origin}${window.location.pathname}?radio=1&track=${slug}${sectionParam}`;
       const onCopied = () => {
         shareBtn.classList.add('copied');
         shareBtn.textContent = '✓';
