@@ -232,7 +232,7 @@
     e.stopPropagation();
     const collapsed = floating.classList.toggle('collapsed');
     badge.setAttribute('aria-expanded', String(!collapsed));
-    badge.textContent = collapsed ? 'STARMILK RADIO \u2736' : '\u2715 close';
+    badge.textContent = collapsed ? 'STARMILK RADIO ✦' : '✕ close';
     if (!collapsed && !hasOpened) {
       hasOpened = true;
       if (allTracks.length > 0) { swapTrack(userHasInteracted); }
@@ -243,7 +243,7 @@
     if (e.key === 'Escape' && !floating.classList.contains('collapsed')) {
       floating.classList.add('collapsed');
       badge.setAttribute('aria-expanded', 'false');
-      badge.textContent = 'STARMILK RADIO \u2736';
+      badge.textContent = 'STARMILK RADIO ✦';
       badge.focus();
     }
   });
@@ -277,7 +277,7 @@
       // Open the radio panel
       floating.classList.remove('collapsed');
       badge.setAttribute('aria-expanded', 'true');
-      badge.textContent = '\u2715 close';
+      badge.textContent = '✕ close';
       hasOpened = true;
       // Find matching track by slug
       const trackSlug = params.get('track');
@@ -306,11 +306,11 @@
       const url = `${window.location.origin}${window.location.pathname}?radio=1&track=${slug}`;
       const onCopied = () => {
         shareBtn.classList.add('copied');
-        shareBtn.textContent = '\u2713';
+        shareBtn.textContent = '✓';
         showToast('Link copied!');
         setTimeout(() => {
           shareBtn.classList.remove('copied');
-          shareBtn.textContent = '\uD83D\uDD17';
+          shareBtn.textContent = '🔗';
         }, 2000);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
