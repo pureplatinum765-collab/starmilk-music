@@ -140,9 +140,9 @@
       /* Matte shadows — no neon glow, soft painterly depth */
       --card-shadow: 0 0 0 1px rgba(30,50,90,.25), 0 4px 24px rgba(8,11,22,.45);
       --card-hover:  0 0 0 1px rgba(60,80,130,.4), 0 6px 32px rgba(30,50,90,.3);
-      --glow-sm:     0 2px 12px rgba(40,60,100,.3);
-      --glow-lg:     0 4px 24px rgba(40,60,100,.35), 0 8px 48px rgba(8,11,22,.3);
-      --gold-glow:   0 2px 14px rgba(201,148,74,.3);
+      --glow-sm:     0 2px 8px rgba(40,60,100,.15);
+      --glow-lg:     0 4px 16px rgba(40,60,100,.2), 0 8px 32px rgba(8,11,22,.2);
+      --gold-glow:   0 2px 8px rgba(201,148,74,.15);
     }
 
     html { scroll-behavior: smooth; }
@@ -154,8 +154,8 @@
       overflow-x: hidden;
       line-height: 1.65;
       padding-bottom: 6rem;
-      /* Matte texture overlay — like a fine art print */
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+      /* Matte texture overlay — like a fine art print on canvas */
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
     }
 
     body.parking-lot-active {
@@ -361,18 +361,8 @@
       font-weight: 900;
       letter-spacing: .22em;
       text-transform: uppercase;
-      background: linear-gradient(120deg, var(--gold-light) 0%, #a89ab8 35%, var(--indigo) 65%, var(--gold-light) 100%);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: logoShimmer 7s linear infinite;
-      filter: drop-shadow(0 0 6px rgba(107,91,138,.25));
-    }
-
-    @keyframes logoShimmer {
-      from { background-position: 0% center; }
-      to   { background-position: 200% center; }
+      color: var(--gold-light);
+      opacity: .85;
     }
 
     .nav-links {
@@ -616,7 +606,7 @@
       text-transform: uppercase;
       color: var(--gold);
       margin-bottom: .6rem;
-      text-shadow: 0 0 6px rgba(201,148,74,.2);
+      opacity: .7;
     }
 
     .section-title {
@@ -624,10 +614,7 @@
       font-weight: 900;
       letter-spacing: .06em;
       text-transform: uppercase;
-      background: linear-gradient(135deg, #e8dfc0 0%, var(--gold-light) 22%, var(--text) 50%, #7b8aad 85%, #6b5b8a 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--text);
       margin-bottom: 1rem;
       line-height: 1.1;
     }
@@ -695,9 +682,9 @@
       pointer-events: none;
     }
 
-    .card:hover { transform: translateY(-7px) scale(1.015); box-shadow: var(--card-hover); }
+    .card:hover { transform: translateY(-3px); box-shadow: var(--card-hover); }
     .card:hover::before { opacity: 1; }
-    .card:hover::after  { opacity: 1; }
+    .card:hover::after  { opacity: 0; }
 
     .card-icon {
       width: 50px;
@@ -883,11 +870,9 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
       filter:
-        drop-shadow(0 0 18px rgba(27,48,88,.45))
-        drop-shadow(0 0 50px rgba(22,32,64,.3));
-      animation:
-        fadeUp    .8s .12s ease both,
-        titleGlow 6s 1s ease-in-out infinite alternate;
+        drop-shadow(0 0 12px rgba(27,48,88,.25))
+        drop-shadow(0 0 30px rgba(22,32,64,.15));
+      animation: fadeUp .8s .12s ease both;
     }
 
     @keyframes titleGlow {

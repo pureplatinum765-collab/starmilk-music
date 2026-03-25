@@ -1,10 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+
+<!-- Perplexity Computer Attribution — SEO Meta Tags -->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>STARMILK | Visualizer</title>
-  <meta name="description" content="Ambient visual listening experience — loop STARMILK art while the music plays." />
+  <title>STARMILK | Visual Listening Room</title>
+  <meta name="description" content="Immersive visual listening experience — ambient visuals and audio-reactive art for the STARMILK music project." />
   <meta name="theme-color" content="#0b0e1a" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23c9944a'/%3E%3Cstop offset='50%25' stop-color='%236b5b8a'/%3E%3Cstop offset='100%25' stop-color='%234a5578'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpolygon points='50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35' fill='url(%23g)'/%3E%3C/svg%3E" />
 
@@ -12,8 +29,8 @@
   {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "STARMILK Visualizer",
-    "description": "Ambient visual listening experience — loop STARMILK art while the music plays.",
+    "name": "STARMILK Visual Listening Room",
+    "description": "Immersive visual listening experience — ambient visuals and audio-reactive art for the STARMILK music project.",
     "isPartOf": {
       "@type": "WebSite",
       "name": "STARMILK",
@@ -32,23 +49,39 @@
 
     :root {
       --bg: #0b0e1a;
+      --bg-deep: #080b16;
       --card: #121827;
       --purple: #6b5b8a;
+      --purple-light: #7b6998;
       --gold: #c9944a;
       --gold-light: #dbb87a;
+      --gold-dim: rgba(201,148,74,.12);
       --text: #d5cfc2;
       --muted: #8c8578;
-      --radius: 14px;
+      --muted-dim: rgba(140,133,120,.18);
     }
 
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: var(--bg);
+      background: var(--bg-deep);
       color: var(--text);
       overflow: hidden;
       height: 100vh;
+      height: 100dvh;
       width: 100vw;
       position: relative;
+      cursor: none;
+    }
+    body.controls-visible { cursor: default; }
+
+    /* ── SVG noise filter for canvas/paper texture ── */
+    .grain-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      opacity: 0.04;
+      mix-blend-mode: overlay;
     }
 
     /* ── Visual layers ── */
@@ -59,177 +92,251 @@
       height: 100%;
       object-fit: contain;
       opacity: 0;
-      transition: opacity 1.8s ease;
+      transition: opacity 2.2s cubic-bezier(.4,0,.2,1);
       z-index: 0;
+      pointer-events: none;
     }
     .viz-layer.active { opacity: 1; }
-    video.viz-layer { filter: saturate(0.75) contrast(1.05); }
-    img.viz-layer { filter: saturate(0.8) contrast(1.05); }
-    .viz-layer.void-bg { background: var(--bg); }
+    video.viz-layer { filter: saturate(0.7) contrast(1.04) brightness(0.95); }
+    img.viz-layer { filter: saturate(0.75) contrast(1.04) brightness(0.92); }
+    .viz-layer.void-bg { background: var(--bg-deep); }
 
-    /* ── Dark vignette overlay ── */
+    /* ── Vignette ── */
     .vignette {
       position: fixed;
       inset: 0;
       z-index: 1;
       pointer-events: none;
       background:
-        radial-gradient(ellipse 80% 80% at 50% 50%, transparent 30%, rgba(11,14,26,.55) 100%),
-        linear-gradient(to bottom, rgba(11,14,26,.3) 0%, transparent 12%, transparent 88%, rgba(11,14,26,.5) 100%);
+        radial-gradient(ellipse 75% 75% at 50% 50%, transparent 20%, rgba(8,11,22,.6) 100%),
+        linear-gradient(to bottom, rgba(8,11,22,.35) 0%, transparent 10%, transparent 90%, rgba(8,11,22,.55) 100%);
     }
 
-    /* ── Controls UI ── */
+    /* ── Audio-reactive canvas ── */
+    #viz-reactive {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      opacity: 0.65;
+    }
+
+    /* ── Ambient particles ── */
+    #viz-particles {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* ── Controls wrapper ── */
     .viz-ui {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
       z-index: 10;
-      padding: 1.2rem 1.5rem 1.5rem;
-      background: linear-gradient(to top, rgba(11,14,26,.9) 0%, rgba(11,14,26,.5) 60%, transparent 100%);
+      padding: 1.6rem 1.5rem 1.8rem;
+      background: linear-gradient(to top, rgba(8,11,22,.92) 0%, rgba(8,11,22,.6) 50%, transparent 100%);
       display: flex;
       flex-direction: column;
-      gap: .8rem;
-      transition: opacity .5s ease;
+      align-items: center;
+      gap: .85rem;
+      opacity: 1;
+      transition: opacity .6s cubic-bezier(.4,0,.2,1);
     }
     .viz-ui.hidden { opacity: 0; pointer-events: none; }
 
-    .viz-title {
-      font-size: .6rem;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--gold);
-      text-align: center;
-    }
-
-    .viz-track {
-      text-align: center;
-      font-size: 1rem;
-      color: var(--text);
-      letter-spacing: .04em;
-      opacity: .85;
-      min-height: 1.4em;
-    }
-
-    /* ── Visual toggle strip ── */
-    .viz-toggles {
+    /* ── Top bar (back + logo) ── */
+    .viz-topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      padding: 1rem 1.2rem;
       display: flex;
-      justify-content: center;
-      gap: .45rem;
-      flex-wrap: wrap;
-    }
-
-    .viz-toggle {
-      border: 1px solid rgba(140,133,120,.2);
-      background: rgba(18,24,39,.7);
-      color: var(--muted);
-      padding: .4rem .7rem;
-      border-radius: 999px;
-      font-size: .58rem;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all .3s ease;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      min-height: 36px;
-      display: flex;
+      justify-content: space-between;
       align-items: center;
-      touch-action: manipulation;
-      white-space: nowrap;
+      background: linear-gradient(to bottom, rgba(8,11,22,.5) 0%, transparent 100%);
+      opacity: 1;
+      transition: opacity .6s cubic-bezier(.4,0,.2,1);
     }
-    .viz-toggle:hover, .viz-toggle:focus-visible {
-      border-color: var(--gold);
-      color: var(--gold-light);
-    }
-    .viz-toggle.active {
-      border-color: var(--gold);
-      background: rgba(201,148,74,.12);
-      color: var(--gold-light);
-    }
-    .viz-toggle:active { transform: scale(.96); }
-
-    .viz-controls {
-      display: flex;
-      justify-content: center;
-      gap: .4rem;
-    }
-
-    .viz-btn {
-      border: 1px solid rgba(140,133,120,.2);
-      background: rgba(18,24,39,.6);
-      color: var(--text);
-      padding: .45rem .8rem;
-      border-radius: 999px;
-      font-size: .65rem;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all .3s ease;
-      min-height: 40px;
-      display: flex;
-      align-items: center;
-      gap: .3rem;
-      touch-action: manipulation;
-    }
-    .viz-btn:hover { border-color: var(--gold); color: var(--gold-light); }
-    .viz-btn:active { transform: scale(.96); }
+    .viz-topbar.hidden { opacity: 0; pointer-events: none; }
 
     .viz-back {
-      position: fixed;
-      top: 1rem;
-      left: 1rem;
-      z-index: 10;
-      border: 1px solid rgba(140,133,120,.2);
-      background: rgba(18,24,39,.6);
       color: var(--muted);
-      padding: .4rem .8rem;
-      border-radius: 999px;
       font-size: .6rem;
-      letter-spacing: .08em;
+      letter-spacing: .1em;
       text-transform: uppercase;
       text-decoration: none;
-      transition: all .3s ease;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      min-height: 40px;
+      padding: .4rem .7rem;
+      border: 1px solid var(--muted-dim);
+      border-radius: 999px;
+      transition: color .3s, border-color .3s;
+      min-height: 36px;
       display: inline-flex;
       align-items: center;
+      gap: .35rem;
     }
     .viz-back:hover { color: var(--gold-light); border-color: var(--gold); }
 
     .viz-logo {
-      position: fixed;
-      top: 1.2rem;
-      right: 1.2rem;
-      z-index: 10;
-      font-size: .65rem;
-      letter-spacing: .2em;
+      font-size: .6rem;
+      letter-spacing: .22em;
       color: var(--muted);
-      opacity: .4;
+      opacity: .35;
+      text-transform: uppercase;
     }
 
-    /* ── SoundCloud embed ── */
-    .viz-player {
-      max-width: 480px;
-      margin: 0 auto;
-      width: 100%;
-    }
-    .viz-player iframe {
-      display: block;
-      width: 100%;
-      height: 110px;
-      border: 0;
-      border-radius: 10px;
-      opacity: .85;
+    /* ── Section label ── */
+    .viz-label {
+      font-size: .5rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: .6;
     }
 
-    /* ── Ambient particle overlay ── */
-    #viz-particles {
-      position: fixed;
-      inset: 0;
-      z-index: 2;
+    /* ── Scene selector ── */
+    .viz-scenes {
+      display: flex;
+      justify-content: center;
+      gap: .65rem;
+      flex-wrap: wrap;
+    }
+
+    .viz-scene-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: border-color .3s, transform .2s;
+      position: relative;
+      overflow: hidden;
+      touch-action: manipulation;
+      background: var(--card);
+    }
+    .viz-scene-dot::after {
+      content: attr(data-label);
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: .48rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity .25s;
       pointer-events: none;
+    }
+    .viz-scene-dot:hover::after,
+    .viz-scene-dot:focus-visible::after { opacity: 1; }
+    .viz-scene-dot:hover { border-color: rgba(201,148,74,.4); }
+    .viz-scene-dot.active {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 2px rgba(201,148,74,.15);
+    }
+    .viz-scene-dot:active { transform: scale(.92); }
+
+    /* Scene dot colors */
+    .viz-scene-dot[data-visual="vision"]    { background: linear-gradient(135deg, #1a1530, #3a2860); }
+    .viz-scene-dot[data-visual="heart"]     { background: linear-gradient(135deg, #2a1020, #5a2040); }
+    .viz-scene-dot[data-visual="sun"]       { background: linear-gradient(135deg, #2a2010, #6a5020); }
+    .viz-scene-dot[data-visual="butterfly"] { background: linear-gradient(135deg, #102030, #204060); }
+    .viz-scene-dot[data-visual="wings"]     { background: linear-gradient(135deg, #1a1a28, #3a3a58); }
+    .viz-scene-dot[data-visual="wizard"]    { background: linear-gradient(135deg, #181828, #2a2a48); }
+    .viz-scene-dot[data-visual="void"]      { background: var(--bg-deep); }
+
+    /* ── Track name ── */
+    .viz-track-name {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 1.05rem;
+      color: var(--text);
+      text-align: center;
+      letter-spacing: .03em;
+      opacity: .85;
+      min-height: 1.5em;
+      font-style: italic;
+      font-weight: normal;
+    }
+
+    /* ── Progress indicator ── */
+    .viz-progress-wrap {
+      width: 100%;
+      max-width: 320px;
+      height: 2px;
+      background: rgba(140,133,120,.1);
+      border-radius: 1px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .viz-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--gold);
+      opacity: .5;
+      border-radius: 1px;
+      transition: width .3s linear;
+    }
+
+    /* ── Transport controls ── */
+    .viz-transport {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .viz-transport-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: .5rem;
+      border-radius: 50%;
+      transition: color .25s, background .25s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+      min-width: 40px;
+      min-height: 40px;
+    }
+    .viz-transport-btn:hover { color: var(--gold-light); background: rgba(201,148,74,.06); }
+    .viz-transport-btn:active { transform: scale(.93); }
+    .viz-transport-btn svg { width: 18px; height: 18px; }
+    .viz-transport-btn.play-btn svg { width: 22px; height: 22px; }
+    .viz-transport-btn.play-btn {
+      color: var(--gold);
+      border: 1.5px solid var(--muted-dim);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+    }
+    .viz-transport-btn.play-btn:hover {
+      border-color: var(--gold);
+      background: rgba(201,148,74,.08);
+    }
+
+    /* ── Hidden SC player ── */
+    .viz-sc-hidden {
+      position: fixed;
+      bottom: -200px;
+      left: -9999px;
+      width: 300px;
+      height: 166px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
+    .viz-sc-hidden iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
     }
 
     /* ── Tap hint ── */
@@ -246,28 +353,33 @@
     }
     .viz-hint.show { opacity: 1; }
     .viz-hint p {
-      font-size: .65rem;
-      letter-spacing: .12em;
+      font-size: .55rem;
+      letter-spacing: .14em;
       text-transform: uppercase;
       color: var(--muted);
     }
 
+    /* ── Focus styles ── */
     :focus-visible {
-      outline: 2px solid var(--gold);
+      outline: 1.5px solid var(--gold);
       outline-offset: 2px;
     }
     button:focus:not(:focus-visible),
     a:focus:not(:focus-visible) { outline: none; }
 
+    /* ── Mobile ── */
     @media (max-width: 640px) {
-      .viz-ui { padding: .6rem .6rem .8rem; gap: .5rem; }
-      .viz-toggle { font-size: .5rem; padding: .3rem .5rem; min-height: 32px; }
-      .viz-track { font-size: .82rem; }
-      .viz-btn { font-size: .55rem; padding: .35rem .6rem; min-height: 36px; }
+      .viz-ui { padding: .8rem .8rem 1rem; gap: .6rem; }
+      .viz-track-name { font-size: .88rem; }
+      .viz-scene-dot { width: 24px; height: 24px; }
       .viz-logo { display: none; }
-      .viz-title { font-size: .5rem; }
-      .viz-player iframe { height: 85px; }
-      .viz-back { font-size: .55rem; padding: .35rem .6rem; min-height: 36px; }
+      .viz-label { font-size: .45rem; }
+      .viz-back { font-size: .52rem; min-height: 32px; padding: .3rem .55rem; }
+      .viz-transport-btn { min-width: 36px; min-height: 36px; }
+      .viz-transport-btn svg { width: 16px; height: 16px; }
+      .viz-transport-btn.play-btn { width: 42px; height: 42px; }
+      .viz-transport-btn.play-btn svg { width: 20px; height: 20px; }
+      .viz-progress-wrap { max-width: 240px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -280,92 +392,156 @@
 </head>
 <body>
 
-  <!-- ═══ Visual Layers (all videos + static image + void) ═══ -->
+  <!-- ═══ Visual Layers ═══ -->
   <video id="viz-vision" class="viz-layer active" loop muted playsinline>
     <source src="starmilk-vision.mp4" type="video/mp4" />
   </video>
-
   <video id="viz-heart" class="viz-layer" loop muted playsinline preload="none">
     <source src="cosmic-heart.mp4" type="video/mp4" />
   </video>
-
   <video id="viz-sun" class="viz-layer" loop muted playsinline preload="none">
     <source src="dripping-sun.mp4" type="video/mp4" />
   </video>
-
   <video id="viz-butterfly" class="viz-layer" loop muted playsinline preload="none">
     <source src="butterfly-infinity.mp4" type="video/mp4" />
   </video>
-
   <video id="viz-wings" class="viz-layer" loop muted playsinline preload="none">
     <source src="winged-ascension.mp4" type="video/mp4" />
   </video>
-
   <img id="viz-wizard" class="viz-layer" src="star-wizard.jpg" alt="Star Wizard" loading="lazy" decoding="async" />
-
   <div id="viz-void" class="viz-layer void-bg" role="presentation"></div>
 
+  <!-- ═══ Vignette ═══ -->
   <div class="vignette" aria-hidden="true"></div>
+
+  <!-- ═══ Audio-Reactive Canvas ═══ -->
+  <canvas id="viz-reactive" aria-hidden="true"></canvas>
+
+  <!-- ═══ Ambient Particles ═══ -->
   <canvas id="viz-particles" aria-hidden="true"></canvas>
 
-  <a href="index.html" class="viz-back" aria-label="Back to main site">&larr; Back</a>
-  <span class="viz-logo" aria-hidden="true">STARMILK</span>
+  <!-- ═══ Paper Grain Texture (SVG noise) ═══ -->
+  <svg class="grain-overlay" aria-hidden="true" width="100%" height="100%">
+    <filter id="grain-filter">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
+      <feColorMatrix type="saturate" values="0" />
+    </filter>
+    <rect width="100%" height="100%" filter="url(#grain-filter)" />
+  </svg>
 
-  <div class="viz-hint" id="viz-hint" aria-hidden="true">
-    <p>tap anywhere to toggle controls</p>
+  <!-- ═══ Top Bar ═══ -->
+  <div class="viz-topbar" id="viz-topbar">
+    <a href="index.html" class="viz-back" aria-label="Back to main site">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back
+    </a>
+    <span class="viz-logo" aria-hidden="true">STARMILK</span>
   </div>
 
+  <!-- ═══ Tap Hint ═══ -->
+  <div class="viz-hint" id="viz-hint" aria-hidden="true">
+    <p>move to reveal controls</p>
+  </div>
+
+  <!-- ═══ Controls UI ═══ -->
   <div class="viz-ui" id="viz-ui" role="region" aria-label="Visualizer controls">
-    <p class="viz-title">Visual Listening Room</p>
 
-    <!-- Visual toggles — 5 videos + 1 image + void -->
-    <div class="viz-toggles" role="radiogroup" aria-label="Visual selection">
-      <button class="viz-toggle active" data-visual="vision" role="radio" aria-checked="true">Chalice Dance</button>
-      <button class="viz-toggle" data-visual="heart" role="radio" aria-checked="false">Cosmic Heart</button>
-      <button class="viz-toggle" data-visual="sun" role="radio" aria-checked="false">Dripping Sun</button>
-      <button class="viz-toggle" data-visual="butterfly" role="radio" aria-checked="false">Butterfly Infinity</button>
-      <button class="viz-toggle" data-visual="wings" role="radio" aria-checked="false">Winged Ascension</button>
-      <button class="viz-toggle" data-visual="wizard" role="radio" aria-checked="false">Star Wizard</button>
-      <button class="viz-toggle" data-visual="void" role="radio" aria-checked="false">Deep Void</button>
+    <span class="viz-label">Visual Listening Room</span>
+
+    <!-- Scene Selector -->
+    <div class="viz-scenes" role="radiogroup" aria-label="Visual scene selection">
+      <button class="viz-scene-dot active" data-visual="vision" data-label="Chalice Dance" role="radio" aria-checked="true" aria-label="Chalice Dance"></button>
+      <button class="viz-scene-dot" data-visual="heart" data-label="Cosmic Heart" role="radio" aria-checked="false" aria-label="Cosmic Heart"></button>
+      <button class="viz-scene-dot" data-visual="sun" data-label="Dripping Sun" role="radio" aria-checked="false" aria-label="Dripping Sun"></button>
+      <button class="viz-scene-dot" data-visual="butterfly" data-label="Butterfly Infinity" role="radio" aria-checked="false" aria-label="Butterfly Infinity"></button>
+      <button class="viz-scene-dot" data-visual="wings" data-label="Winged Ascension" role="radio" aria-checked="false" aria-label="Winged Ascension"></button>
+      <button class="viz-scene-dot" data-visual="wizard" data-label="Star Wizard" role="radio" aria-checked="false" aria-label="Star Wizard"></button>
+      <button class="viz-scene-dot" data-visual="void" data-label="Deep Void" role="radio" aria-checked="false" aria-label="Deep Void"></button>
     </div>
 
-    <!-- Track controls -->
-    <p class="viz-track" id="viz-track-name" aria-live="polite">Loading...</p>
+    <!-- Track Name -->
+    <p class="viz-track-name" id="viz-track-name" aria-live="polite">Loading...</p>
 
-    <div class="viz-controls" role="toolbar" aria-label="Playback controls">
-      <button class="viz-btn" id="viz-prev" aria-label="Previous track">&#x23EE; Prev</button>
-      <button class="viz-btn" id="viz-play" aria-label="Play">&#x25B6; Play</button>
-      <button class="viz-btn" id="viz-next" aria-label="Next track">Next &#x23ED;</button>
-      <button class="viz-btn" id="viz-shuffle" aria-label="Shuffle tracks">&#x1F500; Shuffle</button>
+    <!-- Progress -->
+    <div class="viz-progress-wrap" id="viz-progress-wrap" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div class="viz-progress-bar" id="viz-progress-bar"></div>
     </div>
 
-    <!-- SoundCloud embed -->
-    <div class="viz-player">
-      <div id="viz-embed"></div>
+    <!-- Transport -->
+    <div class="viz-transport" role="toolbar" aria-label="Playback controls">
+      <button class="viz-transport-btn" id="viz-shuffle" aria-label="Shuffle tracks">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 3 21 3 21 8"/>
+          <line x1="4" y1="20" x2="21" y2="3"/>
+          <polyline points="21 16 21 21 16 21"/>
+          <line x1="15" y1="15" x2="21" y2="21"/>
+          <line x1="4" y1="4" x2="9" y2="9"/>
+        </svg>
+      </button>
+      <button class="viz-transport-btn" id="viz-prev" aria-label="Previous track">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="19 20 9 12 19 4 19 20" fill="currentColor" stroke="none" opacity=".7"/>
+          <line x1="5" y1="19" x2="5" y2="5"/>
+        </svg>
+      </button>
+      <button class="viz-transport-btn play-btn" id="viz-play" aria-label="Play">
+        <svg id="play-icon" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+          <polygon points="6 3 20 12 6 21 6 3"/>
+        </svg>
+      </button>
+      <button class="viz-transport-btn" id="viz-next" aria-label="Next track">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 4 15 12 5 20 5 4" fill="currentColor" stroke="none" opacity=".7"/>
+          <line x1="19" y1="5" x2="19" y2="19"/>
+        </svg>
+      </button>
+      <button class="viz-transport-btn" id="viz-loop" aria-label="Loop track">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="17 1 21 5 17 9"/>
+          <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+          <polyline points="7 23 3 19 7 15"/>
+          <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+        </svg>
+      </button>
     </div>
+  </div>
+
+  <!-- ═══ Hidden SoundCloud Player ═══ -->
+  <div class="viz-sc-hidden" id="viz-sc-container" aria-hidden="true">
+    <div id="viz-sc-embed"></div>
   </div>
 
   <script>
   (function() {
     'use strict';
 
+    /* ══════════════════════════════════════════════════════════
+       CONSTANTS & STATE
+       ══════════════════════════════════════════════════════════ */
     const SC_API_URL = 'https://w.soundcloud.com/player/api.js';
     const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const TAU = Math.PI * 2;
+
     let scAPILoaded = false;
     let scWidget = null;
-
-    const loadSCAPI = () => new Promise((resolve) => {
-      if (scAPILoaded && typeof SC !== 'undefined' && SC.Widget) { resolve(true); return; }
-      const script = document.createElement('script');
-      script.src = SC_API_URL;
-      script.onload = () => { scAPILoaded = true; resolve(true); };
-      script.onerror = () => resolve(false);
-      document.head.appendChild(script);
-    });
+    let tracks = [];
+    let currentIndex = 0;
+    let isPlaying = false;
+    let progressPoll = null;
 
     /* ══════════════════════════════════════════════════════════
-       VISUAL TOGGLING — manage all video/image layers
+       DOM REFS
        ══════════════════════════════════════════════════════════ */
+    const ui = document.getElementById('viz-ui');
+    const topbar = document.getElementById('viz-topbar');
+    const hint = document.getElementById('viz-hint');
+    const trackNameEl = document.getElementById('viz-track-name');
+    const scEmbed = document.getElementById('viz-sc-embed');
+    const playBtn = document.getElementById('viz-play');
+    const playIcon = document.getElementById('play-icon');
+    const progressBar = document.getElementById('viz-progress-bar');
+    const progressWrap = document.getElementById('viz-progress-wrap');
+
     const layers = {
       vision:    document.getElementById('viz-vision'),
       heart:     document.getElementById('viz-heart'),
@@ -375,143 +551,252 @@
       wizard:    document.getElementById('viz-wizard'),
       void:      document.getElementById('viz-void')
     };
-
-    const videoLayers = ['vision', 'heart', 'sun', 'butterfly', 'wings'];
+    const videoKeys = ['vision', 'heart', 'sun', 'butterfly', 'wings'];
     let currentVisual = 'vision';
 
-    // Play the default video
+    // Start first video
     layers.vision.play().catch(() => {});
 
-    document.querySelectorAll('.viz-toggle').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const target = btn.dataset.visual;
+    /* ══════════════════════════════════════════════════════════
+       SC API LOADER
+       ══════════════════════════════════════════════════════════ */
+    const loadSCAPI = () => new Promise((resolve) => {
+      if (scAPILoaded && typeof SC !== 'undefined' && SC.Widget) { resolve(true); return; }
+      const s = document.createElement('script');
+      s.src = SC_API_URL;
+      s.onload = () => { scAPILoaded = true; resolve(true); };
+      s.onerror = () => resolve(false);
+      document.head.appendChild(s);
+    });
+
+    /* ══════════════════════════════════════════════════════════
+       VISUAL SCENE SWITCHING
+       ══════════════════════════════════════════════════════════ */
+    document.querySelectorAll('.viz-scene-dot').forEach(dot => {
+      dot.addEventListener('click', () => {
+        const target = dot.dataset.visual;
         if (target === currentVisual) return;
 
-        // Pause all videos, deactivate all layers
-        videoLayers.forEach(key => {
-          layers[key].pause();
-          layers[key].classList.remove('active');
-        });
+        // Pause all videos, hide all layers
+        videoKeys.forEach(k => { layers[k].pause(); layers[k].classList.remove('active'); });
         layers.wizard.classList.remove('active');
         layers.void.classList.remove('active');
 
-        // Update toggle buttons
-        document.querySelectorAll('.viz-toggle').forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-checked', 'false');
+        // Update dots
+        document.querySelectorAll('.viz-scene-dot').forEach(d => {
+          d.classList.remove('active');
+          d.setAttribute('aria-checked', 'false');
         });
 
-        // Activate selected
+        // Activate
         layers[target].classList.add('active');
-        btn.classList.add('active');
-        btn.setAttribute('aria-checked', 'true');
+        dot.classList.add('active');
+        dot.setAttribute('aria-checked', 'true');
         currentVisual = target;
 
-        // Play if it's a video
-        if (videoLayers.includes(target)) {
+        if (videoKeys.includes(target)) {
           layers[target].play().catch(() => {});
         }
       });
     });
 
     /* ══════════════════════════════════════════════════════════
-       UI SHOW/HIDE
+       UI SHOW/HIDE — 6 second timeout, mouse/touch reveal
        ══════════════════════════════════════════════════════════ */
-    const ui = document.getElementById('viz-ui');
-    const hint = document.getElementById('viz-hint');
     let uiVisible = true;
-    let hideTimeout = null;
+    let hideTimer = null;
 
-    function scheduleHide() {
-      clearTimeout(hideTimeout);
-      hideTimeout = setTimeout(() => {
-        ui.classList.add('hidden');
-        uiVisible = false;
-        hint.classList.add('show');
-        setTimeout(() => hint.classList.remove('show'), 2500);
-      }, 10000);
+    function showUI() {
+      ui.classList.remove('hidden');
+      topbar.classList.remove('hidden');
+      document.body.classList.add('controls-visible');
+      uiVisible = true;
+      scheduleHide();
     }
 
-    document.addEventListener('click', (e) => {
-      if (e.target.closest('.viz-ui') || e.target.closest('.viz-back')) return;
-      if (uiVisible) {
-        ui.classList.add('hidden');
-        uiVisible = false;
-      } else {
-        ui.classList.remove('hidden');
-        uiVisible = true;
-        scheduleHide();
-      }
+    function hideUI() {
+      ui.classList.add('hidden');
+      topbar.classList.add('hidden');
+      document.body.classList.remove('controls-visible');
+      uiVisible = false;
+      // Brief hint
+      hint.classList.add('show');
+      setTimeout(() => hint.classList.remove('show'), 2000);
+    }
+
+    function scheduleHide() {
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(hideUI, 6000);
+    }
+
+    // Mouse movement reveals
+    let lastMoveTime = 0;
+    document.addEventListener('mousemove', () => {
+      const now = Date.now();
+      if (now - lastMoveTime < 100) return;
+      lastMoveTime = now;
+      if (!uiVisible) showUI();
+      else scheduleHide();
     });
 
+    // Touch on empty area toggles
+    document.addEventListener('touchstart', (e) => {
+      if (e.target.closest('.viz-ui') || e.target.closest('.viz-topbar')) return;
+      if (uiVisible) hideUI();
+      else showUI();
+    }, { passive: true });
+
+    // Click on empty area toggles (desktop)
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('.viz-ui') || e.target.closest('.viz-topbar') || e.target.closest('footer')) return;
+      if (uiVisible) hideUI();
+      else showUI();
+    });
+
+    // Keyboard
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        if (uiVisible) { ui.classList.add('hidden'); uiVisible = false; }
-        else { ui.classList.remove('hidden'); uiVisible = true; scheduleHide(); }
+        if (uiVisible) hideUI(); else showUI();
+      }
+      if (e.key === ' ' && !e.target.closest('input,textarea')) {
+        e.preventDefault();
+        togglePlayPause();
       }
     });
 
     scheduleHide();
 
     /* ══════════════════════════════════════════════════════════
-       MUSIC PLAYER with SC Widget API auto-advance
+       MUSIC PLAYER
        ══════════════════════════════════════════════════════════ */
-    let tracks = [];
-    let currentIndex = 0;
-    let isPlaying = false;
+    const PLAY_PATH = 'M6 3L20 12L6 21Z';
+    const PAUSE_PATH = 'M6 4H10V20H6ZM14 4H18V20H14Z';
 
-    const trackName = document.getElementById('viz-track-name');
-    const embedShell = document.getElementById('viz-embed');
-    const playBtn = document.getElementById('viz-play');
+    function setPlayIcon(playing) {
+      playIcon.innerHTML = playing
+        ? '<path d="M6 4H10V20H6Z" /><path d="M14 4H18V20H14Z" />'
+        : '<polygon points="6 3 20 12 6 21 6 3"/>';
+      playBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+    }
 
+    function togglePlayPause() {
+      if (!scWidget) return;
+      if (isPlaying) {
+        scWidget.pause();
+        isPlaying = false;
+        setPlayIcon(false);
+        stopProgressPoll();
+      } else {
+        scWidget.play();
+        isPlaying = true;
+        setPlayIcon(true);
+        startProgressPoll();
+      }
+    }
+
+    function startProgressPoll() {
+      stopProgressPoll();
+      progressPoll = setInterval(() => {
+        if (!scWidget) return;
+        scWidget.getPosition(pos => {
+          scWidget.getDuration(dur => {
+            if (dur > 0) {
+              const pct = Math.min(100, (pos / dur) * 100);
+              progressBar.style.width = pct + '%';
+            }
+          });
+        });
+      }, 400);
+    }
+
+    function stopProgressPoll() {
+      if (progressPoll) { clearInterval(progressPoll); progressPoll = null; }
+    }
+
+    // Progress bar click-to-seek
+    progressWrap.addEventListener('click', (e) => {
+      if (!scWidget) return;
+      const rect = progressWrap.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      scWidget.getDuration(dur => {
+        scWidget.seekTo(dur * pct);
+      });
+    });
+
+    // Load tracks
     fetch('starmilk-tracks.json')
       .then(r => r.json())
       .then(data => {
         tracks = data;
+        // Shuffle on load
         for (let i = tracks.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [tracks[i], tracks[j]] = [tracks[j], tracks[i]];
         }
         loadTrack(0);
       })
-      .catch(() => { trackName.textContent = 'Could not load tracks'; });
+      .catch(() => { trackNameEl.textContent = 'Could not load tracks'; });
 
-    async function bindWidgetAutoAdvance(iframe) {
-      try {
-        await loadSCAPI();
-        if (typeof SC === 'undefined' || !SC.Widget) return;
-        scWidget = SC.Widget(iframe);
-        scWidget.bind(SC.Widget.Events.FINISH, () => loadTrack(currentIndex + 1));
-        scWidget.bind(SC.Widget.Events.ERROR, () => setTimeout(() => loadTrack(currentIndex + 1), 1500));
-      } catch (_) {}
-    }
-
-    function loadTrack(index) {
+    async function loadTrack(index) {
       if (!tracks.length) return;
       currentIndex = ((index % tracks.length) + tracks.length) % tracks.length;
       const track = tracks[currentIndex];
       const name = track.name || track.title || 'Unknown Track';
-      trackName.textContent = name;
+      trackNameEl.textContent = name;
+      progressBar.style.width = '0%';
 
       const url = track.url || track.permalink_url;
-      if (url) {
-        const encoded = encodeURIComponent(url);
-        embedShell.innerHTML = `<iframe
-          scrolling="no" frameborder="no" allow="autoplay"
-          title="Now playing: ${name.replace(/"/g, '&quot;')}"
-          src="https://w.soundcloud.com/player/?url=${encoded}&color=%23c9944a&auto_play=${isPlaying}&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
-        ></iframe>`;
-        const iframe = embedShell.querySelector('iframe');
-        if (iframe) {
-          bindWidgetAutoAdvance(iframe);
-          // Fallback: if iframe fails to load, show direct link
-          iframe.addEventListener('error', () => {
-            embedShell.innerHTML = `<a href="${url}" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:underline;font-size:.85rem;">Open on SoundCloud &rarr;</a>`;
-          });
-        }
-      }
+      if (!url) return;
+
+      const encoded = encodeURIComponent(url);
+      const autoPlay = isPlaying ? 'true' : 'false';
+      scEmbed.innerHTML = `<iframe
+        scrolling="no" frameborder="no" allow="autoplay"
+        title="Now playing: ${name.replace(/"/g, '&quot;')}"
+        src="https://w.soundcloud.com/player/?url=${encoded}&color=%23c9944a&auto_play=${autoPlay}&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
+      ></iframe>`;
+
+      const iframe = scEmbed.querySelector('iframe');
+      if (!iframe) return;
+
+      try {
+        await loadSCAPI();
+        if (typeof SC === 'undefined' || !SC.Widget) return;
+        scWidget = SC.Widget(iframe);
+
+        scWidget.bind(SC.Widget.Events.READY, () => {
+          if (isPlaying) {
+            scWidget.play();
+            startProgressPoll();
+          }
+        });
+
+        scWidget.bind(SC.Widget.Events.PLAY, () => {
+          isPlaying = true;
+          setPlayIcon(true);
+          startProgressPoll();
+        });
+
+        scWidget.bind(SC.Widget.Events.PAUSE, () => {
+          isPlaying = false;
+          setPlayIcon(false);
+          stopProgressPoll();
+        });
+
+        scWidget.bind(SC.Widget.Events.FINISH, () => {
+          stopProgressPoll();
+          progressBar.style.width = '100%';
+          setTimeout(() => loadTrack(currentIndex + 1), 600);
+        });
+
+        scWidget.bind(SC.Widget.Events.ERROR, () => {
+          setTimeout(() => loadTrack(currentIndex + 1), 1200);
+        });
+      } catch (_) {}
     }
 
+    // Transport buttons
+    playBtn.addEventListener('click', togglePlayPause);
     document.getElementById('viz-prev').addEventListener('click', () => loadTrack(currentIndex - 1));
     document.getElementById('viz-next').addEventListener('click', () => loadTrack(currentIndex + 1));
     document.getElementById('viz-shuffle').addEventListener('click', () => {
@@ -521,61 +806,238 @@
       }
       loadTrack(0);
     });
-    playBtn.addEventListener('click', () => {
-      isPlaying = !isPlaying;
-      playBtn.textContent = isPlaying ? '\u23F8 Pause' : '\u25B6 Play';
-      playBtn.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
-      loadTrack(currentIndex);
-    });
 
     /* ══════════════════════════════════════════════════════════
-       AMBIENT PARTICLES
+       AMBIENT PARTICLES — slow, organic dust motes
        ══════════════════════════════════════════════════════════ */
-    const canvas = document.getElementById('viz-particles');
-    const ctx = canvas.getContext('2d');
-    const TAU = Math.PI * 2;
-    let W, H, particles;
+    const pCanvas = document.getElementById('viz-particles');
+    const pCtx = pCanvas.getContext('2d');
+    let PW, PH, motes;
+
     function rnd(lo, hi) { return lo + Math.random() * (hi - lo); }
 
-    function buildParticles() {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-      const count = Math.min(60, Math.floor(W * 0.04));
-      particles = Array.from({ length: count }, () => ({
-        x: rnd(0, W), y: rnd(0, H),
-        r: rnd(0.3, 1.6), a: rnd(0.15, 0.6),
-        spd: rnd(0.0003, 0.001), ph: rnd(0, TAU),
-        dx: rnd(-0.015, 0.015), dy: rnd(-0.008, 0.008),
+    function buildMotes() {
+      PW = pCanvas.width = window.innerWidth;
+      PH = pCanvas.height = window.innerHeight;
+      const count = Math.min(45, Math.floor(PW * 0.028));
+      motes = Array.from({ length: count }, () => ({
+        x: rnd(0, PW), y: rnd(0, PH),
+        r: rnd(0.4, 1.8),
+        alpha: rnd(0.08, 0.35),
+        speed: rnd(0.00015, 0.0006),
+        phase: rnd(0, TAU),
+        dx: rnd(-0.08, 0.08),
+        dy: rnd(-0.04, 0.04),
+        color: Math.random() > 0.7
+          ? `201,148,74`   // gold mote
+          : Math.random() > 0.5
+            ? `107,91,138`  // purple mote
+            : `213,207,194` // neutral mote
       }));
     }
 
-    buildParticles();
-    window.addEventListener('resize', buildParticles);
+    buildMotes();
+    window.addEventListener('resize', buildMotes);
 
     if (REDUCED) {
-      ctx.clearRect(0, 0, W, H);
-      particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, TAU);
-        ctx.fillStyle = `rgba(213,207,194,${p.a * 0.5})`;
-        ctx.fill();
+      // Static render
+      pCtx.clearRect(0, 0, PW, PH);
+      motes.forEach(p => {
+        pCtx.beginPath();
+        pCtx.arc(p.x, p.y, p.r, 0, TAU);
+        pCtx.fillStyle = `rgba(${p.color},${p.alpha * 0.4})`;
+        pCtx.fill();
       });
-    } else {
-      (function loop(ts) {
-        ctx.clearRect(0, 0, W, H);
-        particles.forEach(p => {
-          p.x += p.dx; p.y += p.dy;
-          if (p.x < -2) p.x = W + 2;
-          if (p.x > W + 2) p.x = -2;
-          if (p.y < -2) p.y = H + 2;
-          if (p.y > H + 2) p.y = -2;
-          const tw = p.a * (0.5 + 0.5 * Math.sin(ts * p.spd + p.ph));
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r, 0, TAU);
-          ctx.fillStyle = `rgba(213,207,194,${tw})`;
-          ctx.fill();
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       AUDIO-REACTIVE VISUALIZATION
+       Van Gogh brushstroke-style organic visuals
+       ══════════════════════════════════════════════════════════ */
+    const rCanvas = document.getElementById('viz-reactive');
+    const rCtx = rCanvas.getContext('2d');
+    let RW, RH;
+
+    function sizeReactiveCanvas() {
+      RW = rCanvas.width = window.innerWidth;
+      RH = rCanvas.height = window.innerHeight;
+    }
+    sizeReactiveCanvas();
+    window.addEventListener('resize', sizeReactiveCanvas);
+
+    // Audio analysis — gentle dummy oscillation as fallback
+    // (SoundCloud cross-origin prevents real WebAudio connection to iframe)
+    const NUM_BANDS = 64;
+    let audioData = new Float32Array(NUM_BANDS);
+
+    // Gentle organic oscillation that simulates music reactivity
+    function updateDummyAudio(time) {
+      for (let i = 0; i < NUM_BANDS; i++) {
+        const freq = i / NUM_BANDS;
+        // Multiple layered sine waves for organic feel
+        const base = Math.sin(time * 0.0004 + i * 0.3) * 0.3;
+        const mid = Math.sin(time * 0.0007 + i * 0.15) * 0.25;
+        const slow = Math.sin(time * 0.00015 + i * 0.5) * 0.2;
+        const pulse = Math.sin(time * 0.0012) * 0.15; // beat-like pulse
+        // Emphasize bass and mid
+        const emphasis = 1 - freq * 0.4;
+        audioData[i] = Math.max(0, (base + mid + slow + pulse) * emphasis * (isPlaying ? 1.0 : 0.35));
+      }
+    }
+
+    // Reactive visual elements
+    const ringCount = 5;
+    const rings = Array.from({ length: ringCount }, (_, i) => ({
+      radius: 80 + i * 55,
+      points: 90 + i * 20,
+      speed: 0.0001 + i * 0.00003,
+      amplitude: 12 + i * 8,
+      phase: i * 1.2,
+      color: i % 2 === 0
+        ? { r: 201, g: 148, b: 74 }   // gold
+        : { r: 107, g: 91, b: 138 }    // purple
+    }));
+
+    // Floating reactive particles
+    const reactiveParticleCount = 35;
+    const reactiveParticles = Array.from({ length: reactiveParticleCount }, () => ({
+      angle: rnd(0, TAU),
+      dist: rnd(60, 280),
+      size: rnd(1.5, 4),
+      speed: rnd(0.0001, 0.0004),
+      band: Math.floor(rnd(0, NUM_BANDS)),
+      phase: rnd(0, TAU),
+      trail: [],
+      color: Math.random() > 0.5
+        ? { r: 201, g: 148, b: 74 }
+        : { r: 107, g: 91, b: 138 }
+    }));
+
+    /* ══════════════════════════════════════════════════════════
+       MAIN ANIMATION LOOP
+       ══════════════════════════════════════════════════════════ */
+    if (!REDUCED) {
+      (function animate(time) {
+        requestAnimationFrame(animate);
+
+        // Update dummy audio
+        updateDummyAudio(time);
+
+        // ── Draw ambient particles ──
+        pCtx.clearRect(0, 0, PW, PH);
+        motes.forEach(p => {
+          p.x += p.dx;
+          p.y += p.dy;
+          if (p.x < -3) p.x = PW + 3;
+          if (p.x > PW + 3) p.x = -3;
+          if (p.y < -3) p.y = PH + 3;
+          if (p.y > PH + 3) p.y = -3;
+          const twinkle = p.alpha * (0.5 + 0.5 * Math.sin(time * p.speed + p.phase));
+          pCtx.beginPath();
+          pCtx.arc(p.x, p.y, p.r, 0, TAU);
+          pCtx.fillStyle = `rgba(${p.color},${twinkle})`;
+          pCtx.fill();
         });
-        requestAnimationFrame(loop);
+
+        // ── Draw audio-reactive visuals ──
+        rCtx.clearRect(0, 0, RW, RH);
+
+        const cx = RW / 2;
+        const cy = RH / 2;
+
+        // Organic waveform rings — aurora/ink-in-water style
+        rings.forEach((ring, ri) => {
+          const bandStart = Math.floor((ri / ringCount) * NUM_BANDS * 0.6);
+          rCtx.beginPath();
+
+          for (let i = 0; i <= ring.points; i++) {
+            const t = i / ring.points;
+            const angle = t * TAU;
+
+            // Sample audio for this point
+            const bandIdx = Math.min(NUM_BANDS - 1, bandStart + Math.floor(t * (NUM_BANDS * 0.3)));
+            const audioVal = audioData[bandIdx];
+
+            // Organic distortion — multiple noise layers
+            const noise1 = Math.sin(angle * 3 + time * ring.speed + ring.phase) * ring.amplitude * 0.5;
+            const noise2 = Math.sin(angle * 7 + time * ring.speed * 0.6) * ring.amplitude * 0.3;
+            const noise3 = Math.sin(angle * 2 + time * ring.speed * 1.5 + ri) * ring.amplitude * 0.2;
+
+            const audioDisplace = audioVal * ring.amplitude * 2.5;
+            const r = ring.radius + noise1 + noise2 + noise3 + audioDisplace;
+
+            const x = cx + Math.cos(angle) * r;
+            const y = cy + Math.sin(angle) * r;
+
+            if (i === 0) rCtx.moveTo(x, y);
+            else rCtx.lineTo(x, y);
+          }
+
+          rCtx.closePath();
+
+          // Matte, painterly stroke
+          const alpha = 0.06 + audioData[bandStart] * 0.08;
+          rCtx.strokeStyle = `rgba(${ring.color.r},${ring.color.g},${ring.color.b},${alpha})`;
+          rCtx.lineWidth = 1.5 + audioData[bandStart] * 3;
+          rCtx.stroke();
+
+          // Very subtle fill
+          const fillAlpha = 0.008 + audioData[bandStart] * 0.015;
+          rCtx.fillStyle = `rgba(${ring.color.r},${ring.color.g},${ring.color.b},${fillAlpha})`;
+          rCtx.fill();
+        });
+
+        // Floating reactive particles — like embers or cosmic dust
+        reactiveParticles.forEach(p => {
+          const audioVal = audioData[p.band];
+          p.angle += p.speed + audioVal * 0.002;
+
+          // Organic path — swirling, not circular
+          const wobble = Math.sin(time * 0.0002 + p.phase) * 30;
+          const distMod = p.dist + audioVal * 40 + wobble;
+
+          const x = cx + Math.cos(p.angle) * distMod;
+          const y = cy + Math.sin(p.angle) * distMod * 0.75; // slight vertical compression for depth
+
+          // Trail
+          p.trail.push({ x, y });
+          if (p.trail.length > 8) p.trail.shift();
+
+          // Draw trail
+          if (p.trail.length > 1) {
+            rCtx.beginPath();
+            rCtx.moveTo(p.trail[0].x, p.trail[0].y);
+            for (let ti = 1; ti < p.trail.length; ti++) {
+              rCtx.lineTo(p.trail[ti].x, p.trail[ti].y);
+            }
+            const trailAlpha = 0.03 + audioVal * 0.06;
+            rCtx.strokeStyle = `rgba(${p.color.r},${p.color.g},${p.color.b},${trailAlpha})`;
+            rCtx.lineWidth = p.size * 0.5;
+            rCtx.stroke();
+          }
+
+          // Draw particle
+          const particleAlpha = 0.1 + audioVal * 0.25;
+          const particleSize = p.size + audioVal * 2;
+          rCtx.beginPath();
+          rCtx.arc(x, y, particleSize, 0, TAU);
+          rCtx.fillStyle = `rgba(${p.color.r},${p.color.g},${p.color.b},${particleAlpha})`;
+          rCtx.fill();
+        });
+
+        // Subtle central glow — breathing effect
+        const breathe = 0.5 + 0.5 * Math.sin(time * 0.0003);
+        const avgAudio = audioData.reduce((s, v) => s + v, 0) / NUM_BANDS;
+        const glowRadius = 120 + breathe * 60 + avgAudio * 100;
+        const glowAlpha = 0.015 + avgAudio * 0.02;
+
+        const glow = rCtx.createRadialGradient(cx, cy, 0, cx, cy, glowRadius);
+        glow.addColorStop(0, `rgba(201,148,74,${glowAlpha})`);
+        glow.addColorStop(0.5, `rgba(107,91,138,${glowAlpha * 0.5})`);
+        glow.addColorStop(1, 'rgba(8,11,22,0)');
+        rCtx.fillStyle = glow;
+        rCtx.fillRect(cx - glowRadius, cy - glowRadius, glowRadius * 2, glowRadius * 2);
+
       })(0);
     }
 
