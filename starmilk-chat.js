@@ -27,6 +27,27 @@
   if (!toggle || !panel) return;
 
   /* ═══════════════════════════════════════════════════════════
+     BRAIN API — Supabase Edge Function
+     Queries server-side semantic knowledge base.
+     Falls back to client pattern-matching if unavailable.
+     ═══════════════════════════════════════════════════════════ */
+  const BRAIN_URL  = 'https://hcfpygcnsjcfsbzbdrzq.supabase.co/functions/v1/starmilk-brain';
+  const BRAIN_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjZnB5Z2Nuc2pjZnNiemJkcnpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2OTQyNjIsImV4cCI6MjA4OTI3MDI2Mn0.slX4nwDWpvfVlFtJYfBIPgHLW4rQ8qN3HH9C7n4f0CQ';
+
+  async function queryBrain(query) {
+    try {
+      const res = await fetch(BRAIN_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${BRAIN_ANON}` },
+        body: JSON.stringify({ query }),
+        signal: AbortSignal.timeout(4000),
+      });
+      if (!res.ok) return null;
+      return await res.json(); // { answer, tracks, intent, philosophy }
+    } catch (_) { return null; }
+  }
+
+  /* ═══════════════════════════════════════════════════════════
      CONVERSATION MEMORY
      ═══════════════════════════════════════════════════════════ */
   const memory = {
@@ -601,7 +622,22 @@
     "The river doesn't judge what flows through it. Neither does STARMILK. Whatever you're feeling, it belongs here. You belong here.",
   ];
 
-  function generateResponse(input) {
+  async function generateResponse(input) {
+    // First try the server-side brain for semantic knowledge
+    const brain = await queryBrain(input);
+    if (brain && brain.answer) {
+      // Brain found a specific answer — use it, enriched with STARMILK personality
+      let response = brain.answer;
+      // Append track recommendation as a clickable link if available
+      if (brain.tracks && brain.tracks.length > 0) {
+        const track = brain.tracks[0];
+        response += `\n\n<a href="${track.url}" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:underline;font-style:italic;">${track.title}</a> — ${track.desc}`;
+      }
+      rememberTurn('bot', response, brain.intent || 'brain');
+      return response;
+    }
+
+    // Fallback to client-side pattern matching
     const intent = detectIntent(input);
     const mood = detectMood(input);
     memory.mood = mood;
@@ -726,17 +762,24 @@
       const thinkTime = 300 + Math.min(text.length * 3, 1200);
 
       setTimeout(() => {
-        // Remove typing indicator
         if (typing.parentNode) typing.parentNode.removeChild(typing);
         messagesEl.appendChild(msg);
 
+        // If the brain returned HTML (track links), render immediately
+        const hasHTML = /<a\s/i.test(text);
+        if (hasHTML) {
+          msg.innerHTML = text.replace(/\n\n/g, '<br><br>');
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+          return;
+        }
+
+        // Typewriter effect for plain text
         let i = 0;
         const speed = 14 + Math.random() * 10;
         function type() {
           if (i < text.length) {
             msg.textContent = text.slice(0, i + 1);
             i++;
-            // Slight pause at punctuation for natural rhythm
             const char = text[i - 1];
             const delay = (char === '.' || char === '—' || char === ',' || char === '?') ? speed * 4 : speed;
             setTimeout(type, delay);
@@ -752,19 +795,17 @@
     }
   }
 
-  function handleSend() {
+  async function handleSend() {
     const text = inputEl.value.trim();
     if (!text) return;
     inputEl.value = '';
+    sendBtn.disabled = true;
     addMessage(text, false);
     rememberTurn('user', text, detectIntent(text));
 
-    // Natural delay
-    const delay = 200 + Math.random() * 300;
-    setTimeout(() => {
-      const response = generateResponse(text);
-      addMessage(response, true);
-    }, delay);
+    const response = await generateResponse(text);
+    addMessage(response, true);
+    sendBtn.disabled = false;
   }
 
   /* ═══════════════════════════════════════════════════════════

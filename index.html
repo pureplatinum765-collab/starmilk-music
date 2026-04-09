@@ -4488,6 +4488,51 @@ if ('serviceWorker' in navigator) {
 </div>
 <script src="starmilk-chat.js" defer></script>
 
+<!--
+  ══════════════════════════════════════════════════
+  BOTPENGUIN LIVE SUPPORT WIDGET
+
+  To activate:
+  1. Go to https://app.botpenguin.com
+  2. Create a Website Bot (or use an existing one)
+  3. Click Install > Custom Built Website
+  4. Copy your Bot ID (the alphanumeric ID in the script)
+  5. Replace BOT_ID_PLACEHOLDER below with your Bot ID
+  ══════════════════════════════════════════════════
+-->
+<script>
+(function() {
+  var BOT_ID = 'BOT_ID_PLACEHOLDER'; // ← Replace with your BotPenguin Bot ID
+  if (BOT_ID === 'BOT_ID_PLACEHOLDER') return; // Skip until real ID is added
+
+  window.botPenguinData = { chatBotId: BOT_ID };
+
+  var s = document.createElement('script');
+  s.src = 'https://cdn.botpenguin.com/website-bot.js';
+  s.defer = true;
+  s.onload = function() {
+    // Re-style the BotPenguin widget to match STARMILK aesthetic
+    // Wait for widget to render, then apply cosmic styling
+    setTimeout(function() {
+      var style = document.createElement('style');
+      style.textContent = [
+        /* Position above the radio player */
+        '#bp-web-widget-container { bottom: 5.5rem !important; right: 1.25rem !important; }',
+        /* Matte cosmic button */
+        '#bp-web-widget { border-radius: 14px !important; }',
+        '#bp-web-widget .botpenguin-widget-button {',
+        '  background: rgba(11,14,26,.94) !important;',
+        '  border: 1px solid rgba(201,148,74,.22) !important;',
+        '  box-shadow: 0 4px 20px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05) !important;',
+        '}',
+      ].join('\n');
+      document.head.appendChild(style);
+    }, 1500);
+  };
+  document.head.appendChild(s);
+})();
+</script>
+
 <script>
 /* ── Genius Mode: Nav scrolled state + active section tracking ── */
 (function () {
