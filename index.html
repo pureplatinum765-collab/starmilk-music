@@ -2625,6 +2625,592 @@
       }
     }
 
+
+    /* ═══════════════════════════════════════════════════════════
+       GENIUS MODE — Full artistic overhaul
+       Every section breathing from the same midnight canvas.
+       Nothing competes. Everything belongs.
+       ═══════════════════════════════════════════════════════════ */
+
+    /* ── 1. DESIGN SYSTEM UPGRADES ── */
+    :root {
+      /* Tightened colour — teal becomes a deep harmonic blue */
+      --teal:        #3a5888;
+      --teal-light:  #7a9ab8;
+      /* Refined card background — slightly warmer midnight */
+      --card:        #0d1220;
+      /* Stronger section padding rhythm — 4px grid */
+      --section-pad: clamp(5rem, 8vw, 8rem);
+      /* Serif for emotional moments */
+      --font-serif:  Georgia, 'Times New Roman', serif;
+    }
+
+    /* ── 2. BODY — richer background depth ── */
+    body {
+      background: #06080f;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── 3. SECTION SPACING — unified vertical rhythm ── */
+    .section-inner {
+      padding-top:    var(--section-pad);
+      padding-bottom: var(--section-pad);
+    }
+
+    /* ── 4. DIVIDERS — invisible continuity seams ── */
+    .divider {
+      height: 80px;
+      background: transparent;
+      max-width: 100%;
+      position: relative;
+    }
+    .divider::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      background: rgba(201,148,74,.25);
+      box-shadow: 0 0 24px 6px rgba(201,148,74,.04);
+    }
+
+    /* ── 5. SECTION BACKGROUNDS — each breathes its own atmosphere ── */
+    /* All share the deep midnight, differentiated by a radial wash */
+    section {
+      position: relative;
+    }
+    #stream {
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(30,50,90,.3) 0%, transparent 70%);
+    }
+    #the-vision {
+      background: radial-gradient(ellipse 70% 50% at 20% 50%, rgba(60,40,90,.25) 0%, transparent 65%);
+    }
+    #inside-out {
+      background: radial-gradient(ellipse 60% 50% at 80% 50%, rgba(40,60,80,.2) 0%, transparent 70%);
+    }
+    #orchard {
+      background: radial-gradient(ellipse 70% 60% at 50% 80%, rgba(70,55,30,.2) 0%, transparent 65%);
+    }
+    #lyrics {
+      background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(70,45,90,.25) 0%, transparent 70%);
+    }
+    #games {
+      background: radial-gradient(ellipse 60% 50% at 30% 50%, rgba(30,50,80,.22) 0%, transparent 65%);
+    }
+    #support {
+      background: radial-gradient(ellipse 70% 60% at 70% 30%, rgba(60,40,20,.2) 0%, transparent 65%);
+    }
+    #vip {
+      background: radial-gradient(ellipse 60% 50% at 50% 60%, rgba(70,50,100,.2) 0%, transparent 65%);
+    }
+    #connect {
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(30,50,70,.22) 0%, transparent 65%);
+    }
+    #radio {
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(40,35,60,.2) 0%, transparent 65%);
+    }
+
+    /* ── 6. NAV — refined architecture ── */
+    nav {
+      padding: .85rem 2rem;
+      gap: 2.5rem;
+    }
+    .nav-links {
+      gap: 2rem;
+    }
+    .nav-links a {
+      font-size: .78rem;
+      font-weight: 500;
+      letter-spacing: .09em;
+      color: rgba(200,192,178,.45);
+      transition: color .2s ease;
+    }
+    .nav-links a:hover {
+      color: rgba(219,184,122,.85);
+    }
+    /* Active nav item indicator */
+    .nav-links a[data-active='true'] {
+      color: rgba(219,184,122,.9);
+    }
+    /* Visualizer special pill */
+    .nav-visualizer-link {
+      display: inline-flex !important;
+      align-items: center;
+      gap: .35rem;
+      padding: .32rem .75rem .32rem .6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(201,148,74,.2) !important;
+      background: rgba(201,148,74,.04);
+      color: rgba(219,184,122,.7) !important;
+      font-size: .72rem !important;
+      transition: border-color .2s, background .2s, color .2s !important;
+    }
+    .nav-visualizer-link svg {
+      width: 6px;
+      height: 6px;
+      color: var(--gold);
+    }
+    .nav-visualizer-link:hover {
+      border-color: rgba(201,148,74,.45) !important;
+      background: rgba(201,148,74,.09) !important;
+      color: rgba(219,184,122,1) !important;
+    }
+    /* Nav logo refinement */
+    .nav-logo {
+      font-size: 1.1rem;
+      letter-spacing: .28em;
+      font-weight: 700;
+      color: rgba(219,184,122,.7);
+      opacity: 1;
+    }
+
+    /* ── 7. SECTION TITLE SYSTEM ── */
+    .section-title {
+      font-size: clamp(1.7rem, 4vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: .04em;
+      line-height: 1.15;
+      color: rgba(213,207,194,.9);
+    }
+    .label {
+      font-size: .66rem;
+      letter-spacing: .38em;
+      opacity: .5;
+    }
+    .sub {
+      font-size: clamp(.9rem, 1.5vw, 1.05rem);
+      color: rgba(140,133,120,.8);
+      line-height: 1.75;
+      max-width: 56ch;
+    }
+
+    /* Poetic / emotional copy uses the serif voice */
+    .hero-tagline,
+    .river-caption,
+    .radio-section-copy,
+    .clearing-poem {
+      font-family: var(--font-serif) !important;
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: .01em;
+    }
+    .hero-tagline {
+      font-size: clamp(.95rem, 1.8vw, 1.2rem) !important;
+      line-height: 1.85 !important;
+      color: rgba(200,193,180,.6) !important;
+    }
+
+    /* ── 8. BUTTONS — premium matte gold ── */
+    .btn {
+      font-family: inherit;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      padding: .75rem 1.65rem;
+      border-radius: 10px;
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .btn:not(.btn-outline) {
+      background: rgba(201,148,74,.1);
+      border: 1px solid rgba(201,148,74,.28);
+      color: rgba(219,184,122,.9);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .btn:not(.btn-outline):hover {
+      background: rgba(201,148,74,.16);
+      border-color: rgba(201,148,74,.45);
+      color: rgba(240,210,150,1);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(201,148,74,.12), inset 0 1px 0 rgba(255,255,255,.06);
+    }
+    .btn-outline,
+    .btn:last-child {
+      background: transparent;
+      border: 1px solid rgba(107,91,138,.3);
+      color: rgba(200,185,225,.55);
+    }
+    .btn-outline:hover,
+    .btn:last-child:hover {
+      border-color: rgba(107,91,138,.55);
+      color: rgba(200,185,225,.85);
+      transform: translateY(-1px);
+    }
+
+    /* ── 9. CARDS — gallery frame ── */
+    .card {
+      background: rgba(11,14,22,.7);
+      border: 1px solid rgba(255,255,255,.055);
+      border-radius: 12px;
+      padding: 1.75rem;
+      box-shadow:
+        0 1px 0 rgba(255,255,255,.03) inset,
+        0 4px 20px rgba(0,0,0,.4);
+      backdrop-filter: blur(4px);
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(201,148,74,.15);
+      box-shadow:
+        0 1px 0 rgba(255,255,255,.04) inset,
+        0 8px 32px rgba(0,0,0,.5),
+        0 0 0 1px rgba(201,148,74,.08);
+    }
+    .card::before, .card::after { display: none; }
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.07);
+    }
+    .card-plat {
+      font-size: .64rem;
+      letter-spacing: .2em;
+      color: rgba(180,170,200,.45);
+      font-weight: 600;
+    }
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: rgba(213,207,194,.9);
+      line-height: 1.35;
+    }
+    .card p {
+      font-size: .86rem;
+      color: rgba(140,133,120,.7);
+      line-height: 1.7;
+    }
+    .card-arrow {
+      font-size: .76rem;
+      font-weight: 600;
+      color: rgba(180,170,200,.4);
+      letter-spacing: .04em;
+    }
+    .card:hover .card-arrow {
+      color: rgba(219,184,122,.7);
+      gap: .65rem;
+    }
+    /* All card variants use same matte treatment */
+    .card-teal .card-plat,
+    .card-teal .card-arrow { color: rgba(122,154,184,.5); }
+    .card-teal .card-icon {
+      background: rgba(58,88,136,.08);
+      border-color: rgba(58,88,136,.15);
+    }
+    .card-teal:hover { border-color: rgba(58,88,136,.25); }
+    .card-teal:hover .card-arrow { color: rgba(122,154,184,.8); }
+    .card-gold .card-plat,
+    .card-gold .card-arrow { color: rgba(201,148,74,.55); }
+    .card-gold .card-icon {
+      background: rgba(201,148,74,.06);
+      border-color: rgba(201,148,74,.12);
+    }
+    .card-gold:hover { border-color: rgba(201,148,74,.22); }
+    .card-gold:hover .card-arrow { color: rgba(219,184,122,.85); }
+
+    /* ── 10. STREAM GRID — fix the orphan card ── */
+    #stream .grid {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      justify-items: stretch;
+    }
+    @media (min-width: 1000px) {
+      #stream .grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+    @media (min-width: 680px) and (max-width: 999px) {
+      #stream .grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* ── 11. RIVER SECTION — harmonize the neon blue ── */
+    .river-title {
+      color: rgba(213,207,194,.88) !important;
+      text-shadow: none !important;
+      font-family: var(--font-serif) !important;
+      font-style: italic !important;
+      font-weight: 700 !important;
+    }
+    .river-caption {
+      color: rgba(180,172,158,.6) !important;
+      text-shadow: none !important;
+    }
+    .tributary {
+      color: rgba(180,172,158,.5) !important;
+      text-shadow: none !important;
+      border-color: rgba(255,255,255,.07) !important;
+      background: rgba(11,14,22,.6) !important;
+      backdrop-filter: blur(8px);
+    }
+    .river-ocean-copy {
+      color: rgba(213,207,194,.7) !important;
+      text-shadow: none !important;
+    }
+
+    /* ── 12. SOCIAL BUTTONS — unified monochrome + gold on hover ── */
+    .soc-btn {
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.07);
+      color: rgba(200,192,178,.45);
+      border-radius: 12px;
+      padding: .9rem 1.25rem;
+      transition: background .2s, border-color .2s, color .2s, transform .2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: .65rem;
+      font-size: .82rem;
+      font-weight: 500;
+      letter-spacing: .05em;
+    }
+    .soc-btn svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+    .soc-btn:hover {
+      background: rgba(201,148,74,.07);
+      border-color: rgba(201,148,74,.22);
+      color: rgba(219,184,122,.85);
+      transform: translateY(-2px);
+    }
+    .social-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .85rem;
+      margin-top: 2.5rem;
+      justify-content: flex-start;
+    }
+
+    /* ── 13. VIP CARD — more restrained ── */
+    .vip-card {
+      background: rgba(11,14,22,.7);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 16px;
+      padding: 2.5rem;
+      backdrop-filter: blur(4px);
+    }
+    .vip-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: rgba(213,207,194,.85);
+      letter-spacing: .03em;
+    }
+    .vip-perks li::before {
+      color: var(--gold) !important;
+      opacity: .6;
+    }
+    .vip-bonus {
+      border-left: 2px solid rgba(201,148,74,.25) !important;
+      background: rgba(201,148,74,.04) !important;
+      color: rgba(219,184,122,.65) !important;
+      border-radius: 0 8px 8px 0 !important;
+    }
+    .btn-patreon {
+      background: rgba(155,138,184,.08) !important;
+      border: 1px solid rgba(155,138,184,.2) !important;
+      color: rgba(180,165,210,.75) !important;
+      border-radius: 10px !important;
+      transition: background .2s, border-color .2s, color .2s, transform .2s !important;
+    }
+    .btn-patreon:hover {
+      background: rgba(155,138,184,.14) !important;
+      border-color: rgba(155,138,184,.35) !important;
+      color: rgba(200,185,230,.9) !important;
+      transform: translateY(-1px) !important;
+      box-shadow: none !important;
+    }
+    .vip-tier2 {
+      border: 1px solid rgba(255,255,255,.05) !important;
+      background: rgba(255,255,255,.015) !important;
+      border-radius: 12px;
+      padding: 1.5rem !important;
+      margin-top: 1.25rem !important;
+    }
+    .vip-tier2 h4 {
+      color: rgba(200,192,178,.55) !important;
+      font-size: .9rem !important;
+      letter-spacing: .04em !important;
+    }
+    .vip-tier2 p {
+      color: rgba(140,133,120,.55) !important;
+      font-size: .84rem !important;
+    }
+
+    /* ── 14. SUPPORT SECTION ── */
+    .note {
+      background: rgba(255,255,255,.02) !important;
+      border-left: 2px solid rgba(255,255,255,.07) !important;
+      border-radius: 0 8px 8px 0 !important;
+    }
+    .note strong {
+      color: rgba(180,172,158,.65) !important;
+    }
+
+    /* ── 15. GAMES SECTION ── */
+    .game-card {
+      background: rgba(11,14,22,.7);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 14px;
+      backdrop-filter: blur(4px);
+    }
+    .game-card:hover {
+      border-color: rgba(201,148,74,.15);
+    }
+    .game-card h3 {
+      color: rgba(213,207,194,.85);
+    }
+    .game-card p {
+      color: rgba(140,133,120,.7);
+    }
+    .game-card .btn {
+      color: rgba(200,192,178,.5) !important;
+      border-color: rgba(255,255,255,.08) !important;
+      background: transparent !important;
+    }
+    .game-card .btn:hover {
+      color: rgba(219,184,122,.8) !important;
+      border-color: rgba(201,148,74,.22) !important;
+      background: rgba(201,148,74,.05) !important;
+    }
+
+    /* ── 16. FOOTER ── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,.04);
+      background: transparent;
+      padding: 4rem 1.5rem 3rem;
+    }
+    .footer-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: .28em;
+      color: rgba(200,192,178,.35);
+      background: none !important;
+      -webkit-background-clip: unset !important;
+      -webkit-text-fill-color: unset !important;
+      background-clip: unset !important;
+      filter: none !important;
+    }
+    .footer-sub {
+      color: rgba(140,133,120,.4);
+      font-size: .75rem;
+      letter-spacing: .12em;
+    }
+    .footer-copy {
+      color: rgba(100,95,88,.4);
+      font-size: .72rem;
+    }
+
+    /* ── 17. HERO CTA — two buttons, clearly different roles ── */
+    .hero-cta-group { gap: .85rem; }
+    .hero-cta-group .btn:first-child {
+      background: rgba(201,148,74,.12);
+      border: 1px solid rgba(201,148,74,.3);
+      color: rgba(219,184,122,.9);
+    }
+    .hero-cta-group .btn:first-child:hover {
+      background: rgba(201,148,74,.2);
+      border-color: rgba(201,148,74,.5);
+      transform: translateY(-2px);
+    }
+    .hero-eyebrow {
+      color: rgba(180,170,155,.4) !important;
+      letter-spacing: .32em !important;
+      font-size: .64rem !important;
+      font-weight: 500 !important;
+    }
+
+    /* ── 18. SCROLL INDICATOR ── */
+    .scroll-cue span {
+      color: rgba(180,170,155,.25);
+      font-size: .6rem;
+      letter-spacing: .2em;
+    }
+
+    /* ── 19. ORCHARD SECTION ── */
+    #orchard .section-title {
+      font-family: var(--font-serif);
+      font-style: italic;
+    }
+
+    /* ── 20. NAV ACTIVE SECTION TRACKING ── */
+    /* Injected via JS — see below */
+    nav.scrolled {
+      background: rgba(6,8,15,.92);
+      border-bottom-color: rgba(255,255,255,.04);
+    }
+
+    /* ── 21. LYRIC SECTION ── */
+    .lyric-word {
+      color: rgba(219,184,122,.75) !important;
+    }
+    .lyric-drop-word {
+      color: rgba(219,184,122,.8) !important;
+    }
+
+    /* ── 22. RADIO SECTION ── */
+    #radio .radio-section-copy {
+      font-family: var(--font-serif);
+      font-style: italic;
+      color: rgba(140,133,120,.65);
+    }
+    #radio .section-title {
+      font-family: var(--font-serif);
+      font-style: normal;
+    }
+
+    /* ── 23. MOBILE NAV ── */
+    @media (max-width: 680px) {
+      .nav-links {
+        padding: 3rem 2rem 5rem;
+        gap: .5rem;
+        background: rgba(6,8,15,.97);
+        backdrop-filter: blur(30px);
+      }
+      .nav-links a {
+        font-size: 1.15rem;
+        font-weight: 500;
+        letter-spacing: .06em;
+        color: rgba(200,192,178,.5);
+        padding: .85rem 0;
+        border-bottom: 1px solid rgba(255,255,255,.04);
+        display: block;
+        width: 100%;
+      }
+      .nav-links li:last-child a {
+        border-bottom: none;
+      }
+      .nav-visualizer-link {
+        border: none !important;
+        background: transparent !important;
+        padding: .85rem 0 !important;
+        border-radius: 0 !important;
+        border-bottom: 1px solid rgba(255,255,255,.04) !important;
+        font-size: 1.15rem !important;
+        color: rgba(200,192,178,.5) !important;
+      }
+      .section-inner {
+        padding-top: clamp(3.5rem, 7vw, 6rem);
+        padding-bottom: clamp(3.5rem, 7vw, 6rem);
+      }
+    }
+
+    /* ── 24. SECTION TITLE WITH SERIF OPTION ── */
+    /* Applied sparingly — only for the emotional sections */
+    #the-vision .section-title,
+    #orchard    .section-title,
+    #lyrics     .section-title {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      letter-spacing: .03em;
+    }
+
   </style>
 </head>
 <body>
@@ -2670,18 +3256,14 @@
       </svg>
     </button>
     <ul class="nav-links">
-      <li><a href="#stream">Stream</a></li>
-      <li><a href="#radio">Radio</a></li>
-      <li><a href="visualizer.html">Visualizer</a></li>
-      <li><a href="#the-vision">Vision</a></li>
-      <li><a href="#inside-out">Film</a></li>
-      <li><a href="#orchard">Orchard</a></li>
-      <li><a href="#river">River</a></li>
-      <li><a href="#lyrics">Lyrics</a></li>
-      <li><a href="#games" class="game-link">Games</a></li>
+      <li><a href="#stream">Listen</a></li>
+      <li><a href="#the-vision">Explore</a></li>
+      <li><a href="#games">Play</a></li>
       <li><a href="#support">Support</a></li>
-      <li><a href="#vip">VIP</a></li>
       <li><a href="#connect">Connect</a></li>
+      <li><a href="visualizer.html" class="nav-visualizer-link">Visualizer
+        <svg viewBox="0 0 8 8" fill="currentColor" aria-hidden="true"><circle cx="4" cy="4" r="2.5"/></svg>
+      </a></li>
       <li><button type="button" id="mood-ring-trigger" class="mood-ring-trigger" aria-label="Change mood"></button></li>
     </ul>
   </nav>
@@ -3137,38 +3719,27 @@
 
         <!-- Instagram -->
         <a class="soc-btn reveal" href="https://www.instagram.com/starmilk_labz?igsh=cTJpMWNpcXppbjgy" target="_blank" rel="noopener noreferrer" aria-label="STARMILK on Instagram">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <defs>
-              <linearGradient id="iglg" x1="0%" y1="100%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#f09433"/>
-                <stop offset="35%" stop-color="#e6683c"/>
-                <stop offset="65%" stop-color="#dc2743"/>
-                <stop offset="100%" stop-color="#bc1888"/>
-              </linearGradient>
-            </defs>
-            <rect x="2" y="2" width="20" height="20" rx="5.5" fill="url(#iglg)"/>
-            <circle cx="12" cy="12" r="4.2" stroke="#fff" stroke-width="1.8" fill="none"/>
-            <circle cx="17.4" cy="6.6" r="1.15" fill="#fff"/>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="5.5"/>
+            <circle cx="12" cy="12" r="4.2"/>
+            <circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none"/>
           </svg>
           Instagram
         </a>
 
         <!-- TikTok -->
         <a class="soc-btn reveal" href="https://www.tiktok.com/@starmilk1?_t=ZP-90xWzsjiLWQ&_r=1" target="_blank" rel="noopener noreferrer" aria-label="STARMILK on TikTok">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <rect x="2" y="2" width="20" height="20" rx="5.5" fill="#010101"/>
-            <path d="M16 3.5v10.8a3.3 3.3 0 1 1-2.4-3.17V7.8a6.5 6.5 0 1 0 4.9 6.5V7A6.45 6.45 0 0 0 22 7.5" stroke="none"/>
-            <path d="M15 4.5c.5 2 2 3.3 3.5 3.5v2.5c-1.5 0-3-.5-4-1.5V16a4 4 0 1 1-3-3.87V14.6A1.5 1.5 0 1 0 13 16V4.5h2z" fill="#fff"/>
-            <path d="M18.5 8c.5 0 1 .07 1.5.2V5.7A6.5 6.5 0 0 1 15 4.5v2c.9.4 2.2.8 3.5 1.5z" fill="#69C9D0"/>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/>
           </svg>
           TikTok
         </a>
 
         <!-- YouTube -->
         <a class="soc-btn reveal" href="https://www.youtube.com/@STARMILK-s5u" target="_blank" rel="noopener noreferrer" aria-label="STARMILK on YouTube">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M22.54 6.42A2.78 2.78 0 0 0 20.59 4.5C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.5C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" fill="#FF0000"/>
-            <polygon points="9.75,15.02 15.5,12 9.75,8.98" fill="#fff"/>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.92C18.88 4 12 4 12 4s-6.88 0-8.59.5A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.5C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/>
+            <polygon points="9.75,15.02 15.5,12 9.75,8.98" fill="currentColor" stroke="none"/>
           </svg>
           YouTube
         </a>
@@ -3916,6 +4487,58 @@ if ('serviceWorker' in navigator) {
   </div>
 </div>
 <script src="starmilk-chat.js" defer></script>
+
+<script>
+/* ── Genius Mode: Nav scrolled state + active section tracking ── */
+(function () {
+  const nav = document.getElementById('nav');
+  if (!nav) return;
+
+  // Scrolled class
+  const onScroll = () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Active section highlighting
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+  if (!sections.length || !navLinks.length) return;
+
+  // Map section IDs to which nav link to highlight
+  const sectionMap = {
+    'hero':       null,
+    'stream':     '#stream',
+    'radio':      '#stream',
+    'the-vision': '#the-vision',
+    'inside-out': '#the-vision',
+    'orchard':    '#the-vision',
+    'river':      '#the-vision',
+    'lyrics':     '#the-vision',
+    'games':      '#games',
+    'support':    '#support',
+    'vip':        '#support',
+    'connect':    '#connect',
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const id = entry.target.id;
+      const targetHref = sectionMap[id];
+      navLinks.forEach(a => {
+        a.removeAttribute('data-active');
+        if (targetHref && a.getAttribute('href') === targetHref) {
+          a.setAttribute('data-active', 'true');
+        }
+      });
+    });
+  }, { threshold: 0.35 });
+
+  sections.forEach(s => observer.observe(s));
+})();
+</script>
 
 </body>
 </html>
