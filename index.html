@@ -2604,6 +2604,35 @@
       box-shadow: inset 0 1px 0 rgba(219,184,122,.06), 0 2px 6px rgba(8,11,22,.3);
       transition: border-color var(--t), background var(--t);
     }
+    .chat-voice-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,.07);
+      color: rgba(180,170,200,.4);
+      border-radius: 8px;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: color .2s, border-color .2s, background .2s;
+    }
+    .chat-voice-btn:hover {
+      color: rgba(219,184,122,.8);
+      border-color: rgba(201,148,74,.25);
+    }
+    .chat-voice-btn.listening {
+      color: #e05050;
+      border-color: rgba(224,80,80,.4);
+      background: rgba(224,80,80,.08);
+      animation: voicePulse .8s ease-in-out infinite alternate;
+    }
+    @keyframes voicePulse {
+      from { box-shadow: 0 0 0 0 rgba(224,80,80,.3); }
+      to   { box-shadow: 0 0 0 6px rgba(224,80,80,0); }
+    }
+
     .starmilk-chat-input button:hover {
       border-color: rgba(201,148,74,.65);
       background: linear-gradient(145deg, #243358, #1b2d50);
@@ -4483,6 +4512,14 @@ if ('serviceWorker' in navigator) {
   </div>
   <div class="starmilk-chat-input">
     <input type="text" id="starmilk-chat-in" placeholder="Ask me anything..." autocomplete="off" />
+    <button id="starmilk-chat-voice" class="chat-voice-btn" aria-label="Voice input" title="Speak">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+        <line x1="12" y1="19" x2="12" y2="23"/>
+        <line x1="8" y1="23" x2="16" y2="23"/>
+      </svg>
+    </button>
     <button id="starmilk-chat-send">Send</button>
   </div>
 </div>

@@ -27,23 +27,83 @@
   if (!toggle || !panel) return;
 
   /* ═══════════════════════════════════════════════════════════
-     BRAIN API — Supabase Edge Function
-     Queries server-side semantic knowledge base.
-     Falls back to client pattern-matching if unavailable.
+     SEMANTIC BRAIN v2 — Browser embedding + Qdrant vector search
+     1. Lazy-loads all-MiniLM-L6-v2 (~22MB WASM, cached after first load)
+     2. Embeds user query in the browser (free, private, instant after load)
+     3. Sends 384-dim vector to Supabase edge function
+     4. Edge function searches Qdrant for nearest knowledge chunks
+     5. Returns semantically relevant tracks + context
+     Falls back to keyword brain if model isn't loaded yet.
      ═══════════════════════════════════════════════════════════ */
   const BRAIN_URL  = 'https://hcfpygcnsjcfsbzbdrzq.supabase.co/functions/v1/starmilk-brain';
   const BRAIN_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjZnB5Z2Nuc2pjZnNiemJkcnpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2OTQyNjIsImV4cCI6MjA4OTI3MDI2Mn0.slX4nwDWpvfVlFtJYfBIPgHLW4rQ8qN3HH9C7n4f0CQ';
+  const EMBED_MODEL_URL = 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2';
+
+  let _embedder = null;
+  let _embedderLoading = false;
+
+  // Lazy-load the embedding model on first use
+  async function getEmbedder() {
+    if (_embedder) return _embedder;
+    if (_embedderLoading) {
+      // Wait for existing load
+      await new Promise(r => setTimeout(r, 200));
+      return _embedder;
+    }
+    _embedderLoading = true;
+    try {
+      const { pipeline, env } = await import(EMBED_MODEL_URL + '/dist/transformers.min.js');
+      env.allowLocalModels = false;
+      const p = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', { quantized: true });
+      _embedder = p;
+      return _embedder;
+    } catch (_) {
+      _embedderLoading = false;
+      return null;
+    }
+  }
+
+  // Pre-load model when chat panel opens (warm start)
+  async function warmUpEmbedder() {
+    if (!_embedder && !_embedderLoading) {
+      getEmbedder(); // fire-and-forget
+    }
+  }
+
+  async function embed(text) {
+    const embedder = await getEmbedder();
+    if (!embedder) return null;
+    const out = await embedder(text, { pooling: 'mean', normalize: true });
+    return Array.from(out.data).map(String);
+  }
 
   async function queryBrain(query) {
+    // Try semantic search first (requires embedding model)
+    const vector = await embed(query);
+    if (vector) {
+      try {
+        const res = await fetch(BRAIN_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${BRAIN_ANON}` },
+          body: JSON.stringify({ query, vector, mode: 'semantic' }),
+          signal: AbortSignal.timeout(5000),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.answer) return data;
+        }
+      } catch (_) {}
+    }
+    // Fall back to keyword brain
     try {
       const res = await fetch(BRAIN_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${BRAIN_ANON}` },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ query, mode: 'keyword' }),
         signal: AbortSignal.timeout(4000),
       });
       if (!res.ok) return null;
-      return await res.json(); // { answer, tracks, intent, philosophy }
+      return await res.json();
     } catch (_) { return null; }
   }
 
@@ -866,10 +926,18 @@
 
     if (isOpen && !hasGreeted) {
       hasGreeted = true;
+      warmUpEmbedder(); // start loading model in background
+      // Time-aware greeting
+      const hour = new Date().getHours();
+      const timeGreeting =
+        hour < 5  ? 'It’s the deep hours. The cosmos never sleeps.' :
+        hour < 12 ? 'Morning. The orchard is waking.' :
+        hour < 17 ? 'Afternoon light on the river.' :
+        hour < 21 ? 'Evening settling in.' :
+                    'Late now. The quietest frequencies.';
       setTimeout(() => {
-        addMessage(pickFresh(R.greeting, 'greeting'), true);
-        // Show suggested prompts after greeting
-        setTimeout(renderSuggestedPrompts, 2000);
+        addMessage(timeGreeting + ' ' + pickFresh(R.greeting, 'greeting'), true);
+        setTimeout(renderSuggestedPrompts, 2500);
       }, 300);
     }
 
@@ -900,6 +968,59 @@
       handleSend();
     }
   });
+
+  /* ═══════════════════════════════════════════════════════════
+     VOICE INPUT — Web Speech API
+     Completely free, client-side, no external dependencies.
+     Pulses red while listening, submits on silence.
+     ═══════════════════════════════════════════════════════════ */
+  const voiceBtn = document.getElementById('starmilk-chat-voice');
+  if (voiceBtn && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    let isListening = false;
+
+    voiceBtn.style.display = 'flex';
+
+    voiceBtn.addEventListener('click', () => {
+      if (isListening) {
+        recognition?.stop();
+        return;
+      }
+      recognition = new SR();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => {
+        isListening = true;
+        voiceBtn.classList.add('listening');
+        inputEl.placeholder = 'Listening...';
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript.trim();
+        inputEl.value = transcript;
+        handleSend();
+      };
+
+      recognition.onerror = () => {
+        isListening = false;
+        voiceBtn.classList.remove('listening');
+        inputEl.placeholder = 'Ask me anything...';
+      };
+
+      recognition.onend = () => {
+        isListening = false;
+        voiceBtn.classList.remove('listening');
+        inputEl.placeholder = 'Ask me anything...';
+      };
+
+      recognition.start();
+    });
+  } else if (voiceBtn) {
+    voiceBtn.style.display = 'none'; // hide if not supported
+  }
 
   // Close on Escape
   document.addEventListener('keydown', (e) => {
