@@ -15,7 +15,7 @@
     { section: 'radio',      name: 'THE TRANSMISSION',    desc: 'Always spinning' },
     { section: 'the-vision', name: 'THE VISION LAYER',    desc: '∞ light-years' },
     { section: 'inside-out', name: 'THE FILM',            desc: 'The butterfly stage' },
-    { section: 'orchard',    name: 'THE ORCHARD',         desc: 'Every fruit is a door' },
+    { section: 'orchard',    name: 'THE ORCHARD',         desc: 'Every fruit is a song' },
     { section: 'river',      name: 'THE RIVER',           desc: 'The river runs both ways' },
     { section: 'lyrics',     name: 'THE HONEY',           desc: 'Where grief becomes nectar' },
     { section: 'games',      name: 'THE COSMOS TERMINAL', desc: 'Three portals' },
