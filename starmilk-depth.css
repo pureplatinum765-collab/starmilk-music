@@ -1,0 +1,594 @@
+/* ═══════════════════════════════════════════════════════════════════
+   STARMILK DEPTH SYSTEM
+   The site is a descent through the STARMILK universe.
+   Scroll down. Go deeper. Everything was built to last.
+   Inspired by: neal.fun/deep-sea × Yeti × Immersive Garden
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ─── 1. THE DESCENT — background darkens as you scroll ─────────── */
+
+/* Background: consistent deep-space midnight.
+   Depth atmosphere is created by:
+   – Per-section radial gradients (genius-mode CSS)
+   – JS-driven darkening overlay (see starmilk-depth.js)
+   – The depth markers and scroll rail
+*/
+body {
+  background: #05060e !important;
+}
+
+/* JS-driven depth overlay: gets darker as you scroll deeper */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  pointer-events: none;
+  z-index: 0;
+  transition: background-color 0.4s ease;
+  /* --depth-alpha is set by starmilk-depth.js */
+}
+
+/* ─── 2. DEPTH MARKERS ── the neal.fun zone lines ────────────────── */
+/*
+   Full-width dotted line + big centered text.
+   Appear as you cross section boundaries.
+   These are the landmarks of the descent.
+*/
+
+.depth-marker {
+  position: relative;
+  padding: clamp(5rem, 8vw, 8rem) 0;
+  text-align: center;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* The full-width dotted line — like neal.fun's dashed separator */
+.depth-marker::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 50%;
+  height: 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.07);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.depth-marker.revealed::after {
+  transform: scaleX(1);
+}
+
+/* The big centered depth text */
+.depth-marker-inner {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 2.5rem;
+  background: transparent; /* text sits ON the line, no bg needed */
+}
+
+/* Small lines flanking the text — like a section rule */
+.depth-marker-inner::before,
+.depth-marker-inner::after {
+  content: '';
+  display: block;
+  width: clamp(2rem, 6vw, 5rem);
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  transform: scaleX(0);
+  transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: 0.6s;
+}
+
+.depth-marker.revealed .depth-marker-inner::before,
+.depth-marker.revealed .depth-marker-inner::after {
+  transform: scaleX(1);
+}
+
+.depth-marker-text {
+  font-family: 'DM Serif Display', Georgia, 'Times New Roman', serif;
+  font-size: clamp(0.75rem, 2.5vw, 1.05rem);
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(200, 190, 172, 0.18);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 1.2s ease, transform 1.2s ease;
+  transition-delay: 0.3s;
+  white-space: nowrap;
+}
+
+.depth-marker.revealed .depth-marker-text {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Depth number — small, tucked in corner */
+.depth-marker-num {
+  position: absolute;
+  left: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  color: rgba(201, 148, 74, 0.2);
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.8s ease 0.8s;
+}
+.depth-marker.revealed .depth-marker-num { opacity: 1; }
+
+/* ─── 3. SCROLL RAIL — 2px on right edge ─────────────────────────── */
+/*
+   Like the browser's native scrollbar but custom.
+   Shows how far you've descended.
+*/
+
+.scroll-rail {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  z-index: 9999;
+  background: rgba(255, 255, 255, 0.03);
+  pointer-events: none;
+}
+
+.scroll-rail-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0%;
+  background: linear-gradient(
+    to bottom,
+    rgba(107, 91, 138, 0.6),
+    rgba(201, 148, 74, 0.4)
+  );
+  transition: height 0.1s linear;
+}
+
+/* ─── 4. FIXED DEPTH LABEL — bottom-left, always visible ─────────── */
+/*
+   Shows your current position in the universe.
+   Small, ambient, not intrusive.
+*/
+
+.depth-current {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  z-index: 9000;
+  pointer-events: none;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.depth-current.visible { opacity: 1; }
+
+.depth-current-name {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(201, 148, 74, 0.4);
+  line-height: 1;
+}
+
+.depth-current-desc {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 0.65rem;
+  font-style: italic;
+  color: rgba(200, 190, 172, 0.2);
+  line-height: 1;
+}
+
+/* ─── 5. SECTION REVEALS ─────────────────────────────────────────── */
+/*
+   Native CSS scroll-driven animations.
+   Content rises from below as you reach it.
+   Falls back to visibility: visible for older browsers.
+*/
+
+@supports (animation-timeline: view()) {
+  .section-inner {
+    animation: smDepthReveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 32%;
+  }
+
+  .depth-marker {
+    animation: smDepthReveal linear both;
+    animation-timeline: view();
+    animation-range: entry 5% entry 50%;
+  }
+
+  @keyframes smDepthReveal {
+    from {
+      opacity: 0;
+      transform: translateY(2.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Stagger children for richer reveals */
+  .section-inner > * {
+    animation: smChildReveal linear both;
+    animation-timeline: view(block);
+    animation-range: entry 0% entry 40%;
+  }
+  @keyframes smChildReveal {
+    from { opacity: 0; transform: translateY(1.5rem); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Don't animate elements that should always be visible */
+  nav, .radio-floating, .starmilk-chat-toggle,
+  [id="parking-lot-overlay"], [id="mood-ring-overlay"] {
+    animation: none !important;
+  }
+}
+
+/* ─── 6. MASSIVE TYPOGRAPHY — display serif, heavy scale ────────── */
+/*
+   Section titles become monuments.
+   Not assembled — CARVED.
+*/
+
+/* Load DM Serif Display (also added in head) */
+
+.section-title {
+  font-family: 'DM Serif Display', Georgia, 'Times New Roman', serif !important;
+  font-size: clamp(2.6rem, 5.5vw, 6rem) !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.05 !important;
+  color: rgba(218, 210, 196, 0.9) !important;
+  margin-bottom: 1.5rem !important;
+}
+
+/* Labels stay sans-serif */
+.label {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  font-size: 0.64rem !important;
+  letter-spacing: 0.36em !important;
+  opacity: 0.45 !important;
+}
+
+/* Sub text — generous leading */
+.sub {
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem) !important;
+  line-height: 1.85 !important;
+  color: rgba(140, 133, 120, 0.75) !important;
+  max-width: 52ch !important;
+}
+
+/* Section inner padding — generous, earned */
+.section-inner {
+  padding-top:    clamp(5.5rem, 9vw, 9rem) !important;
+  padding-bottom: clamp(5.5rem, 9vw, 9rem) !important;
+}
+
+/* ─── 7. SLAB CARDS — Yeti-grade construction ───────────────────── */
+/*
+   Cards don't float. They sit.
+   Multiple shadow layers create genuine Z-depth.
+   Bottom edge is darker — like physical elevation.
+*/
+
+.card {
+  background: rgba(4, 5, 12, 0.97) !important;
+  border: 1px solid rgba(255, 255, 255, 0.065) !important;
+  border-bottom-width: 0 !important;
+  border-radius: 10px !important;
+  position: relative !important;
+  box-shadow:
+    /* Top edge highlight */
+    0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
+    /* Surface sheen */
+    0 2px 0 0 rgba(255, 255, 255, 0.02) inset,
+    /* Close shadow — the card sitting on surface */
+    0 4px 0 0 rgba(0, 0, 0, 0.55),
+    /* Mid shadow — depth */
+    0 8px 24px rgba(0, 0, 0, 0.65),
+    /* Far shadow — atmospheric */
+    0 24px 60px rgba(0, 0, 0, 0.4),
+    /* Ultra-far — presence */
+    0 60px 100px rgba(0, 0, 0, 0.2) !important;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.28s ease !important;
+}
+
+/* Bottom edge — physical thickness */
+.card::after {
+  content: '' !important;
+  position: absolute !important;
+  left: 1px !important;
+  right: 1px !important;
+  bottom: -4px !important;
+  height: 4px !important;
+  background: rgba(0, 0, 0, 0.6) !important;
+  border-radius: 0 0 10px 10px !important;
+  opacity: 1 !important;
+  pointer-events: none !important;
+}
+
+.card::before { display: none !important; }
+
+.card:hover {
+  transform: translateY(-8px) !important;
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.06) inset,
+    0 2px 0 0 rgba(255, 255, 255, 0.03) inset,
+    0 4px 0 0 rgba(0, 0, 0, 0.5),
+    0 16px 40px rgba(0, 0, 0, 0.7),
+    0 40px 80px rgba(0, 0, 0, 0.5),
+    0 80px 120px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(201, 148, 74, 0.1) !important;
+}
+
+.card:hover::after {
+  bottom: -10px !important;
+  height: 10px !important;
+}
+
+/* ─── 8. SOLID BUTTONS — pressed states, real height ───────────── */
+
+.btn {
+  height: 52px !important;
+  padding: 0 2.2rem !important;
+  border-radius: 9px !important;
+  font-weight: 600 !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.1em !important;
+  position: relative !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 3px 0 rgba(0, 0, 0, 0.5),
+    0 6px 16px rgba(0, 0, 0, 0.4) !important;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.2s ease !important;
+}
+
+.btn:active {
+  transform: translateY(2px) !important;
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.3) inset,
+    0 0 0 rgba(0, 0, 0, 0),
+    0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Primary button — gold, solid */
+.btn:not(.btn-outline) {
+  background: rgba(201, 148, 74, 0.12) !important;
+  border: 1px solid rgba(201, 148, 74, 0.28) !important;
+  color: rgba(235, 200, 140, 0.92) !important;
+}
+
+.btn:not(.btn-outline):hover {
+  background: rgba(201, 148, 74, 0.2) !important;
+  border-color: rgba(201, 148, 74, 0.5) !important;
+  color: rgba(245, 215, 155, 1) !important;
+  transform: translateY(-2px) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.07) inset,
+    0 5px 0 rgba(0, 0, 0, 0.45),
+    0 10px 24px rgba(0, 0, 0, 0.5),
+    0 0 32px rgba(201, 148, 74, 0.1) !important;
+}
+
+/* ─── 9. NAVIGATION — crisper, more authoritative ───────────────── */
+
+nav {
+  background: rgba(3, 4, 10, 0.88) !important;
+  backdrop-filter: blur(20px) saturate(1.3) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+.nav-logo {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  font-size: 0.95rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.32em !important;
+  color: rgba(213, 200, 175, 0.65) !important;
+  opacity: 1 !important;
+}
+
+.nav-links a {
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.1em !important;
+  color: rgba(190, 182, 165, 0.4) !important;
+  transition: color 0.2s ease !important;
+}
+
+.nav-links a:hover,
+.nav-links a[data-active='true'] {
+  color: rgba(213, 184, 130, 0.9) !important;
+}
+
+/* ─── 10. FOOTER — quiet, monumental ────────────────────────────── */
+
+footer {
+  padding: 6rem 2rem 4rem !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.035) !important;
+  background: transparent !important;
+  position: relative !important;
+}
+
+footer::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: 0; right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, rgba(1, 2, 4, 0), transparent);
+  pointer-events: none;
+}
+
+.footer-name {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  font-size: 1.05rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.3em !important;
+  color: rgba(200, 190, 170, 0.25) !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  background-clip: unset !important;
+  filter: none !important;
+}
+
+/* ─── 11. GLOBAL TEXTURE ── noise over everything ────────────────── */
+/*
+   A subtle noise filter makes every surface feel painted, not printed.
+   Matte. Like a fine art print.
+*/
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  mix-blend-mode: overlay;
+}
+
+/* ─── 12. SOCIAL BUTTONS — cleaner weight ────────────────────────── */
+
+.soc-btn {
+  height: 48px !important;
+  padding: 0 1.4rem !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  background: rgba(4, 5, 12, 0.9) !important;
+  color: rgba(195, 185, 165, 0.45) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    0 2px 0 rgba(0, 0, 0, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.35) !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, color 0.18s ease, border-color 0.18s ease !important;
+}
+
+.soc-btn:hover {
+  transform: translateY(-3px) !important;
+  border-color: rgba(201, 148, 74, 0.22) !important;
+  color: rgba(213, 184, 130, 0.85) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 5px 0 rgba(0, 0, 0, 0.35),
+    0 12px 28px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ─── 13. GAME CARDS ─────────────────────────────────────────────── */
+
+.game-card {
+  background: rgba(4, 5, 12, 0.97) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 12px !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    0 4px 0 rgba(0, 0, 0, 0.5),
+    0 12px 40px rgba(0, 0, 0, 0.6),
+    0 40px 80px rgba(0, 0, 0, 0.3) !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+.game-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 10px 0 rgba(0, 0, 0, 0.45),
+    0 20px 60px rgba(0, 0, 0, 0.7),
+    0 60px 100px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ─── 14. VIP CARD ───────────────────────────────────────────────── */
+
+.vip-card {
+  background: rgba(4, 5, 12, 0.97) !important;
+  border: 1px solid rgba(255, 255, 255, 0.065) !important;
+  border-radius: 14px !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 6px 0 rgba(0, 0, 0, 0.5),
+    0 16px 50px rgba(0, 0, 0, 0.6),
+    0 50px 90px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* ─── 15. DIVIDERS — lighter, thinner seams ─────────────────────── */
+
+.divider {
+  height: 60px !important;
+  background: transparent !important;
+}
+
+.divider::after {
+  background: rgba(201, 148, 74, 0.18) !important;
+  box-shadow: 0 0 20px 4px rgba(201, 148, 74, 0.03) !important;
+}
+
+/* ─── 16. CHATBOT BUTTON — solid, weighty ────────────────────────── */
+
+#starmilk-chat-toggle {
+  box-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.4),
+    0 6px 20px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.07) inset !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+#starmilk-chat-toggle:hover {
+  transform: translateY(-3px) !important;
+  box-shadow:
+    0 6px 0 rgba(0, 0, 0, 0.35),
+    0 12px 32px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* ─── 17. MOBILE ─────────────────────────────────────────────────── */
+
+@media (max-width: 680px) {
+  .depth-marker-text {
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    white-space: normal;
+    text-align: center;
+  }
+  .depth-marker-num {
+    display: none;
+  }
+  .depth-current {
+    display: none; /* too cluttered on small screens */
+  }
+  .section-inner {
+    padding-top:    clamp(4rem, 8vw, 7rem) !important;
+    padding-bottom: clamp(4rem, 8vw, 7rem) !important;
+  }
+  .btn {
+    height: 48px !important;
+  }
+}
