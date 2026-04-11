@@ -13,8 +13,16 @@
    – JS-driven darkening overlay (see starmilk-depth.js)
    – The depth markers and scroll rail
 */
+html {
+  background: #04050c; /* Fallback if canvas doesn't load */
+}
 body {
-  background: #05060e !important;
+  background: transparent !important; /* Let mesh gradient show through */
+}
+/* Main content sits above the mesh gradient canvas */
+.wrap, #wrap {
+  position: relative;
+  z-index: 1;
 }
 
 /* JS-driven depth overlay: gets darker as you scroll deeper */
