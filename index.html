@@ -1974,12 +1974,20 @@
     }
     .radio-poem.visible { opacity: 1; }
 
-    /* Hidden embed */
-    #radio-embed-shell { display: none; }
+    /* Hidden embed — visually hidden but functional so SoundCloud can load and play */
+    #radio-embed-shell {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      pointer-events: none;
+    }
     #radio-embed-shell iframe {
       display: block;
-      width: 100%;
-      height: 0;
+      width: 300px;
+      height: 166px;
       border: 0;
     }
 
@@ -3199,23 +3207,35 @@
     /* ── 23. MOBILE NAV ── */
     @media (max-width: 680px) {
       .nav-links {
-        padding: 3rem 2rem 5rem;
-        gap: .5rem;
-        background: rgba(6,8,15,.97);
-        backdrop-filter: blur(30px);
+        /* Force fullscreen overlay below the nav bar */
+        position: fixed !important;
+        top: 56px !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        height: auto !important;
+        min-height: calc(100dvh - 56px) !important;
+        padding: 2.5rem 2rem 4rem !important;
+        gap: .6rem !important;
+        background: rgba(4,5,12,.98) !important;
+        backdrop-filter: blur(30px) !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        overflow-y: auto !important;
+        z-index: 9000 !important;
       }
       .nav-links a {
-        font-size: 1.15rem;
-        font-weight: 500;
-        letter-spacing: .06em;
-        color: rgba(200,192,178,.5);
-        padding: .85rem 0;
-        border-bottom: 1px solid rgba(255,255,255,.04);
-        display: block;
-        width: 100%;
+        font-size: 1.1rem !important;
+        font-weight: 500 !important;
+        letter-spacing: .06em !important;
+        color: rgba(200,192,178,.5) !important;
+        padding: .85rem 0 !important;
+        border-bottom: 1px solid rgba(255,255,255,.04) !important;
+        display: block !important;
+        width: 100% !important;
       }
       .nav-links li:last-child a {
-        border-bottom: none;
+        border-bottom: none !important;
       }
       .nav-visualizer-link {
         border: none !important;
@@ -3223,12 +3243,12 @@
         padding: .85rem 0 !important;
         border-radius: 0 !important;
         border-bottom: 1px solid rgba(255,255,255,.04) !important;
-        font-size: 1.15rem !important;
+        font-size: 1.1rem !important;
         color: rgba(200,192,178,.5) !important;
       }
       .section-inner {
-        padding-top: clamp(3.5rem, 7vw, 6rem);
-        padding-bottom: clamp(3.5rem, 7vw, 6rem);
+        padding-top: clamp(3.5rem, 7vw, 6rem) !important;
+        padding-bottom: clamp(3.5rem, 7vw, 6rem) !important;
       }
     }
 
