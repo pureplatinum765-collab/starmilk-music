@@ -2023,12 +2023,12 @@
 
     /* Hidden embed — visually hidden but functional so SoundCloud can load and play */
     #radio-embed-shell {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
+      position: fixed;
+      left: -9999px;
+      top: -9999px;
+      width: 300px;
+      height: 166px;
+      opacity: 0;
       pointer-events: none;
     }
     #radio-embed-shell iframe {
@@ -2072,6 +2072,12 @@
       border-color: rgba(201,148,74,.3);
       background: rgba(201,148,74,.1);
     }
+    .radio-ctrl-play {
+      width: 44px;
+      height: 44px;
+      border-color: rgba(201,148,74,.18);
+    }
+    .radio-ctrl-play svg { width: 20px; height: 20px; }
     /* Share slightly smaller icon */
     .radio-ctrl-share svg { width: 15px; height: 15px; }
     .radio-ctrl.copied {
@@ -3960,7 +3966,7 @@
     </div>
 
     <!-- ── Radio panel ── -->
-    <div id="radio-tab-radio" class="radio-tab-pane" data-radio-panel="radio"
+    <div id="radio-tab-radio" class="radio-tab-pane active" data-radio-panel="radio"
          role="tabpanel" aria-labelledby="rtab-radio">
 
       <!-- Now playing -->
@@ -3980,6 +3986,7 @@
       <div class="radio-transport">
         <button type="button" id="radio-shuffle" class="radio-ctrl"   aria-label="Shuffle" aria-pressed="false"></button>
         <button type="button" id="radio-prev"    class="radio-ctrl"   aria-label="Previous track"></button>
+        <button type="button" id="radio-play"    class="radio-ctrl radio-ctrl-play" aria-label="Play" aria-pressed="false"></button>
         <button type="button" id="radio-next"    class="radio-ctrl"   aria-label="Next track"></button>
         <button type="button" id="radio-share"   class="radio-ctrl radio-ctrl-share" aria-label="Share track"></button>
       </div>

@@ -1,12 +1,9 @@
 /**
  * STARMILK COSMOS — Lightweight visual engine
  * ─────────────────────────────────────────────────
- * 1. Animated mesh gradient: 4 soft color blobs drifting with heavy CSS blur.
- *    Same technique as Stripe/Linear/Vercel. Runs on any device.
- *    Mouse gently influences blob positions.
- *
- * 2. Custom cursor: gold glow orb with spring physics.
- *    Scales on interactive elements. Hidden on touch devices.
+ * Animated mesh gradient: 4 soft color blobs drifting with heavy CSS blur.
+ * Same technique as Stripe/Linear/Vercel. Runs on any device.
+ * Mouse gently influences blob positions.
  *
  * Design rationale (from Reddit/Awwwards research):
  *   - "Minimalism with purpose" — every animation must serve the content
@@ -136,85 +133,9 @@
   if (old && old !== canvas) old.style.display = 'none';
 
 
-  // ═══════════════════════════════════════════════════════════
-  // 2. CUSTOM CURSOR
-  //    Gold glow orb. Spring physics. Scales on interactive elements.
-  //    Hidden on touch/mobile.
-  // ═══════════════════════════════════════════════════════════
-
-  if ('ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth < 768) return;
-
-  const cursor = document.createElement('div');
-  cursor.className = 'sm-cursor';
-  cursor.innerHTML = '<div class="sm-cursor-dot"></div><div class="sm-cursor-ring"></div>';
-  document.body.appendChild(cursor);
-
-  const style = document.createElement('style');
-  style.textContent = `
-    *, *::before, *::after { cursor: none !important; }
-    .sm-cursor {
-      position: fixed; top: 0; left: 0; z-index: 99999;
-      pointer-events: none; mix-blend-mode: screen;
-    }
-    .sm-cursor-dot {
-      position: absolute; width: 6px; height: 6px;
-      border-radius: 50%; background: rgba(201,148,74,0.85);
-      transform: translate(-50%,-50%);
-      transition: width .2s ease, height .2s ease;
-    }
-    .sm-cursor-ring {
-      position: absolute; width: 36px; height: 36px;
-      border-radius: 50%;
-      border: 1px solid rgba(201,148,74,0.12);
-      background: radial-gradient(circle, rgba(201,148,74,0.03) 0%, transparent 70%);
-      transform: translate(-50%,-50%);
-      transition: width .3s cubic-bezier(.34,1.56,.64,1), height .3s cubic-bezier(.34,1.56,.64,1),
-                  border-color .2s ease;
-    }
-    .sm-cursor.hover .sm-cursor-dot { width: 10px; height: 10px; }
-    .sm-cursor.hover .sm-cursor-ring {
-      width: 48px; height: 48px;
-      border-color: rgba(201,148,74,0.2);
-    }
-    .sm-cursor.hidden { opacity: 0; }
-    @media (pointer: coarse) { .sm-cursor { display: none !important; } *, *::before, *::after { cursor: auto !important; } }
-    @media (max-width: 768px) { .sm-cursor { display: none !important; } *, *::before, *::after { cursor: auto !important; } }
-  `;
-  document.head.appendChild(style);
-
-  let cx = window.innerWidth / 2, cy = window.innerHeight / 2;
-  let rx = cx, ry = cy;
-  let hidden = false;
-
-  document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX / window.innerWidth;
-    mouseY = e.clientY / window.innerHeight;
-    if (hidden) { hidden = false; cursor.classList.remove('hidden'); }
-  }, { passive: true });
-
-  document.addEventListener('mouseleave', () => { hidden = true; cursor.classList.add('hidden'); });
-
-  const INTERACTIVE = 'a, button, [role="button"], input, select, textarea, .btn, .card, .soc-btn, .game-card, .radio-badge, .radio-ctrl, .radio-queue-name, .radio-like-btn, .chat-suggestion-chip, #starmilk-chat-toggle, .nav-hamburger, .radio-queue-heart, .radio-tab, .nav-visualizer-link, label';
-
-  document.addEventListener('mouseover', (e) => {
-    cursor.classList.toggle('hover', !!e.target.closest(INTERACTIVE));
-  }, { passive: true });
-
-  const dot = cursor.children[0];
-  const ring = cursor.children[1];
-
-  function cursorFrame() {
-    // Tight spring for dot
-    cx += (mouseX * window.innerWidth - cx) * 0.18;
-    cy += (mouseY * window.innerHeight - cy) * 0.18;
-    // Loose spring for ring
-    rx += (mouseX * window.innerWidth - rx) * 0.07;
-    ry += (mouseY * window.innerHeight - ry) * 0.07;
-
-    dot.style.transform = `translate(${cx}px, ${cy}px) translate(-50%,-50%)`;
-    ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%,-50%)`;
-    requestAnimationFrame(cursorFrame);
-  }
-  requestAnimationFrame(cursorFrame);
+  // Custom cursor removed — native cursor is better.
+  // Remove any leftover cursor DOM from previous versions.
+  const oldCursor = document.querySelector('.sm-cursor');
+  if (oldCursor) oldCursor.remove();
 
 })();

@@ -21,6 +21,7 @@
   const badge        = document.getElementById('radio-badge');
   const closeBtn     = document.getElementById('radio-close');
   const prevBtn      = document.getElementById('radio-prev');
+  const playBtn      = document.getElementById('radio-play');
   const nextBtn      = document.getElementById('radio-next');
   const shuffleBtn   = document.getElementById('radio-shuffle');
   const likeBtn      = document.getElementById('radio-like');
@@ -141,13 +142,26 @@
     return f;
   };
 
-  const bindWidget = async (iframe) => {
+  let pendingAutoplay = false;
+
+  const bindWidget = async (iframe, autoplay = false) => {
     try {
       await loadSCAPI();
       if (typeof SC === 'undefined' || !SC.Widget) return;
       scWidget = SC.Widget(iframe);
-      scWidget.bind(SC.Widget.Events.FINISH, () => nextTrack(true));
+      scWidget.bind(SC.Widget.Events.FINISH, () => { isPlaying = false; refreshPlayBtn(); nextTrack(true); });
       scWidget.bind(SC.Widget.Events.ERROR,  () => setTimeout(() => nextTrack(true), 1500));
+      scWidget.bind(SC.Widget.Events.PLAY,   () => { isPlaying = true;  refreshPlayBtn(); });
+      scWidget.bind(SC.Widget.Events.PAUSE,  () => { isPlaying = false; refreshPlayBtn(); });
+      if (autoplay && userHasInteracted) {
+        pendingAutoplay = true;
+        scWidget.bind(SC.Widget.Events.READY, () => {
+          if (pendingAutoplay) {
+            pendingAutoplay = false;
+            scWidget.play();
+          }
+        });
+      }
     } catch (_) {}
   };
 
@@ -342,9 +356,10 @@
     if (!allTracks.length) return;
     const track = allTracks[currentIndex];
     trackNameEl.textContent = track.name;
+    const shouldPlay = autoplay && userHasInteracted;
     const iframe = ensureIframe();
-    iframe.src = embedUrl(track, autoplay && userHasInteracted);
-    bindWidget(iframe);
+    iframe.src = embedUrl(track, shouldPlay);
+    bindWidget(iframe, shouldPlay);
     updateQueueActive();
     refreshLikeBtn();
     updateTrackArt();
@@ -377,6 +392,34 @@
     showToast(isShuffleActive ? 'Shuffle on' : 'Shuffle off');
   };
 
+  let isPlaying = false;
+
+  const refreshPlayBtn = () => {
+    if (!playBtn) return;
+    playBtn.innerHTML = isPlaying ? SVG.pause : SVG.play;
+    playBtn.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
+    playBtn.setAttribute('aria-pressed', String(isPlaying));
+    playBtn.classList.toggle('active', isPlaying);
+  };
+
+  const togglePlay = () => {
+    if (!scWidget) {
+      // No widget yet — load the current track and play
+      if (allTracks.length) swapTrack(true);
+      return;
+    }
+    scWidget.isPaused((paused) => {
+      if (paused) {
+        scWidget.play();
+        isPlaying = true;
+      } else {
+        scWidget.pause();
+        isPlaying = false;
+      }
+      refreshPlayBtn();
+    });
+  };
+
   /* ─── Poem ───────────────────────────────────────────────────── */
   const maybePoem = () => {
     if (!poemEl || poemCooldown || Math.random() < 0.6) return;
@@ -402,6 +445,8 @@
   const SVG = {
     heart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
     prev:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>`,
+    play:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`,
+    pause: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="4" x2="6" y2="20"/><line x1="18" y1="4" x2="18" y2="20"/></svg>`,
     next:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="4" x2="19" y2="20"/></svg>`,
     shuffle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>`,
     share:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
@@ -415,6 +460,7 @@
 
   badge.addEventListener('click', (e) => {
     e.stopPropagation();
+    userHasInteracted = true; // badge click IS user interaction
     const nowOpen = floating.classList.toggle('open');
     floating.classList.toggle('collapsed', !nowOpen);
     badge.setAttribute('aria-expanded', String(nowOpen));
@@ -422,6 +468,7 @@
       hasOpened = true;
       // Inject SVG icons into controls
       if (prevBtn)    prevBtn.innerHTML    = SVG.prev;
+      if (playBtn)    playBtn.innerHTML    = SVG.play;
       if (nextBtn)    nextBtn.innerHTML    = SVG.next;
       if (shuffleBtn) shuffleBtn.innerHTML = SVG.shuffle;
       if (likeBtn)    likeBtn.innerHTML    = SVG.heart;
@@ -429,7 +476,7 @@
       if (shareBtn)   shareBtn.innerHTML   = SVG.share;
       buildFavQueue();
       refreshFavCount();
-      if (allTracks.length) swapTrack(userHasInteracted);
+      if (allTracks.length) swapTrack(true);
     }
   });
 
@@ -451,6 +498,7 @@
   });
 
   if (prevBtn)    prevBtn.addEventListener('click',    prevTrack);
+  if (playBtn)    playBtn.addEventListener('click',    togglePlay);
   if (nextBtn)    nextBtn.addEventListener('click',    () => nextTrack(true));
   if (shuffleBtn) shuffleBtn.addEventListener('click', toggleShuffle);
   if (likeBtn)    likeBtn.addEventListener('click',    () => toggleFav(allTracks[currentIndex]));
@@ -508,6 +556,7 @@
         if (idx !== -1) { currentIndex = idx; deepLinkedTrack = allTracks[idx].name; }
       }
       if (prevBtn)    prevBtn.innerHTML    = SVG.prev;
+      if (playBtn)    playBtn.innerHTML    = SVG.play;
       if (nextBtn)    nextBtn.innerHTML    = SVG.next;
       if (shuffleBtn) shuffleBtn.innerHTML = SVG.shuffle;
       if (likeBtn)    likeBtn.innerHTML    = SVG.heart;
