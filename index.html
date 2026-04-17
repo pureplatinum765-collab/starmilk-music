@@ -412,58 +412,88 @@
     }
 
     .mood-ring-card {
-      width: min(92vw, 700px);
-      border-radius: 24px;
-      border: 1px solid rgba(27,48,88,.2);
-      padding: 2rem;
-      background: linear-gradient(145deg, rgba(14,19,37,.96), rgba(8,11,22,.98));
-      box-shadow: 0 4px 32px rgba(8,11,22,.55);
+      width: min(92vw, 600px);
+      border-radius: 0;
+      border: 0;
+      padding: 2.5rem 2rem;
+      background: transparent;
+      box-shadow: none;
       text-align: center;
     }
 
     .mood-ring-title {
-      font-family: Georgia, serif;
-      font-size: clamp(1.3rem, 4vw, 2rem);
-      color: #d5cfc2;
-      margin-bottom: 1.5rem;
-      letter-spacing: .04em;
-      text-shadow: none;
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      font-style: italic;
+      font-weight: 400;
+      color: rgba(213,207,194,.5);
+      margin-bottom: 2.5rem;
+      letter-spacing: .02em;
     }
 
     .mood-ring-options {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: .4rem;
     }
 
+    /* Mood selectors — typographic, not orbs. Art, not candy. */
     .mood-orb {
       border: 0;
-      border-radius: 50%;
-      width: 112px;
-      aspect-ratio: 1;
-      margin: 0 auto;
-      color: #d5cfc2;
-      font-size: .76rem;
-      text-transform: uppercase;
-      letter-spacing: .08em;
+      border-radius: 0;
+      width: auto;
+      aspect-ratio: auto;
+      margin: 0;
+      padding: .75rem 1.4rem;
+      background: transparent;
+      color: rgba(200,192,178,.35);
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      font-style: italic;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: .02em;
       cursor: pointer;
-      animation: moodPulse 3.5s ease-in-out infinite;
-      transition: transform .3s ease;
+      position: relative;
+      transition: color .3s ease;
+      animation: none;
+      box-shadow: none;
+    }
+
+    /* Underline indicator */
+    .mood-orb::after {
+      content: '';
+      position: absolute;
+      bottom: .4rem;
+      left: 50%;
+      width: 0;
+      height: 1px;
+      background: rgba(201,148,74,.6);
+      transform: translateX(-50%);
+      transition: width .3s cubic-bezier(.16,1,.3,1);
     }
 
     .mood-orb:hover,
-    .mood-orb:focus-visible { transform: scale(1.08); outline: none; }
+    .mood-orb:focus-visible {
+      color: rgba(219,184,122,.8);
+      outline: none;
+      transform: none;
+    }
+    .mood-orb:hover::after,
+    .mood-orb:focus-visible::after {
+      width: 60%;
+    }
 
-    /* Earthy matte mood orbs — natural tones, painted feel */
-    .mood-orb[data-mood='heavy'] { background: radial-gradient(circle at 35% 30%, #3d4a6b, #1a2035 75%); box-shadow: 0 3px 12px rgba(40,50,80,.4); }
-    .mood-orb[data-mood='thawing'] { background: linear-gradient(140deg, #7a9ab5, #c4a882); box-shadow: 0 3px 12px rgba(122,154,181,.3); color: #2a2520; }
-    .mood-orb[data-mood='tender'] { background: radial-gradient(circle at 35% 30%, #b08a8a, #6b4a4f 75%); box-shadow: 0 3px 12px rgba(140,100,100,.3); }
-    .mood-orb[data-mood='alive'] { background: linear-gradient(140deg, #a8945a, #6b8a5e); box-shadow: 0 3px 12px rgba(107,138,94,.3); color: #1e2018; }
-    .mood-orb[data-mood='going-round'] { background: conic-gradient(from 80deg, #5a4a72, #8a6b5e, #6b5b8a, #5a4a72); box-shadow: 0 3px 12px rgba(90,74,114,.3); }
-
-    @keyframes moodPulse {
-      0%, 100% { transform: scale(.98); filter: saturate(1); }
-      50% { transform: scale(1.04); filter: saturate(1.15); }
+    /* Remove the old gradient backgrounds */
+    .mood-orb[data-mood='heavy'],
+    .mood-orb[data-mood='thawing'],
+    .mood-orb[data-mood='tender'],
+    .mood-orb[data-mood='alive'],
+    .mood-orb[data-mood='going-round'] {
+      background: transparent;
+      box-shadow: none;
+      color: rgba(200,192,178,.35);
     }
 
     body[data-mood='heavy'] { background: #080a18; }

@@ -38,6 +38,9 @@
   let orbs = [];
   let startTime = 0;
   let rainPaused = false;
+  let exitActive = false;
+  let exitStartTs = 0;
+  let exitSnapshots = null;
 
   /* ── Mood orb definitions (earthy matte) ── */
   const MOODS = [
@@ -157,6 +160,16 @@
       Math.min((elapsed - spiralStart) / spiralDuration, 1);
     const spiralEased = easeInOutCubic(spiralT);
 
+    /* ── Exit convergence timing ── */
+    const EXIT_CONVERGE = 0.5;   // seconds – orbs rush to center
+    const EXIT_FADE     = 0.7;   // seconds – overlay fades out
+    let convergeEased = 0;
+    if (exitActive) {
+      if (!exitStartTs) exitStartTs = timestamp;
+      const exitElapsed = (timestamp - exitStartTs) / 1000;
+      convergeEased = easeInOutCubic(Math.min(exitElapsed / EXIT_CONVERGE, 1));
+    }
+
     // Wizard reveal
     if (elapsed > wizardStart && wizardImg) {
       const wizT = Math.min((elapsed - wizardStart) / 3.5, 1);
@@ -189,8 +202,16 @@
       orb.x = baseX + drift;
       orb.y = baseY + driftY;
 
-      // Trail (short fading trail during spiral)
-      if (spiralT > 0.05 && spiralT < 0.95) {
+      /* Exit override: rush orbs toward center */
+      if (exitActive && exitSnapshots) {
+        const snap = exitSnapshots[i];
+        orb.x = snap.x + (cx - snap.x) * convergeEased;
+        orb.y = snap.y + (cy - snap.y) * convergeEased;
+        orb.alpha = snap.alpha * (1 - convergeEased * 0.4);
+      }
+
+      // Trail (short fading trail during spiral, suppress during exit)
+      if (spiralT > 0.05 && spiralT < 0.95 && !exitActive) {
         orb.trail.push({ x: orb.x, y: orb.y, a: orb.alpha * 0.3 });
         if (orb.trail.length > 12) orb.trail.shift();
       } else {
@@ -304,6 +325,44 @@
       }
     }
 
+    /* ── Exit: golden burst at center + fade overlay ── */
+    if (exitActive && exitStartTs) {
+      const exitElapsed = (timestamp - exitStartTs) / 1000;
+
+      // Convergence glow burst
+      if (convergeEased > 0.5) {
+        const burstAlpha = (convergeEased - 0.5) / 0.5 * 0.4;
+        const burstR = 60 + (1 - convergeEased) * 40;
+        const burstGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, burstR);
+        burstGrad.addColorStop(0, `rgba(201,148,74,${burstAlpha})`);
+        burstGrad.addColorStop(0.5, `rgba(126,184,164,${burstAlpha * 0.45})`);
+        burstGrad.addColorStop(1, 'rgba(11,14,26,0)');
+        ctx.fillStyle = burstGrad;
+        ctx.beginPath();
+        ctx.arc(cx, cy, burstR, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Fade overlay after convergence finishes
+      if (exitElapsed > EXIT_CONVERGE) {
+        const fadeT = Math.min((exitElapsed - EXIT_CONVERGE) / EXIT_FADE, 1);
+        overlay.style.opacity = 1 - easeOutQuart(fadeT);
+      }
+
+      // Cleanup when fully done
+      if (exitElapsed >= EXIT_CONVERGE + EXIT_FADE) {
+        cancelAnimationFrame(rafId); rafId = 0;
+        overlay.classList.add('exited');
+        setTimeout(() => {
+          overlay.remove();
+          document.body.classList.remove('parking-lot-active');
+          window.dispatchEvent(new CustomEvent('starmilk:parkingLotDismissed'));
+          if (audioCtx) audioCtx.close().catch(() => {});
+        }, 100);
+        return;
+      }
+    }
+
     rafId = requestAnimationFrame(draw);
   }
 
@@ -360,33 +419,13 @@
       const now = audioCtx.currentTime;
       padGain.gain.cancelScheduledValues(now);
       padGain.gain.setValueAtTime(Math.max(0.0001, padGain.gain.value), now);
-      padGain.gain.linearRampToValueAtTime(0.0001, now + 1.5);
+      padGain.gain.linearRampToValueAtTime(0.0001, now + 1.2);
     }
 
-    // Accelerate spiral and fade out
-    const exitStart = performance.now();
-    const exitDur = 2000;
-
-    function exitAnim(ts) {
-      const p = Math.min((ts - exitStart) / exitDur, 1);
-      // Speed up orbs outward (reverse funnel)
-      if (p > 0.3) {
-        overlay.style.opacity = 1 - easeInOutCubic((p - 0.3) / 0.7);
-      }
-      if (p < 1) {
-        requestAnimationFrame(exitAnim);
-      } else {
-        overlay.classList.add('exited');
-        setTimeout(() => {
-          overlay.remove();
-          document.body.classList.remove('parking-lot-active');
-          window.dispatchEvent(new CustomEvent('starmilk:parkingLotDismissed'));
-          if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
-          if (audioCtx) { audioCtx.close().catch(() => {}); }
-        }, 200);
-      }
-    }
-    requestAnimationFrame(exitAnim);
+    // Snapshot current orb positions — draw() will rush them to center
+    exitSnapshots = orbs.map(o => ({ x: o.x, y: o.y, size: o.size, alpha: o.alpha }));
+    exitActive = true;
+    exitStartTs = 0; // first draw frame will set this
   }
 
   function setupReturningVisitorFlow() {
