@@ -227,16 +227,38 @@
       : `${filteredTracks.length} / ${allTracks.length}`;
   };
 
+  // Generate a unique gradient for a track based on its name
+  const trackGradient = (name) => {
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = ((h << 5) - h + name.charCodeAt(i)) | 0;
+    const hue1 = ((h & 0xFF) / 255 * 60) + 240;       // 240-300 (purple-blue range)
+    const hue2 = (((h >> 8) & 0xFF) / 255 * 40) + 20;  // 20-60 (gold-amber range)
+    const angle = ((h >> 16) & 0xFF) / 255 * 360;
+    return `linear-gradient(${angle}deg, hsla(${hue1},40%,20%,.7), hsla(${hue2},50%,30%,.5))`;
+  };
+
+  // Update the track art square
+  const updateTrackArt = () => {
+    const art = document.getElementById('radio-track-art');
+    if (!art || !allTracks[currentIndex]) return;
+    art.style.background = trackGradient(allTracks[currentIndex].name);
+  };
+
   const buildQueue = () => {
     if (!queueEl) return;
     queueEl.innerHTML = '';
     const frag = document.createDocumentFragment();
-    filteredTracks.forEach(track => {
+    filteredTracks.forEach((track, i) => {
       const row   = document.createElement('div');
       const globalIdx = allTracks.indexOf(track);
       row.className = 'radio-queue-item' + (globalIdx === currentIndex ? ' active' : '');
       row.setAttribute('role', 'option');
       row.setAttribute('aria-selected', globalIdx === currentIndex ? 'true' : 'false');
+
+      // Track number
+      const numEl = document.createElement('span');
+      numEl.className = 'radio-queue-num';
+      numEl.textContent = String(globalIdx + 1);
 
       const nameEl = document.createElement('button');
       nameEl.type = 'button';
@@ -256,6 +278,7 @@
         toggleFav(track);
       });
 
+      row.appendChild(numEl);
       row.appendChild(nameEl);
       row.appendChild(heartBtn);
       frag.appendChild(row);
@@ -324,6 +347,7 @@
     bindWidget(iframe);
     updateQueueActive();
     refreshLikeBtn();
+    updateTrackArt();
     maybePoem();
   };
 
