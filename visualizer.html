@@ -5,40 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>STARMILK | Visualizer</title>
   <meta name="description" content="Ambient visual listening experience — loop STARMILK art while the music plays." />
-  <meta name="theme-color" content="#0b0e1a" />
+  <meta name="theme-color" content="#080b16" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23c9944a'/%3E%3Cstop offset='50%25' stop-color='%236b5b8a'/%3E%3Cstop offset='100%25' stop-color='%234a5578'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpolygon points='50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35' fill='url(%23g)'/%3E%3C/svg%3E" />
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": "STARMILK Visualizer",
-    "description": "Ambient visual listening experience — loop STARMILK art while the music plays.",
-    "isPartOf": {
-      "@type": "WebSite",
-      "name": "STARMILK",
-      "url": "https://pureplatinum765-collab.github.io/starmilk-music/"
-    },
-    "creator": {
-      "@type": "SoftwareApplication",
-      "name": "Perplexity Computer",
-      "url": "https://www.perplexity.ai/computer"
-    }
-  }
-  </script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0b0e1a;
-      --card: #121827;
-      --purple: #6b5b8a;
-      --gold: #c9944a;
+      --bg:         #080b16;
+      --bg-mid:     #0e1325;
+      --card:       #10162a;
+      --purple:     #6b5b8a;
+      --indigo:     #3d5080;
+      --violet:     #7b6998;
+      --teal:       #3a7068;
+      --teal-light: #6aad96;
+      --gold:       #c9944a;
       --gold-light: #dbb87a;
-      --text: #d5cfc2;
-      --muted: #8c8578;
-      --radius: 14px;
+      --blue-night: #1b3058;
+      --blue-deep:  #162040;
+      --text:       #d5cfc2;
+      --muted:      #8c8578;
+      --radius:     14px;
+      --t:          .35s cubic-bezier(.4,0,.2,1);
     }
 
     body {
@@ -51,7 +40,6 @@
       position: relative;
     }
 
-    /* ── Visual layers ── */
     .viz-layer {
       position: fixed;
       inset: 0;
@@ -64,21 +52,35 @@
     }
     .viz-layer.active { opacity: 1; }
     video.viz-layer { filter: saturate(0.75) contrast(1.05); }
-    img.viz-layer { filter: saturate(0.8) contrast(1.05); }
+    img.viz-layer   { filter: saturate(0.8) contrast(1.05); }
     .viz-layer.void-bg { background: var(--bg); }
 
-    /* ── Dark vignette overlay ── */
-    .vignette {
+    #viz-shader {
       position: fixed;
       inset: 0;
       z-index: 1;
       pointer-events: none;
-      background:
-        radial-gradient(ellipse 80% 80% at 50% 50%, transparent 30%, rgba(11,14,26,.55) 100%),
-        linear-gradient(to bottom, rgba(11,14,26,.3) 0%, transparent 12%, transparent 88%, rgba(11,14,26,.5) 100%);
+      mix-blend-mode: screen;
+      opacity: 0.45;
     }
 
-    /* ── Controls UI ── */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 80% at 50% 50%, transparent 30%, rgba(8,11,22,.55) 100%),
+        linear-gradient(to bottom, rgba(8,11,22,.3) 0%, transparent 12%, transparent 88%, rgba(8,11,22,.5) 100%);
+    }
+
+    #viz-particles {
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
     .viz-ui {
       position: fixed;
       bottom: 0;
@@ -86,7 +88,8 @@
       right: 0;
       z-index: 10;
       padding: 1.2rem 1.5rem 1.5rem;
-      background: linear-gradient(to top, rgba(11,14,26,.9) 0%, rgba(11,14,26,.5) 60%, transparent 100%);
+      background: linear-gradient(to top, rgba(8,11,22,.92) 0%, rgba(8,11,22,.5) 60%, transparent 100%);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
       display: flex;
       flex-direction: column;
       gap: .8rem;
@@ -109,9 +112,37 @@
       letter-spacing: .04em;
       opacity: .85;
       min-height: 1.4em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
     }
 
-    /* ── Visual toggle strip ── */
+    .audio-bars {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 14px;
+      opacity: 0;
+      transition: opacity .3s ease;
+    }
+    .audio-bars.playing { opacity: .7; }
+    .audio-bars span {
+      width: 2px;
+      background: var(--gold);
+      border-radius: 1px;
+      animation: audioBar 1.2s ease-in-out infinite;
+    }
+    .audio-bars span:nth-child(1) { height: 40%; animation-delay: 0s; }
+    .audio-bars span:nth-child(2) { height: 70%; animation-delay: .15s; }
+    .audio-bars span:nth-child(3) { height: 50%; animation-delay: .3s; }
+    .audio-bars span:nth-child(4) { height: 90%; animation-delay: .1s; }
+
+    @keyframes audioBar {
+      0%, 100% { transform: scaleY(0.3); }
+      50% { transform: scaleY(1); }
+    }
+
     .viz-toggles {
       display: flex;
       justify-content: center;
@@ -120,31 +151,40 @@
     }
 
     .viz-toggle {
-      border: 1px solid rgba(140,133,120,.2);
-      background: rgba(18,24,39,.7);
+      border: 1px solid rgba(140,133,120,.15);
+      background: rgba(16,22,42,.7);
       color: var(--muted);
-      padding: .4rem .7rem;
+      padding: .4rem .7rem .4rem .55rem;
       border-radius: 999px;
       font-size: .58rem;
       letter-spacing: .06em;
       text-transform: uppercase;
       cursor: pointer;
-      transition: all .3s ease;
+      transition: all var(--t);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       min-height: 36px;
-      display: flex;
+      display: inline-flex;
       align-items: center;
+      gap: .35rem;
       touch-action: manipulation;
       white-space: nowrap;
     }
+
+    .viz-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
     .viz-toggle:hover, .viz-toggle:focus-visible {
-      border-color: var(--gold);
-      color: var(--gold-light);
+      border-color: rgba(140,133,120,.35);
+      color: var(--text);
     }
     .viz-toggle.active {
       border-color: var(--gold);
-      background: rgba(201,148,74,.12);
+      background: rgba(201,148,74,.08);
       color: var(--gold-light);
     }
     .viz-toggle:active { transform: scale(.96); }
@@ -156,8 +196,8 @@
     }
 
     .viz-btn {
-      border: 1px solid rgba(140,133,120,.2);
-      background: rgba(18,24,39,.6);
+      border: 1px solid rgba(140,133,120,.15);
+      background: rgba(16,22,42,.6);
       color: var(--text);
       padding: .45rem .8rem;
       border-radius: 999px;
@@ -165,14 +205,14 @@
       letter-spacing: .06em;
       text-transform: uppercase;
       cursor: pointer;
-      transition: all .3s ease;
+      transition: all var(--t);
       min-height: 40px;
       display: flex;
       align-items: center;
       gap: .3rem;
       touch-action: manipulation;
     }
-    .viz-btn:hover { border-color: var(--gold); color: var(--gold-light); }
+    .viz-btn:hover { border-color: rgba(140,133,120,.35); color: var(--gold-light); }
     .viz-btn:active { transform: scale(.96); }
 
     .viz-back {
@@ -180,8 +220,8 @@
       top: 1rem;
       left: 1rem;
       z-index: 10;
-      border: 1px solid rgba(140,133,120,.2);
-      background: rgba(18,24,39,.6);
+      border: 1px solid rgba(140,133,120,.15);
+      background: rgba(16,22,42,.6);
       color: var(--muted);
       padding: .4rem .8rem;
       border-radius: 999px;
@@ -189,14 +229,14 @@
       letter-spacing: .08em;
       text-transform: uppercase;
       text-decoration: none;
-      transition: all .3s ease;
+      transition: all var(--t);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       min-height: 40px;
       display: inline-flex;
       align-items: center;
     }
-    .viz-back:hover { color: var(--gold-light); border-color: var(--gold); }
+    .viz-back:hover { color: var(--gold-light); border-color: rgba(140,133,120,.35); }
 
     .viz-logo {
       position: fixed;
@@ -209,7 +249,6 @@
       opacity: .4;
     }
 
-    /* ── SoundCloud embed ── */
     .viz-player {
       max-width: 480px;
       margin: 0 auto;
@@ -224,15 +263,6 @@
       opacity: .85;
     }
 
-    /* ── Ambient particle overlay ── */
-    #viz-particles {
-      position: fixed;
-      inset: 0;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    /* ── Tap hint ── */
     .viz-hint {
       position: fixed;
       top: 50%;
@@ -268,6 +298,7 @@
       .viz-title { font-size: .5rem; }
       .viz-player iframe { height: 85px; }
       .viz-back { font-size: .55rem; padding: .35rem .6rem; min-height: 36px; }
+      .viz-dot { width: 5px; height: 5px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -280,31 +311,25 @@
 </head>
 <body>
 
-  <!-- ═══ Visual Layers (all videos + static image + void) ═══ -->
   <video id="viz-vision" class="viz-layer active" loop muted playsinline>
     <source src="starmilk-vision.mp4" type="video/mp4" />
   </video>
-
   <video id="viz-heart" class="viz-layer" loop muted playsinline preload="none">
     <source src="cosmic-heart.mp4" type="video/mp4" />
   </video>
-
   <video id="viz-sun" class="viz-layer" loop muted playsinline preload="none">
     <source src="dripping-sun.mp4" type="video/mp4" />
   </video>
-
   <video id="viz-butterfly" class="viz-layer" loop muted playsinline preload="none">
     <source src="butterfly-infinity.mp4" type="video/mp4" />
   </video>
-
   <video id="viz-wings" class="viz-layer" loop muted playsinline preload="none">
     <source src="winged-ascension.mp4" type="video/mp4" />
   </video>
-
   <img id="viz-wizard" class="viz-layer" src="star-wizard.jpg" alt="Star Wizard" loading="lazy" decoding="async" />
-
   <div id="viz-void" class="viz-layer void-bg" role="presentation"></div>
 
+  <canvas id="viz-shader" aria-hidden="true"></canvas>
   <div class="vignette" aria-hidden="true"></div>
   <canvas id="viz-particles" aria-hidden="true"></canvas>
 
@@ -318,19 +343,34 @@
   <div class="viz-ui" id="viz-ui" role="region" aria-label="Visualizer controls">
     <p class="viz-title">Visual Listening Room</p>
 
-    <!-- Visual toggles — 5 videos + 1 image + void -->
     <div class="viz-toggles" role="radiogroup" aria-label="Visual selection">
-      <button class="viz-toggle active" data-visual="vision" role="radio" aria-checked="true">Chalice Dance</button>
-      <button class="viz-toggle" data-visual="heart" role="radio" aria-checked="false">Cosmic Heart</button>
-      <button class="viz-toggle" data-visual="sun" role="radio" aria-checked="false">Dripping Sun</button>
-      <button class="viz-toggle" data-visual="butterfly" role="radio" aria-checked="false">Butterfly Infinity</button>
-      <button class="viz-toggle" data-visual="wings" role="radio" aria-checked="false">Winged Ascension</button>
-      <button class="viz-toggle" data-visual="wizard" role="radio" aria-checked="false">Star Wizard</button>
-      <button class="viz-toggle" data-visual="void" role="radio" aria-checked="false">Deep Void</button>
+      <button class="viz-toggle active" data-visual="vision" data-color="#c9944a" role="radio" aria-checked="true">
+        <span class="viz-dot" style="background:#c9944a"></span> Chalice Dance
+      </button>
+      <button class="viz-toggle" data-visual="heart" data-color="#6b5b8a" role="radio" aria-checked="false">
+        <span class="viz-dot" style="background:#6b5b8a"></span> Cosmic Heart
+      </button>
+      <button class="viz-toggle" data-visual="sun" data-color="#dbb87a" role="radio" aria-checked="false">
+        <span class="viz-dot" style="background:#dbb87a"></span> Dripping Sun
+      </button>
+      <button class="viz-toggle" data-visual="butterfly" data-color="#7b6998" role="radio" aria-checked="false">
+        <span class="viz-dot" style="background:#7b6998"></span> Butterfly Infinity
+      </button>
+      <button class="viz-toggle" data-visual="wings" data-color="#6aad96" role="radio" aria-checked="false">
+        <span class="viz-dot" style="background:#6aad96"></span> Winged Ascension
+      </button>
+      <button class="viz-toggle" data-visual="wizard" data-color="#3d5080" role="radio" aria-checked="false">
+        <span class="viz-dot" style="background:#3d5080"></span> Star Wizard
+      </button>
+      <button class="viz-toggle" data-visual="void" data-color="#1b3058" role="radio" aria-checked="false">
+        <span class="viz-dot" style="background:#1b3058"></span> Deep Void
+      </button>
     </div>
 
-    <!-- Track controls -->
-    <p class="viz-track" id="viz-track-name" aria-live="polite">Loading...</p>
+    <p class="viz-track" id="viz-track-name" aria-live="polite">
+      <span class="audio-bars" id="audio-bars"><span></span><span></span><span></span><span></span></span>
+      <span id="track-label">Loading...</span>
+    </p>
 
     <div class="viz-controls" role="toolbar" aria-label="Playback controls">
       <button class="viz-btn" id="viz-prev" aria-label="Previous track">&#x23EE; Prev</button>
@@ -339,7 +379,6 @@
       <button class="viz-btn" id="viz-shuffle" aria-label="Shuffle tracks">&#x1F500; Shuffle</button>
     </div>
 
-    <!-- SoundCloud embed -->
     <div class="viz-player">
       <div id="viz-embed"></div>
     </div>
@@ -351,6 +390,7 @@
 
     const SC_API_URL = 'https://w.soundcloud.com/player/api.js';
     const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const IS_MOBILE = window.innerWidth < 768;
     let scAPILoaded = false;
     let scWidget = null;
 
@@ -364,7 +404,7 @@
     });
 
     /* ══════════════════════════════════════════════════════════
-       VISUAL TOGGLING — manage all video/image layers
+       VISUAL TOGGLING
        ══════════════════════════════════════════════════════════ */
     const layers = {
       vision:    document.getElementById('viz-vision'),
@@ -379,15 +419,18 @@
     const videoLayers = ['vision', 'heart', 'sun', 'butterfly', 'wings'];
     let currentVisual = 'vision';
 
-    // Play the default video
     layers.vision.play().catch(() => {});
+
+    const MODE_MAP = {
+      vision: 0, heart: 1, sun: 2, butterfly: 3,
+      wings: 4, wizard: 5, void: 6
+    };
 
     document.querySelectorAll('.viz-toggle').forEach(btn => {
       btn.addEventListener('click', () => {
         const target = btn.dataset.visual;
         if (target === currentVisual) return;
 
-        // Pause all videos, deactivate all layers
         videoLayers.forEach(key => {
           layers[key].pause();
           layers[key].classList.remove('active');
@@ -395,22 +438,21 @@
         layers.wizard.classList.remove('active');
         layers.void.classList.remove('active');
 
-        // Update toggle buttons
         document.querySelectorAll('.viz-toggle').forEach(b => {
           b.classList.remove('active');
           b.setAttribute('aria-checked', 'false');
         });
 
-        // Activate selected
         layers[target].classList.add('active');
         btn.classList.add('active');
         btn.setAttribute('aria-checked', 'true');
         currentVisual = target;
 
-        // Play if it's a video
         if (videoLayers.includes(target)) {
           layers[target].play().catch(() => {});
         }
+
+        shaderSetMode(MODE_MAP[target] ?? 0);
       });
     });
 
@@ -454,13 +496,14 @@
     scheduleHide();
 
     /* ══════════════════════════════════════════════════════════
-       MUSIC PLAYER with SC Widget API auto-advance
+       MUSIC PLAYER
        ══════════════════════════════════════════════════════════ */
     let tracks = [];
     let currentIndex = 0;
     let isPlaying = false;
 
-    const trackName = document.getElementById('viz-track-name');
+    const trackLabel = document.getElementById('track-label');
+    const audioBars = document.getElementById('audio-bars');
     const embedShell = document.getElementById('viz-embed');
     const playBtn = document.getElementById('viz-play');
 
@@ -474,7 +517,7 @@
         }
         loadTrack(0);
       })
-      .catch(() => { trackName.textContent = 'Could not load tracks'; });
+      .catch(() => { trackLabel.textContent = 'Could not load tracks'; });
 
     async function bindWidgetAutoAdvance(iframe) {
       try {
@@ -491,7 +534,7 @@
       currentIndex = ((index % tracks.length) + tracks.length) % tracks.length;
       const track = tracks[currentIndex];
       const name = track.name || track.title || 'Unknown Track';
-      trackName.textContent = name;
+      trackLabel.textContent = name;
 
       const url = track.url || track.permalink_url;
       if (url) {
@@ -504,7 +547,6 @@
         const iframe = embedShell.querySelector('iframe');
         if (iframe) {
           bindWidgetAutoAdvance(iframe);
-          // Fallback: if iframe fails to load, show direct link
           iframe.addEventListener('error', () => {
             embedShell.innerHTML = `<a href="${url}" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:underline;font-size:.85rem;">Open on SoundCloud &rarr;</a>`;
           });
@@ -523,69 +565,453 @@
     });
     playBtn.addEventListener('click', () => {
       isPlaying = !isPlaying;
-      playBtn.textContent = isPlaying ? '\u23F8 Pause' : '\u25B6 Play';
+      playBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
       playBtn.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
+      audioBars.classList.toggle('playing', isPlaying);
       loadTrack(currentIndex);
     });
 
     /* ══════════════════════════════════════════════════════════
-       AMBIENT PARTICLES
+       WEBGL SHADER SYSTEM
        ══════════════════════════════════════════════════════════ */
-    const canvas = document.getElementById('viz-particles');
-    const ctx = canvas.getContext('2d');
+    const shaderCanvas = document.getElementById('viz-shader');
+    let gl = null;
+    let shaderProgram = null;
+    let uTime, uResolution, uMode, uTransition;
+    let shaderMode = 0;
+    let shaderTransition = 1.0;
+    let transitionTarget = 1.0;
+    let lastFrame = 0;
+    const FPS_INTERVAL = 1000 / 30;
+
+    function shaderSetMode(mode) {
+      shaderMode = mode;
+      shaderTransition = 0.0;
+      transitionTarget = 1.0;
+    }
+
+    const VERT_SRC = `#version 300 es
+    in vec2 a_pos;
+    void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }`;
+
+    const FRAG_SRC = `#version 300 es
+    precision mediump float;
+    uniform float u_time;
+    uniform vec2 u_res;
+    uniform int u_mode;
+    uniform float u_trans;
+    out vec4 fragColor;
+
+    // Simplex-style noise
+    vec3 mod289(vec3 x) { return x - floor(x * (1.0/289.0)) * 289.0; }
+    vec2 mod289(vec2 x) { return x - floor(x * (1.0/289.0)) * 289.0; }
+    vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+
+    float snoise(vec2 v) {
+      const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+                         -0.577350269189626, 0.024390243902439);
+      vec2 i = floor(v + dot(v, C.yy));
+      vec2 x0 = v - i + dot(i, C.xx);
+      vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+      vec4 x12 = x0.xyxy + C.xxzz;
+      x12.xy -= i1;
+      i = mod289(i);
+      vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+      vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+      m = m*m; m = m*m;
+      vec3 x = 2.0 * fract(p * C.www) - 1.0;
+      vec3 h = abs(x) - 0.5;
+      vec3 ox = floor(x + 0.5);
+      vec3 a0 = x - ox;
+      m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+      vec3 g;
+      g.x = a0.x * x0.x + h.x * x0.y;
+      g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+      return 130.0 * dot(m, g);
+    }
+
+    float fbm(vec2 p, int oct) {
+      float v = 0.0, a = 0.5;
+      mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.5));
+      for (int i = 0; i < 5; i++) {
+        if (i >= oct) break;
+        v += a * snoise(p);
+        p = rot * p * 2.0;
+        a *= 0.5;
+      }
+      return v;
+    }
+
+    // Palette colors
+    vec3 GOLD    = vec3(0.788, 0.580, 0.290);
+    vec3 PURPLE  = vec3(0.420, 0.357, 0.541);
+    vec3 TEAL    = vec3(0.228, 0.439, 0.408);
+    vec3 INDIGO  = vec3(0.239, 0.314, 0.502);
+    vec3 CREAM   = vec3(0.835, 0.812, 0.761);
+    vec3 DEEP    = vec3(0.031, 0.043, 0.086);
+
+    // Mode 0: Chalice Dance — fluid flow field
+    vec3 chaliceDance(vec2 uv, float t) {
+      vec2 p = uv * 3.0;
+      float n1 = fbm(p + vec2(t * 0.12, t * 0.08), 4);
+      float n2 = fbm(p + vec2(n1 * 0.6, t * 0.06), 3);
+      float flow = fbm(p + vec2(n2 * 0.8), 4);
+      vec3 col = mix(INDIGO * 0.4, GOLD * 0.7, smoothstep(-0.3, 0.5, flow));
+      col = mix(col, PURPLE * 0.5, smoothstep(0.2, 0.8, n1));
+      col *= 0.5 + 0.5 * smoothstep(-0.2, 0.3, n2);
+      return col * 0.65;
+    }
+
+    // Mode 1: Cosmic Heart — sacred geometry rings
+    vec3 cosmicHeart(vec2 uv, float t) {
+      vec2 center = uv - 0.5;
+      float dist = length(center);
+      float angle = atan(center.y, center.x);
+      float rings = sin(dist * 28.0 - t * 0.8) * 0.5 + 0.5;
+      rings *= smoothstep(0.5, 0.1, dist);
+      float pulse = sin(t * 0.6) * 0.5 + 0.5;
+      float cell = snoise(vec2(angle * 2.0, dist * 6.0) + t * 0.1);
+      vec3 col = mix(DEEP, PURPLE * 0.8, rings * 0.6);
+      col += GOLD * 0.3 * rings * pulse;
+      col += vec3(cell * 0.06) * smoothstep(0.4, 0.0, dist);
+      float geoLine = abs(sin(angle * 6.0 + t * 0.2)) * smoothstep(0.35, 0.05, abs(dist - 0.2 - pulse * 0.05));
+      col += GOLD * geoLine * 0.15;
+      return col * 0.6;
+    }
+
+    // Mode 2: Dripping Sun — vertical rain streaks
+    vec3 drippingSun(vec2 uv, float t) {
+      vec3 col = DEEP * 0.3;
+      for (int i = 0; i < 12; i++) {
+        float fi = float(i);
+        float x = fract(sin(fi * 127.1) * 43758.5453);
+        float speed = 0.3 + fract(sin(fi * 311.7) * 43758.5453) * 0.7;
+        float wobble = snoise(vec2(fi * 7.0, t * 0.3)) * 0.03;
+        float sx = x + wobble;
+        float sy = fract(-t * speed * 0.15 + fi * 0.37);
+        float dx = abs(uv.x - sx);
+        float dy = uv.y - sy;
+        float streak = smoothstep(0.015, 0.0, dx) * smoothstep(0.0, 0.25, dy) * smoothstep(0.5, 0.25, dy);
+        vec3 streakCol = mix(GOLD, CREAM, fract(fi * 0.618));
+        col += streakCol * streak * 0.4;
+      }
+      float glow = smoothstep(0.5, 0.0, length(uv - vec2(0.5, 0.15)));
+      col += GOLD * glow * 0.15;
+      return col * 0.7;
+    }
+
+    // Mode 3: Butterfly Infinity — lemniscate trails
+    vec3 butterflyInfinity(vec2 uv, float t) {
+      vec3 col = DEEP * 0.2;
+      vec2 center = uv - 0.5;
+      for (int i = 0; i < 5; i++) {
+        float fi = float(i);
+        float phase = fi * 1.2566 + t * (0.15 + fi * 0.03);
+        float scale = 0.15 + fi * 0.04;
+        float ct = cos(phase);
+        float st = sin(phase);
+        float denom = 1.0 + st * st;
+        vec2 lem = vec2(scale * ct / denom, scale * ct * st / denom);
+        float d = length(center - lem);
+        float trail = smoothstep(0.04, 0.0, d);
+        vec3 tc = mix(GOLD, PURPLE, fi / 5.0);
+        col += tc * trail * 0.35;
+        float glow = smoothstep(0.12, 0.0, d);
+        col += tc * glow * 0.05;
+      }
+      return col * 0.7;
+    }
+
+    // Mode 4: Winged Ascension — rising light columns
+    vec3 wingedAscension(vec2 uv, float t) {
+      vec3 col = DEEP * 0.2;
+      for (int i = 0; i < 7; i++) {
+        float fi = float(i);
+        float x = 0.1 + fi * 0.12;
+        float wobble = snoise(vec2(fi * 3.0, t * 0.2)) * 0.04;
+        x += wobble;
+        float dx = abs(uv.x - x);
+        float column = smoothstep(0.025, 0.0, dx);
+        float rise = snoise(vec2(uv.y * 3.0 - t * 0.4, fi * 5.0));
+        column *= smoothstep(-0.3, 0.3, rise);
+        float brightness = 0.5 + 0.5 * sin(uv.y * 6.0 - t * 0.5 + fi);
+        vec3 lightCol = mix(TEAL, CREAM, brightness * 0.5);
+        col += lightCol * column * 0.25;
+      }
+      float depthFog = smoothstep(1.0, 0.0, uv.y) * 0.1;
+      col += TEAL * depthFog;
+      return col * 0.6;
+    }
+
+    // Mode 5: Star Wizard — parallax depth starfield
+    vec3 starWizard(vec2 uv, float t) {
+      vec3 col = DEEP;
+      for (int layer = 0; layer < 4; layer++) {
+        float fl = float(layer);
+        float speed = 0.02 + fl * 0.02;
+        float scale = 20.0 + fl * 15.0;
+        vec2 p = uv * scale + vec2(t * speed, t * speed * 0.5);
+        vec2 cell = floor(p);
+        vec2 f = fract(p);
+        for (int yi = -1; yi <= 1; yi++) {
+          for (int xi = -1; xi <= 1; xi++) {
+            vec2 neighbor = vec2(float(xi), float(yi));
+            vec2 point = vec2(
+              fract(sin(dot(cell + neighbor, vec2(127.1, 311.7))) * 43758.5453),
+              fract(sin(dot(cell + neighbor, vec2(269.5, 183.3))) * 43758.5453)
+            );
+            float d = length(f - neighbor - point);
+            float star = smoothstep(0.06 - fl * 0.01, 0.0, d);
+            float halo = smoothstep(0.15, 0.0, d) * 0.15;
+            vec3 starCol = mix(CREAM, GOLD, fract(sin(dot(cell + neighbor, vec2(43.3, 17.9))) * 4758.5));
+            col += starCol * (star + halo) * (0.4 - fl * 0.06);
+          }
+        }
+      }
+      return col * 0.55;
+    }
+
+    // Mode 6: Deep Void — black hole with accretion disk
+    vec3 deepVoid(vec2 uv, float t) {
+      vec2 center = uv - 0.5;
+      float dist = length(center);
+      float angle = atan(center.y, center.x);
+
+      // Gravitational lensing distortion
+      float warp = 0.02 / (dist + 0.08);
+      vec2 warped = center + normalize(center) * warp;
+      float wDist = length(warped);
+
+      // Event horizon
+      float horizon = smoothstep(0.06, 0.08, dist);
+
+      // Accretion disk
+      float diskAngle = angle + t * 0.3 + snoise(vec2(angle * 2.0, t * 0.1)) * 0.3;
+      float disk = smoothstep(0.22, 0.12, abs(wDist - 0.18));
+      disk *= (0.5 + 0.5 * sin(diskAngle * 8.0 + t));
+      disk *= horizon;
+
+      // Outer glow
+      float corona = smoothstep(0.4, 0.1, dist) * smoothstep(0.06, 0.12, dist);
+      float noise = fbm(vec2(angle * 3.0, dist * 5.0) + t * 0.15, 3);
+
+      vec3 col = DEEP * (1.0 - horizon * 0.5);
+      col += GOLD * disk * 0.6;
+      col += PURPLE * corona * 0.2 * (0.5 + noise * 0.5);
+      col += GOLD * 0.08 * smoothstep(0.3, 0.08, dist) * horizon;
+
+      // Lensing ring highlight
+      float ring = smoothstep(0.01, 0.0, abs(dist - 0.09));
+      col += GOLD * ring * 0.4;
+
+      return col * 0.7;
+    }
+
+    void main() {
+      vec2 uv = gl_FragCoord.xy / u_res;
+      float t = u_time;
+      vec3 col;
+
+      if (u_mode == 0) col = chaliceDance(uv, t);
+      else if (u_mode == 1) col = cosmicHeart(uv, t);
+      else if (u_mode == 2) col = drippingSun(uv, t);
+      else if (u_mode == 3) col = butterflyInfinity(uv, t);
+      else if (u_mode == 4) col = wingedAscension(uv, t);
+      else if (u_mode == 5) col = starWizard(uv, t);
+      else col = deepVoid(uv, t);
+
+      col *= u_trans;
+      fragColor = vec4(col, 1.0);
+    }`;
+
+    function initShader() {
+      gl = shaderCanvas.getContext('webgl2', { alpha: true, premultipliedAlpha: false });
+      if (!gl) return;
+
+      resizeShader();
+
+      const vs = gl.createShader(gl.VERTEX_SHADER);
+      gl.shaderSource(vs, VERT_SRC);
+      gl.compileShader(vs);
+
+      const fs = gl.createShader(gl.FRAGMENT_SHADER);
+      gl.shaderSource(fs, FRAG_SRC);
+      gl.compileShader(fs);
+
+      shaderProgram = gl.createProgram();
+      gl.attachShader(shaderProgram, vs);
+      gl.attachShader(shaderProgram, fs);
+      gl.linkProgram(shaderProgram);
+
+      if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        gl = null;
+        return;
+      }
+
+      gl.useProgram(shaderProgram);
+
+      uTime = gl.getUniformLocation(shaderProgram, 'u_time');
+      uResolution = gl.getUniformLocation(shaderProgram, 'u_res');
+      uMode = gl.getUniformLocation(shaderProgram, 'u_mode');
+      uTransition = gl.getUniformLocation(shaderProgram, 'u_trans');
+
+      const posLoc = gl.getAttribLocation(shaderProgram, 'a_pos');
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(posLoc);
+      gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+    }
+
+    function resizeShader() {
+      if (!gl) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, IS_MOBILE ? 1 : 2);
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      shaderCanvas.width = Math.floor(w * dpr * (IS_MOBILE ? 0.5 : 0.75));
+      shaderCanvas.height = Math.floor(h * dpr * (IS_MOBILE ? 0.5 : 0.75));
+      shaderCanvas.style.width = w + 'px';
+      shaderCanvas.style.height = h + 'px';
+      if (gl) gl.viewport(0, 0, shaderCanvas.width, shaderCanvas.height);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       ORGANIC PARTICLE SYSTEM
+       ══════════════════════════════════════════════════════════ */
+    const pCanvas = document.getElementById('viz-particles');
+    const pCtx = pCanvas.getContext('2d');
     const TAU = Math.PI * 2;
-    let W, H, particles;
+    let pW, pH, particles;
+    const CONNECTION_DIST = IS_MOBILE ? 80 : 100;
+
     function rnd(lo, hi) { return lo + Math.random() * (hi - lo); }
 
+    function simpleNoise(x, y) {
+      const n = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
+      return (n - Math.floor(n)) * 2.0 - 1.0;
+    }
+
     function buildParticles() {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-      const count = Math.min(60, Math.floor(W * 0.04));
-      particles = Array.from({ length: count }, () => ({
-        x: rnd(0, W), y: rnd(0, H),
-        r: rnd(0.3, 1.6), a: rnd(0.15, 0.6),
-        spd: rnd(0.0003, 0.001), ph: rnd(0, TAU),
-        dx: rnd(-0.015, 0.015), dy: rnd(-0.008, 0.008),
-      }));
+      pW = pCanvas.width = window.innerWidth;
+      pH = pCanvas.height = window.innerHeight;
+      const count = IS_MOBILE ? 40 : 75;
+      particles = Array.from({ length: count }, () => {
+        const isGold = Math.random() < 0.15;
+        return {
+          x: rnd(0, pW), y: rnd(0, pH),
+          r: rnd(0.8, 2.2),
+          a: rnd(0.15, 0.55),
+          color: isGold ? 'rgba(201,148,74,' : 'rgba(213,207,194,',
+          spd: rnd(0.0003, 0.001), ph: rnd(0, TAU),
+          stretch: 1 + Math.random() * 0.6
+        };
+      });
     }
 
     buildParticles();
-    window.addEventListener('resize', buildParticles);
+    window.addEventListener('resize', () => { buildParticles(); resizeShader(); });
+
+    /* ══════════════════════════════════════════════════════════
+       RENDER LOOP — 30fps cap
+       ══════════════════════════════════════════════════════════ */
+    let globalTime = 0;
+
+    function renderLoop(ts) {
+      if (ts - lastFrame < FPS_INTERVAL) {
+        requestAnimationFrame(renderLoop);
+        return;
+      }
+      lastFrame = ts;
+      globalTime += 0.033;
+
+      // Shader transition easing
+      if (shaderTransition < transitionTarget) {
+        shaderTransition = Math.min(shaderTransition + 0.025, transitionTarget);
+      }
+
+      // Draw WebGL shader
+      if (gl && shaderProgram) {
+        gl.uniform1f(uTime, globalTime);
+        gl.uniform2f(uResolution, shaderCanvas.width, shaderCanvas.height);
+        gl.uniform1i(uMode, shaderMode);
+        gl.uniform1f(uTransition, shaderTransition);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      }
+
+      // Draw particles
+      pCtx.clearRect(0, 0, pW, pH);
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+
+        // Flow field motion from noise
+        const nx = simpleNoise(p.x * 0.003, globalTime * 0.3) * 0.4;
+        const ny = simpleNoise(p.y * 0.003 + 100.0, globalTime * 0.3) * 0.4;
+        p.x += nx;
+        p.y += ny;
+
+        if (p.x < -5) p.x = pW + 5;
+        if (p.x > pW + 5) p.x = -5;
+        if (p.y < -5) p.y = pH + 5;
+        if (p.y > pH + 5) p.y = -5;
+
+        const tw = p.a * (0.5 + 0.5 * Math.sin(globalTime * 3 * p.spd + p.ph));
+
+        // Connection lines
+        for (let j = i + 1; j < particles.length; j++) {
+          const q = particles[j];
+          const dx = p.x - q.x;
+          const dy = p.y - q.y;
+          const dist = dx * dx + dy * dy;
+          const maxDist = CONNECTION_DIST * CONNECTION_DIST;
+          if (dist < maxDist) {
+            const alpha = (1 - dist / maxDist) * 0.08;
+            pCtx.beginPath();
+            pCtx.moveTo(p.x, p.y);
+            pCtx.lineTo(q.x, q.y);
+            pCtx.strokeStyle = `rgba(213,207,194,${alpha})`;
+            pCtx.lineWidth = 0.5;
+            pCtx.stroke();
+          }
+        }
+
+        // Draw particle (slightly elongated)
+        pCtx.save();
+        pCtx.translate(p.x, p.y);
+        pCtx.scale(p.stretch, 1);
+        pCtx.beginPath();
+        pCtx.arc(0, 0, p.r, 0, TAU);
+        pCtx.fillStyle = p.color + tw + ')';
+        pCtx.fill();
+        pCtx.restore();
+      }
+
+      requestAnimationFrame(renderLoop);
+    }
 
     if (REDUCED) {
-      ctx.clearRect(0, 0, W, H);
+      // Static render for reduced motion
+      pCtx.clearRect(0, 0, pW, pH);
       particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, TAU);
-        ctx.fillStyle = `rgba(213,207,194,${p.a * 0.5})`;
-        ctx.fill();
+        pCtx.beginPath();
+        pCtx.arc(p.x, p.y, p.r, 0, TAU);
+        pCtx.fillStyle = p.color + (p.a * 0.4) + ')';
+        pCtx.fill();
       });
+
+      if (gl && shaderProgram) {
+        gl.uniform1f(uTime, 0);
+        gl.uniform2f(uResolution, shaderCanvas.width, shaderCanvas.height);
+        gl.uniform1i(uMode, 0);
+        gl.uniform1f(uTransition, 1.0);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      }
     } else {
-      (function loop(ts) {
-        ctx.clearRect(0, 0, W, H);
-        particles.forEach(p => {
-          p.x += p.dx; p.y += p.dy;
-          if (p.x < -2) p.x = W + 2;
-          if (p.x > W + 2) p.x = -2;
-          if (p.y < -2) p.y = H + 2;
-          if (p.y > H + 2) p.y = -2;
-          const tw = p.a * (0.5 + 0.5 * Math.sin(ts * p.spd + p.ph));
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r, 0, TAU);
-          ctx.fillStyle = `rgba(213,207,194,${tw})`;
-          ctx.fill();
-        });
-        requestAnimationFrame(loop);
-      })(0);
+      initShader();
+      requestAnimationFrame(renderLoop);
     }
 
   })();
   </script>
-
-  <footer style="position:fixed;bottom:4px;right:12px;z-index:5;font-size:.55rem;opacity:.3;color:var(--muted)">
-    <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none">
-      Created with Perplexity Computer
-    </a>
-  </footer>
 </body>
 </html>

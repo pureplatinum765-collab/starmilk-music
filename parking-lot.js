@@ -1,7 +1,6 @@
 (function () {
   'use strict';
 
-  /* ── Safe localStorage wrapper ── */
   const _ls = (function () {
     const m = {};
     const s = window['local' + 'Storage'];
@@ -29,31 +28,26 @@
   const state = {
     isEntering: false,
     hasEnteredBefore: _ls.getItem(STORAGE_KEY) === 'true',
-    funnelProgress: 0,    // 0→1 as orbs spiral inward
-    wizardReveal: 0       // 0→1 as wizard image fades in
+    phase: 'skating'
   };
 
   let ctx = null;
   let rafId = 0;
-  let orbs = [];
   let startTime = 0;
-  let rainPaused = false;
+  let paused = false;
 
-  /* ── Mood orb definitions (earthy matte) ── */
-  const MOODS = [
-    { label: 'Heavy',      emoji: '🪨', color: '#3d4a6b', glow: 'rgba(61,74,107,.4)' },
-    { label: 'Thawing',    emoji: '🧊', color: '#7a9ab5', glow: 'rgba(122,154,181,.35)' },
-    { label: 'Tender',     emoji: '🌷', color: '#b08a8a', glow: 'rgba(176,138,138,.35)' },
-    { label: 'Alive',      emoji: '🌿', color: '#a8945a', glow: 'rgba(168,148,90,.4)' },
-    { label: 'Going Round',emoji: '🌀', color: '#5a4a72', glow: 'rgba(90,74,114,.35)' }
-  ];
+  let droplets = [];
+  let ripples = [];
+  let trail = [];
 
-  /* ── Build canvas ── */
+  const GOLD_LIGHT = '#dbb87a';
+  const CREAM = '#e8dfc0';
+  const MILK_COLORS = ['#e8dfc0', '#d5cfc2', '#f0e8d8', '#ddd5c4', '#c9c0ae', '#dbb87a'];
+
   function setupCanvas() {
     if (!canvas) return;
     ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
-
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const w = window.innerWidth;
     const h = window.innerHeight;
@@ -64,80 +58,58 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  /* ── Create orbs — they start scattered, then funnel in ── */
-  function buildOrbs() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    const cx = w / 2;
-    const cy = h / 2;
-    orbs = [];
-
-    // Create multiple orbs per mood (scattered across screen)
-    const orbsPerMood = isMobile ? 7 : 12;
-    for (let mi = 0; mi < MOODS.length; mi++) {
-      const mood = MOODS[mi];
-      for (let j = 0; j < orbsPerMood; j++) {
-        const angle = ((mi * orbsPerMood + j) / (MOODS.length * orbsPerMood)) * Math.PI * 2;
-        // Start from edges — scattered wide
-        const startRadius = Math.max(w, h) * 0.55 + Math.random() * 120;
-        const startX = cx + Math.cos(angle) * startRadius;
-        const startY = cy + Math.sin(angle) * startRadius;
-
-        // Funnel target — tighter spiral near center
-        const targetRadius = 25 + Math.random() * 45;
-        const spiralOffset = (j / orbsPerMood) * Math.PI * 2;
-
-        orbs.push({
-          mood: mi,
-          // Starting position (scattered)
-          sx: startX,
-          sy: startY,
-          // Current position
-          x: startX,
-          y: startY,
-          // Size & visual
-          size: isMobile ? (12 + Math.random() * 14) : (16 + Math.random() * 18),
-          color: mood.color,
-          glow: mood.glow,
-          label: j === 0 ? mood.label : null, // Only first orb of each mood gets label
-          emoji: j === 0 ? mood.emoji : null,
-          // Spiral parameters
-          angle: angle,
-          spiralOffset: spiralOffset,
-          targetRadius: targetRadius,
-          // Drift (idle wobble)
-          driftPhase: Math.random() * Math.PI * 2,
-          driftSpeed: 0.3 + Math.random() * 0.5,
-          driftAmp: 3 + Math.random() * 6,
-          // Opacity
-          alpha: 0,
-          targetAlpha: 0.7 + Math.random() * 0.3,
-          // Trail
-          trail: []
-        });
-      }
-    }
-  }
-
-  /* ── Easing ── */
   function easeInOutCubic(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   }
   function easeOutQuart(t) {
     return 1 - Math.pow(1 - t, 4);
   }
+  function easeOutExpo(t) {
+    return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+  }
 
-  /* ── Phases:
-       0.0 – 0.15  : Orbs appear from edges, floating
-       0.15 – 0.7  : Orbs spiral inward (coin funnel)
-       0.7 – 1.0   : Orbs settle into tight orbit, wizard image reveals
-  ── */
+  function createSplatter(cx, cy) {
+    const count = isMobile ? 30 : 55;
+    droplets = [];
+    ripples = [];
+
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 2 + Math.random() * 12;
+      const size = 2 + Math.random() * 14;
+      droplets.push({
+        x: cx, y: cy,
+        vx: Math.cos(angle) * speed * (0.6 + Math.random() * 0.8),
+        vy: Math.sin(angle) * speed * (0.6 + Math.random() * 0.8) - Math.random() * 3,
+        r: size, origR: size,
+        color: MILK_COLORS[Math.floor(Math.random() * MILK_COLORS.length)],
+        alpha: 0.7 + Math.random() * 0.3,
+        gravity: 0.08 + Math.random() * 0.12,
+        drag: 0.96 + Math.random() * 0.03,
+        stretch: 1 + Math.random() * 0.5
+      });
+    }
+
+    for (let i = 0; i < 3; i++) {
+      ripples.push({
+        x: cx, y: cy,
+        r: 10,
+        maxR: 120 + i * 80,
+        alpha: 0.5 - i * 0.12,
+        speed: 3.5 - i * 0.6
+      });
+    }
+  }
+
+  const FONT_SIZE = isMobile ? 42 : 72;
+  const FONT = `900 ${FONT_SIZE}px 'Segoe UI', system-ui, -apple-system, sans-serif`;
+  const TRAIL_LENGTH = isMobile ? 6 : 10;
 
   function draw(timestamp) {
-    if (!ctx || rainPaused) return;
+    if (!ctx || paused) return;
     if (!startTime) startTime = timestamp;
 
-    const elapsed = (timestamp - startTime) / 1000; // seconds
+    const elapsed = (timestamp - startTime) / 1000;
     const w = window.innerWidth;
     const h = window.innerHeight;
     const cx = w / 2;
@@ -145,169 +117,216 @@
 
     ctx.clearRect(0, 0, w, h);
 
-    // Phase timing
-    const appearDuration = 2.5;    // orbs fade in over 2.5s
-    const spiralStart = 1.8;       // spiral begins at 1.8s
-    const spiralDuration = 7.0;    // spiral takes 7s to fully converge
-    const wizardStart = 5.8;       // wizard starts fading in earlier for layered reveal
-
-    // Compute progress values
-    const appearProgress = Math.min(elapsed / appearDuration, 1);
-    const spiralT = elapsed < spiralStart ? 0 :
-      Math.min((elapsed - spiralStart) / spiralDuration, 1);
-    const spiralEased = easeInOutCubic(spiralT);
-
-    // Wizard reveal
-    if (elapsed > wizardStart && wizardImg) {
-      const wizT = Math.min((elapsed - wizardStart) / 3.5, 1);
-      state.wizardReveal = easeOutQuart(wizT);
-      wizardImg.style.opacity = state.wizardReveal * 0.65;
-      wizardImg.style.transform = `translate(-50%, -50%) scale(${0.85 + state.wizardReveal * 0.15})`;
-      wizardImg.style.filter = `blur(${(1 - state.wizardReveal) * 8}px) saturate(${0.6 + state.wizardReveal * 0.4})`;
+    if (elapsed < 4.8) {
+      drawSkatingPhase(elapsed, cx, cy, w, h);
     }
 
-    // Draw each orb
-    for (let i = 0; i < orbs.length; i++) {
-      const orb = orbs[i];
-
-      // Fade in
-      orb.alpha = Math.min(appearProgress * orb.targetAlpha * 1.3, orb.targetAlpha);
-
-      // Spiral movement (coin funnel)
-      const spiralAngle = orb.angle + spiralEased * Math.PI * 6 + orb.spiralOffset;
-      const maxRadius = Math.max(w, h) * 0.55;
-      const currentRadius = maxRadius * (1 - spiralEased) + orb.targetRadius * spiralEased;
-
-      // Compute position
-      const baseX = cx + Math.cos(spiralAngle) * currentRadius;
-      const baseY = cy + Math.sin(spiralAngle) * currentRadius;
-
-      // Add gentle drift wobble
-      const drift = Math.sin(elapsed * orb.driftSpeed + orb.driftPhase) * orb.driftAmp * (1 - spiralEased * 0.7);
-      const driftY = Math.cos(elapsed * orb.driftSpeed * 0.7 + orb.driftPhase) * orb.driftAmp * 0.6 * (1 - spiralEased * 0.7);
-
-      orb.x = baseX + drift;
-      orb.y = baseY + driftY;
-
-      // Trail (short fading trail during spiral)
-      if (spiralT > 0.05 && spiralT < 0.95) {
-        orb.trail.push({ x: orb.x, y: orb.y, a: orb.alpha * 0.3 });
-        if (orb.trail.length > 12) orb.trail.shift();
-      } else {
-        if (orb.trail.length > 0) orb.trail.shift();
+    if (elapsed >= 4.8 && elapsed < 7.5) {
+      if (state.phase === 'skating') {
+        state.phase = 'splatter';
+        createSplatter(cx, cy);
       }
-
-      // Draw trail
-      for (let t = 0; t < orb.trail.length; t++) {
-        const tp = orb.trail[t];
-        const ta = tp.a * (t / orb.trail.length) * 0.5;
-        const ts = orb.size * 0.4 * (t / orb.trail.length);
-        ctx.beginPath();
-        ctx.arc(tp.x, tp.y, ts, 0, Math.PI * 2);
-        ctx.fillStyle = orb.color;
-        ctx.globalAlpha = ta;
-        ctx.fill();
-      }
-
-      // Draw glow
-      ctx.globalAlpha = orb.alpha * 0.35;
-      const glowSize = orb.size * 2.5;
-      const gradient = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, glowSize);
-      gradient.addColorStop(0, orb.glow);
-      gradient.addColorStop(1, 'rgba(11,14,26,0)');
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(orb.x, orb.y, glowSize, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Draw orb body (matte circle)
-      ctx.globalAlpha = orb.alpha;
-      ctx.beginPath();
-      ctx.arc(orb.x, orb.y, orb.size / 2, 0, Math.PI * 2);
-      ctx.fillStyle = orb.color;
-      ctx.fill();
-
-      // Inner highlight (subtle matte sheen)
-      ctx.globalAlpha = orb.alpha * 0.3;
-      const innerGrad = ctx.createRadialGradient(
-        orb.x - orb.size * 0.15, orb.y - orb.size * 0.15, 0,
-        orb.x, orb.y, orb.size / 2
-      );
-      innerGrad.addColorStop(0, 'rgba(213,207,194,.4)');
-      innerGrad.addColorStop(1, 'rgba(213,207,194,0)');
-      ctx.fillStyle = innerGrad;
-      ctx.beginPath();
-      ctx.arc(orb.x, orb.y, orb.size / 2, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Label text (only on primary orbs, only early in animation)
-      if (orb.label && spiralT < 0.5) {
-        const labelAlpha = orb.alpha * (1 - spiralT * 2);
-        if (labelAlpha > 0.05) {
-          ctx.globalAlpha = labelAlpha;
-          ctx.font = `600 ${isMobile ? 11 : 13}px system-ui, -apple-system, sans-serif`;
-          ctx.textAlign = 'center';
-          ctx.fillStyle = '#d5cfc2';
-          // Emoji above
-          if (orb.emoji) {
-            ctx.font = `${isMobile ? 18 : 22}px system-ui`;
-            ctx.fillText(orb.emoji, orb.x, orb.y - orb.size / 2 - 12);
-          }
-          ctx.font = `600 ${isMobile ? 11 : 13}px system-ui, -apple-system, sans-serif`;
-          ctx.fillText(orb.label, orb.x, orb.y + orb.size / 2 + 18);
-        }
-      }
-
-      ctx.globalAlpha = 1;
+      drawSplatterPhase(elapsed - 4.8, cx, cy, w, h);
     }
 
-    // Soft vignette overlay as spiral converges
-    if (spiralT > 0.5) {
-      const vigAlpha = (spiralT - 0.5) * 0.15;
-      const vigGrad = ctx.createRadialGradient(cx, cy, w * 0.15, cx, cy, w * 0.6);
-      vigGrad.addColorStop(0, 'rgba(11,14,26,0)');
-      vigGrad.addColorStop(1, `rgba(11,14,26,${vigAlpha})`);
-      ctx.fillStyle = vigGrad;
-      ctx.fillRect(0, 0, w, h);
+    if (elapsed >= 6.5 && wizardImg) {
+      const fadeT = Math.min((elapsed - 6.5) / 1.5, 1);
+      const wizAlpha = easeOutQuart(fadeT) * 0.65;
+      wizardImg.style.opacity = wizAlpha;
+      wizardImg.style.transform = `translate(-50%, -50%) scale(${0.85 + fadeT * 0.15})`;
+      wizardImg.style.filter = `blur(${(1 - fadeT) * 8}px) saturate(${0.6 + fadeT * 0.4})`;
     }
 
-    // Convergence halo + release pulse for a fuller reveal moment
-    if (spiralT > 0.72) {
-      const haloT = (spiralT - 0.72) / 0.28;
-      const pulse = 0.45 + Math.sin(elapsed * 3.6) * 0.2;
-      const radius = 48 + haloT * 120;
-      const ringGrad = ctx.createRadialGradient(cx, cy, Math.max(10, radius * 0.4), cx, cy, radius);
-      ringGrad.addColorStop(0, `rgba(201,148,74,${0.18 * pulse})`);
-      ringGrad.addColorStop(0.7, `rgba(126,184,164,${0.11 * pulse})`);
-      ringGrad.addColorStop(1, 'rgba(11,14,26,0)');
-      ctx.globalAlpha = Math.min(1, haloT * 1.15);
-      ctx.fillStyle = ringGrad;
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-
-      if (haloT > 0.55) {
-        const rays = isMobile ? 8 : 14;
-        const rayAlpha = (haloT - 0.55) * 0.35;
-        ctx.strokeStyle = `rgba(219,184,122,${rayAlpha})`;
-        ctx.lineWidth = 1.2;
-        for (let i = 0; i < rays; i++) {
-          const a = (Math.PI * 2 / rays) * i + elapsed * 0.35;
-          const r1 = 32 + Math.sin(elapsed * 1.2 + i) * 5;
-          const r2 = 68 + haloT * 140;
-          ctx.beginPath();
-          ctx.moveTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
-          ctx.lineTo(cx + Math.cos(a) * r2, cy + Math.sin(a) * r2);
-          ctx.stroke();
-        }
-      }
+    if (elapsed >= 7.5 && !line1.classList.contains('visible')) {
+      line1.classList.add('visible');
+    }
+    if (elapsed >= 9.0 && !line2.classList.contains('visible')) {
+      line2.classList.add('visible');
+    }
+    if (elapsed >= 9.8 && !readyBtn.classList.contains('visible')) {
+      readyBtn.classList.add('visible');
     }
 
     rafId = requestAnimationFrame(draw);
   }
 
-  /* ── Audio: Soft ambient pad instead of rain ── */
+  function drawSkatingPhase(elapsed, cx, cy, w, h) {
+    const orbitDuration = 3.5;
+    const landStart = 3.5;
+    const landDuration = 1.0;
+    const stillStart = 4.5;
+
+    const loops = 3.5;
+    const maxRadiusX = Math.min(w * 0.38, 380);
+    const maxRadiusY = Math.min(h * 0.28, 220);
+
+    let textX, textY, textAngle, textAlpha;
+
+    if (elapsed < orbitDuration) {
+      const t = elapsed / orbitDuration;
+      const easedT = easeInOutCubic(t);
+      const radiusFactor = 1 - easedT * 0.85;
+      const rx = maxRadiusX * radiusFactor;
+      const ry = maxRadiusY * radiusFactor;
+      const angle = t * loops * Math.PI * 2 - Math.PI / 2;
+
+      textX = cx + Math.cos(angle) * rx;
+      textY = cy + Math.sin(angle) * ry;
+
+      const tangent = Math.atan2(
+        Math.cos(angle) * ry,
+        -Math.sin(angle) * rx
+      );
+      textAngle = tangent * 0.15;
+      textAlpha = Math.min(elapsed / 0.8, 1);
+
+      trail.push({ x: textX, y: textY, angle: textAngle, alpha: textAlpha, time: elapsed });
+      if (trail.length > TRAIL_LENGTH) trail.shift();
+
+    } else if (elapsed < stillStart) {
+      const t = (elapsed - landStart) / landDuration;
+      const easedT = easeOutExpo(t);
+
+      const lastAngle = loops * Math.PI * 2 - Math.PI / 2;
+      const lastRx = maxRadiusX * 0.15;
+      const lastRy = maxRadiusY * 0.15;
+      const lastX = cx + Math.cos(lastAngle) * lastRx;
+      const lastY = cy + Math.sin(lastAngle) * lastRy;
+
+      textX = lastX + (cx - lastX) * easedT;
+      textY = lastY + (cy - lastY) * easedT;
+      textAngle = (1 - easedT) * 0.05;
+      textAlpha = 1;
+
+      if (trail.length > 0 && t > 0.3) trail.shift();
+
+    } else {
+      textX = cx;
+      textY = cy;
+      textAngle = 0;
+      textAlpha = 1;
+      trail = [];
+    }
+
+    for (let i = 0; i < trail.length; i++) {
+      const tp = trail[i];
+      const trailAlpha = (i / trail.length) * 0.18 * tp.alpha;
+      drawText(tp.x, tp.y, tp.angle, trailAlpha);
+    }
+
+    if (textAlpha > 0) {
+      drawText(textX, textY, textAngle, textAlpha);
+    }
+  }
+
+  function drawText(x, y, angle, alpha) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.font = FONT;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = GOLD_LIGHT;
+    ctx.fillText('STARMILK', 0, 0);
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
+  function drawSplatterPhase(elapsed, cx, cy) {
+    const fadeStart = 1.5;
+    const fadeDuration = 1.2;
+    let globalFade = 1;
+    if (elapsed > fadeStart) {
+      globalFade = 1 - Math.min((elapsed - fadeStart) / fadeDuration, 1);
+    }
+
+    if (elapsed < 0.6) {
+      drawFragmentedText(cx, cy, elapsed, globalFade);
+    }
+
+    for (let i = ripples.length - 1; i >= 0; i--) {
+      const rip = ripples[i];
+      rip.r += rip.speed;
+      const ripProgress = rip.r / rip.maxR;
+      if (ripProgress > 1) { ripples.splice(i, 1); continue; }
+
+      const ripAlpha = rip.alpha * (1 - ripProgress) * globalFade;
+      ctx.beginPath();
+      ctx.arc(rip.x, rip.y, rip.r, 0, Math.PI * 2);
+      ctx.strokeStyle = CREAM;
+      ctx.globalAlpha = ripAlpha;
+      ctx.lineWidth = 2 - ripProgress * 1.5;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+
+    for (let i = 0; i < droplets.length; i++) {
+      const d = droplets[i];
+      d.vx *= d.drag;
+      d.vy *= d.drag;
+      d.vy += d.gravity;
+      d.x += d.vx;
+      d.y += d.vy;
+
+      d.r = d.origR * Math.max(0, 1 - elapsed * 0.08);
+      if (d.r < 0.5) continue;
+
+      const speed = Math.sqrt(d.vx * d.vx + d.vy * d.vy);
+      const stretchFactor = 1 + speed * 0.04 * d.stretch;
+
+      ctx.save();
+      ctx.translate(d.x, d.y);
+      ctx.rotate(Math.atan2(d.vy, d.vx));
+      ctx.scale(stretchFactor, 1 / Math.sqrt(stretchFactor));
+      ctx.globalAlpha = d.alpha * globalFade;
+      ctx.fillStyle = d.color;
+      ctx.beginPath();
+      ctx.arc(0, 0, Math.max(0.5, d.r), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    if (elapsed < 0.8) {
+      const glowAlpha = (1 - elapsed / 0.8) * 0.25 * globalFade;
+      const glowR = 60 + elapsed * 200;
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowR);
+      grad.addColorStop(0, `rgba(219,184,122,${glowAlpha})`);
+      grad.addColorStop(1, 'rgba(219,184,122,0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, glowR, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function drawFragmentedText(cx, cy, elapsed, globalFade) {
+    const chars = 'STARMILK'.split('');
+    const charW = FONT_SIZE * 0.62;
+    const startX = cx - (chars.length * charW) / 2 + charW / 2;
+
+    ctx.font = FONT;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    for (let i = 0; i < chars.length; i++) {
+      const angle = (i / chars.length) * Math.PI * 2 + elapsed * 2;
+      const dist = elapsed * (80 + i * 20);
+      const x = startX + i * charW + Math.cos(angle) * dist;
+      const y = cy + Math.sin(angle) * dist;
+      const rot = elapsed * (i - 3.5) * 0.8;
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rot);
+      ctx.globalAlpha = (1 - elapsed / 0.6) * globalFade;
+      ctx.fillStyle = GOLD_LIGHT;
+      ctx.fillText(chars[i], 0, 0);
+      ctx.restore();
+    }
+    ctx.globalAlpha = 1;
+  }
+
   let audioCtx = null;
   let padGain = null;
 
@@ -319,14 +338,12 @@
       padGain.gain.value = 0.0001;
       padGain.connect(audioCtx.destination);
 
-      // Soft pad: layered sine waves
       const freqs = [110, 165, 220, 277.2];
       freqs.forEach((freq, idx) => {
         const osc = audioCtx.createOscillator();
         const oscGain = audioCtx.createGain();
         osc.type = 'sine';
         osc.frequency.value = freq;
-        // Gentle detune for warmth
         osc.detune.value = (idx - 1.5) * 4;
         oscGain.gain.value = 0.12 / freqs.length;
 
@@ -347,7 +364,6 @@
     } catch { /* audio not available */ }
   }
 
-  /* ── Entry / Exit ── */
   function completeEntry() {
     if (state.isEntering) return;
     state.isEntering = true;
@@ -355,7 +371,6 @@
 
     overlay.classList.add('entering');
 
-    // Fade out audio
     if (padGain && audioCtx) {
       const now = audioCtx.currentTime;
       padGain.gain.cancelScheduledValues(now);
@@ -363,13 +378,11 @@
       padGain.gain.linearRampToValueAtTime(0.0001, now + 1.5);
     }
 
-    // Accelerate spiral and fade out
     const exitStart = performance.now();
     const exitDur = 2000;
 
     function exitAnim(ts) {
       const p = Math.min((ts - exitStart) / exitDur, 1);
-      // Speed up orbs outward (reverse funnel)
       if (p > 0.3) {
         overlay.style.opacity = 1 - easeInOutCubic((p - 0.3) / 0.7);
       }
@@ -390,19 +403,39 @@
   }
 
   function setupReturningVisitorFlow() {
+    if (!ctx) setupCanvas();
+    if (ctx) {
+      ctx.font = FONT;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.globalAlpha = 0.8;
+      ctx.fillStyle = GOLD_LIGHT;
+      ctx.fillText('STARMILK', window.innerWidth / 2, window.innerHeight / 2);
+      ctx.globalAlpha = 1;
+    }
     line1.textContent = 'Welcome back.';
     line1.classList.add('visible');
     setTimeout(completeEntry, reducedMotion ? 400 : 1800);
   }
 
   function setupFirstTimeFlow() {
-    const t1 = reducedMotion ? 300 : 2500;
-    const t2 = reducedMotion ? 600 : 5000;
-    const t3 = reducedMotion ? 800 : 5800;
+    if (reducedMotion) {
+      if (ctx) {
+        ctx.font = FONT;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.globalAlpha = 0.9;
+        ctx.fillStyle = GOLD_LIGHT;
+        ctx.fillText('STARMILK', window.innerWidth / 2, window.innerHeight / 2);
+        ctx.globalAlpha = 1;
+      }
+      setTimeout(() => line1.classList.add('visible'), 800);
+      setTimeout(() => line2.classList.add('visible'), 1600);
+      setTimeout(() => readyBtn.classList.add('visible'), 2200);
+      return;
+    }
 
-    setTimeout(() => line1.classList.add('visible'), t1);
-    setTimeout(() => line2.classList.add('visible'), t2);
-    setTimeout(() => readyBtn.classList.add('visible'), t3);
+    rafId = requestAnimationFrame(draw);
   }
 
   function bootstrapAudio() {
@@ -417,22 +450,20 @@
     startAudio();
   }
 
-  /* ── Wire events ── */
   readyBtn.addEventListener('click', completeEntry);
   skipLink.addEventListener('click', function (e) { e.preventDefault(); completeEntry(); });
 
-  window.addEventListener('resize', () => { setupCanvas(); buildOrbs(); });
+  window.addEventListener('resize', setupCanvas);
 
   document.addEventListener('visibilitychange', () => {
-    rainPaused = document.hidden;
-    if (rainPaused && rafId) { cancelAnimationFrame(rafId); rafId = 0; return; }
-    if (!rainPaused && !state.isEntering && !rafId) { rafId = requestAnimationFrame(draw); }
+    paused = document.hidden;
+    if (paused && rafId) { cancelAnimationFrame(rafId); rafId = 0; return; }
+    if (!paused && !state.isEntering && !rafId && !state.hasEnteredBefore) {
+      rafId = requestAnimationFrame(draw);
+    }
   });
 
-  /* ── Init ── */
   setupCanvas();
-  buildOrbs();
-  rafId = requestAnimationFrame(draw);
   bootstrapAudio();
 
   if (state.hasEnteredBefore) {
