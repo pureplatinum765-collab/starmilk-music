@@ -45,16 +45,17 @@
 
   const loadSCAPI = () => new Promise((resolve) => {
     if (scAPILoaded && typeof SC !== 'undefined' && SC.Widget) { resolve(true); return; }
+    const timeout = setTimeout(() => resolve(false), 8000);
     const existing = document.querySelector(`script[src="${SC_API_URL}"]`);
     if (existing) {
-      existing.addEventListener('load', () => { scAPILoaded = true; resolve(true); });
-      if (scAPILoaded) resolve(true);
+      if (typeof SC !== 'undefined' && SC.Widget) { clearTimeout(timeout); scAPILoaded = true; resolve(true); return; }
+      existing.addEventListener('load', () => { clearTimeout(timeout); scAPILoaded = true; resolve(true); });
       return;
     }
     const script = document.createElement('script');
     script.src = SC_API_URL;
-    script.onload = () => { scAPILoaded = true; resolve(true); };
-    script.onerror = () => resolve(false);
+    script.onload = () => { clearTimeout(timeout); scAPILoaded = true; resolve(true); };
+    script.onerror = () => { clearTimeout(timeout); resolve(false); };
     document.head.appendChild(script);
   });
 
@@ -174,24 +175,26 @@
       item.setAttribute('aria-label', `Play ${track.name}`);
       item.addEventListener('click', () => {
         currentTrackIndex = allTracks.indexOf(track);
-        swapTrack(true);
+        swapTrack(true, true);
       });
       fragment.appendChild(item);
     });
     queueEl.appendChild(fragment);
   };
 
-  const updateQueueActive = () => {
+  const updateQueueActive = (userInitiated = false) => {
     if (!queueEl) return;
     const currentTrack = allTracks[currentTrackIndex];
     queueEl.querySelectorAll('.radio-queue-item').forEach((item) => {
       item.classList.toggle('active', item.textContent === currentTrack?.name);
     });
-    const activeItem = queueEl.querySelector('.radio-queue-item.active');
-    if (activeItem) activeItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    if (userInitiated) {
+      const activeItem = queueEl.querySelector('.radio-queue-item.active');
+      if (activeItem) activeItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
   };
 
-  const swapTrack = (shouldAutoplay = false) => {
+  const swapTrack = (shouldAutoplay = false, userInitiated = false) => {
     if (allTracks.length === 0) return;
     const track = allTracks[currentTrackIndex];
     trackNameEl.textContent = track.name;
@@ -199,7 +202,7 @@
     const autoplay = shouldAutoplay && userHasInteracted;
     iframe.src = embedUrl(track, autoplay);
     bindWidgetEvents(iframe);
-    updateQueueActive();
+    updateQueueActive(userInitiated);
     maybeShowPoem();
   };
 
@@ -212,7 +215,7 @@
   const prevTrack = () => {
     if (allTracks.length === 0) return;
     currentTrackIndex = (currentTrackIndex - 1 + allTracks.length) % allTracks.length;
-    swapTrack(true);
+    swapTrack(true, true);
   };
 
   const shufflePlay = () => {
@@ -221,7 +224,7 @@
     do { newIdx = Math.floor(Math.random() * allTracks.length); }
     while (newIdx === currentTrackIndex && allTracks.length > 1);
     currentTrackIndex = newIdx;
-    swapTrack(true);
+    swapTrack(true, true);
   };
 
   const maybeShowPoem = () => {

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>STARMILK | Cosmic Electronic Music</title>
-  <meta name="description" content="Born from the trembling. Raised by rivers. Where quantum physics meets childhood trauma and decides to dance. STARMILK — electronic music direct to fans." />
+  <title>STARMILK | Funky Hip Hop &amp; Cosmic R&amp;B</title>
+  <meta name="description" content="Roller skating rhythm jams, funky hip hop, cosmic R&B. Where quantum physics meets childhood trauma and decides to dance. STARMILK — direct to fans." />
   <meta name="theme-color" content="#0b0e1a" />
   <link rel="manifest" href="manifest.json" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -13,14 +13,14 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://pureplatinum765-collab.github.io/starmilk-music/" />
-  <meta property="og:title" content="STARMILK | Cosmic Electronic Music" />
-  <meta property="og:description" content="Born from the trembling. Raised by rivers. Where quantum physics meets childhood trauma and decides to dance." />
+  <meta property="og:title" content="STARMILK | Funky Hip Hop &amp; Cosmic R&amp;B" />
+  <meta property="og:description" content="Roller skating rhythm jams, funky hip hop, cosmic R&B. Where quantum physics meets childhood trauma and decides to dance." />
   <meta property="og:image" content="https://pureplatinum765-collab.github.io/starmilk-music/star-wizard.jpg" />
   <meta property="og:image:width" content="1344" />
   <meta property="og:image:height" content="768" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="STARMILK | Cosmic Electronic Music" />
-  <meta name="twitter:description" content="Where quantum physics meets childhood trauma and decides to dance." />
+  <meta name="twitter:title" content="STARMILK | Funky Hip Hop &amp; Cosmic R&amp;B" />
+  <meta name="twitter:description" content="Roller skating rhythm jams, funky hip hop, cosmic R&B. Direct to fans." />
   <meta name="twitter:image" content="https://pureplatinum765-collab.github.io/starmilk-music/star-wizard.jpg" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23c9944a'/%3E%3Cstop offset='50%25' stop-color='%236b5b8a'/%3E%3Cstop offset='100%25' stop-color='%234a5578'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpolygon points='50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35' fill='url(%23g)'/%3E%3C/svg%3E" />
 
@@ -32,8 +32,8 @@
     "name": "STARMILK",
     "url": "https://pureplatinum765-collab.github.io/starmilk-music/",
     "image": "https://pureplatinum765-collab.github.io/starmilk-music/star-wizard.jpg",
-    "description": "Born from the trembling. Raised by rivers. Cosmic electronic music direct to fans.",
-    "genre": ["Electronic", "Ambient", "Experimental"],
+    "description": "Roller skating rhythm jams, funky hip hop, cosmic R&B. Direct to fans.",
+    "genre": ["Hip Hop", "R&B", "Electronic", "Funk"],
     "sameAs": [
       "https://soundcloud.com/star-milk-645735333",
       "https://www.youtube.com/@STARMILK-s5u",
@@ -2057,6 +2057,65 @@
     }
     .yt-facade-btn:hover .yt-play-icon { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
 
+    .yt-channel-player {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .yt-playlist {
+      display: flex;
+      gap: .5rem;
+      margin-top: .8rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .yt-playlist-item {
+      border: 1px solid rgba(140,133,120,.15);
+      background: rgba(16,22,42,.6);
+      color: var(--muted);
+      padding: .5rem .9rem;
+      border-radius: 999px;
+      font-size: .72rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all var(--t);
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+    }
+
+    .yt-playlist-item .yt-playlist-now {
+      font-size: .55rem;
+      opacity: 0;
+      transition: opacity var(--t);
+    }
+
+    .yt-playlist-item.active {
+      border-color: var(--gold);
+      color: var(--gold-light);
+      background: rgba(201,148,74,.08);
+    }
+
+    .yt-playlist-item.active .yt-playlist-now { opacity: 1; }
+
+    .yt-playlist-item:hover {
+      border-color: rgba(140,133,120,.35);
+      color: var(--text);
+    }
+
+    .yt-playlist-more {
+      color: var(--muted);
+      font-size: .7rem;
+      letter-spacing: .06em;
+      text-decoration: none;
+      padding: .5rem .6rem;
+      transition: color var(--t);
+    }
+
+    .yt-playlist-more:hover { color: var(--gold-light); }
+
     /* ── Focus-visible improvements ── */
     :focus-visible {
       outline: 2px solid var(--gold);
@@ -2357,7 +2416,7 @@
       <li><a href="#radio">Radio</a></li>
       <li><a href="visualizer.html">Visualizer</a></li>
       <li><a href="#the-vision">Vision</a></li>
-      <li><a href="#inside-out">Film</a></li>
+      <li><a href="#inside-out">TV</a></li>
       <li><a href="#orchard">Orchard</a></li>
       <li><a href="#river">River</a></li>
       <li><a href="#lyrics">Lyrics</a></li>
@@ -2391,13 +2450,13 @@
     </div>
 
     <div class="hero-content">
-      <p class="hero-eyebrow">Cosmic Electronic Music</p>
+      <p class="hero-eyebrow">Roller Skating Rhythm Jams</p>
       <h1 class="hero-title">STARMILK</h1>
       <p class="hero-tagline">
-        Born from the trembling. Raised by rivers.<br>
+        Funky hip hop. Cosmic R&amp;B. Roller rink grooves.<br>
         Where quantum physics meets childhood trauma and decides to dance.<br>
-        <em>This is DNA remembering how to sing.</em><br>
-        Living mythology poured straight from the wound into the light.
+        <em>This is DNA remembering how to move.</em><br>
+        Living mythology poured straight from the wound into the rhythm.
       </p>
       <a href="#stream" class="btn">
         Explore Music <span aria-hidden="true">&#8595;</span>
@@ -2417,8 +2476,8 @@
     <div class="section-inner">
       <span class="label reveal">Continuous Transmission</span>
       <h2 class="section-title reveal" id="radio-h">STARMILK Radio</h2>
-      <p class="radio-section-copy reveal">Tune into a single infinite stream: songs, ambient textures, and spoken-word messages from the river between frequencies.</p>
-      <p class="radio-section-copy reveal" style="margin-top:.8rem;font-size:.88rem;opacity:.7">Open STARMILK Radio in the corner to begin listening. 302 tracks. Infinite shuffle. No ads.</p>
+      <p class="radio-section-copy reveal">Infinite shuffle of funky hip hop, cosmic R&amp;B, ambient grooves, and spoken-word transmissions from the roller rink between frequencies.</p>
+      <p class="radio-section-copy reveal" style="margin-top:.8rem;font-size:.88rem;opacity:.7">Open STARMILK Radio in the corner to start skating. 302 tracks. Infinite shuffle. No ads.</p>
     </div>
   </section>
 
@@ -2428,7 +2487,7 @@
   <section id="the-vision" class="vision-section" data-mood-section="going-round" aria-labelledby="vision-h">
     <div class="vision-bg" aria-hidden="true"></div>
     <div class="section-inner">
-      <span class="label reveal">Living Mythology</span>
+      <span class="label reveal">The Groove</span>
       <h2 class="section-title reveal" id="vision-h">The Vision</h2>
 
       <!-- Star wizard art -->
@@ -2445,25 +2504,39 @@
       </div>
 
       <blockquote class="vision-quote reveal">
-        "Where quantum physics meets childhood trauma and decides to dance."
+        "Where quantum physics meets childhood trauma and decides to groove."
       </blockquote>
     </div>
   </section>
 
   <div class="divider"></div>
 
-  <!-- ═══ INSIDE OUT VIDEO ══════════════════════════════════════════ -->
+  <!-- ═══ STARMILK TV — YouTube Channel ═════════════════════════════ -->
   <section id="inside-out" data-mood-section="going-round" aria-labelledby="inside-out-h">
     <div class="section-inner">
-      <span class="label reveal">Visual Scripture</span>
-      <h2 class="section-title reveal" id="inside-out-h">Inside Out</h2>
-      <p class="video-sub reveal">A STARMILK Film</p>
+      <span class="label reveal">The Rink</span>
+      <h2 class="section-title reveal" id="inside-out-h">STARMILK TV</h2>
+      <p class="video-sub reveal">Roller skating rhythm jams, funky hip hop, cosmic R&amp;B — straight from the channel.</p>
 
-      <div class="video-showcase reveal" style="margin-top:2rem" id="yt-facade">
-        <button type="button" class="yt-facade-btn" aria-label="Play STARMILK — Inside Out video" data-yt-id="Xu6kcAi5-9o">
-          <img src="https://i.ytimg.com/vi/Xu6kcAi5-9o/hqdefault.jpg" alt="STARMILK — Inside Out video thumbnail" loading="lazy" decoding="async" width="800" height="450" style="width:100%;height:auto;display:block;border-radius:var(--radius);" />
-          <svg class="yt-play-icon" viewBox="0 0 68 48" aria-hidden="true"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55C3.97 2.33 2.26 4.81 1.48 7.74.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24 27 14v20" fill="#fff"/></svg>
-        </button>
+      <div class="yt-channel-player reveal" style="margin-top:2rem">
+        <div class="video-showcase" id="yt-facade">
+          <button type="button" class="yt-facade-btn" aria-label="Play STARMILK — Roots and Roads" data-yt-id="gPUUGd4SGFs" data-yt-title="Roots and Roads">
+            <img src="https://i.ytimg.com/vi/gPUUGd4SGFs/hqdefault.jpg" alt="STARMILK — Roots and Roads thumbnail" loading="lazy" decoding="async" width="800" height="450" style="width:100%;height:auto;display:block;border-radius:var(--radius);" />
+            <svg class="yt-play-icon" viewBox="0 0 68 48" aria-hidden="true"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55C3.97 2.33 2.26 4.81 1.48 7.74.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24 27 14v20" fill="#fff"/></svg>
+          </button>
+        </div>
+
+        <div class="yt-playlist">
+          <button class="yt-playlist-item active" data-yt-id="gPUUGd4SGFs" data-yt-title="Roots and Roads">
+            <span class="yt-playlist-now">&#9654;</span> Roots and Roads
+          </button>
+          <button class="yt-playlist-item" data-yt-id="Xu6kcAi5-9o" data-yt-title="Inside Out">
+            <span class="yt-playlist-now">&#9654;</span> Inside Out
+          </button>
+          <a class="yt-playlist-more" href="https://www.youtube.com/@STARMILK-s5u" target="_blank" rel="noopener noreferrer">
+            More on YouTube &#8594;
+          </a>
+        </div>
       </div>
     </div>
   </section>
@@ -2488,8 +2561,8 @@
             </svg>
           </div>
           <span class="card-plat">YouTube</span>
-          <h3>Visual Scriptures</h3>
-          <p>Visual journey through the quantum scripture. Every track is a doorway.</p>
+          <h3>STARMILK TV</h3>
+          <p>Roller skating rhythm jams, funky visuals, cosmic R&amp;B — the full channel.</p>
           <span class="card-arrow">Watch now &#8594;</span>
         </a>
 
@@ -2865,7 +2938,7 @@
   <!-- ═══ FOOTER ═════════════════════════════════════════════════ -->
   <footer>
     <div class="footer-name">STARMILK</div>
-    <p class="footer-sub">Electronic Music &nbsp;&bull;&nbsp; Direct to Fans &nbsp;&bull;&nbsp; No Middlemen</p>
+    <p class="footer-sub">Funky Hip Hop &nbsp;&bull;&nbsp; Cosmic R&amp;B &nbsp;&bull;&nbsp; Roller Rink Grooves &nbsp;&bull;&nbsp; Direct to Fans</p>
     <p class="footer-copy">&copy; 2026 STARMILK. All rights reserved.</p>
     <p class="footer-copy" style="margin-top:.5rem;opacity:.35">
       <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none">Created with Perplexity Computer</a>
@@ -3471,13 +3544,49 @@ document.querySelectorAll('.nav-links a, .nav-links button').forEach(el => {
 
 
 <script>
-// YouTube Lite Facade — load iframe only on click
-document.querySelector('.yt-facade-btn')?.addEventListener('click', function() {
-  const ytId = this.dataset.ytId;
-  if (!ytId) return;
-  const showcase = this.parentElement;
-  showcase.innerHTML = '<iframe width="100%" style="aspect-ratio:16/9" src="https://www.youtube.com/embed/' + ytId + '?autoplay=1" title="STARMILK — Inside Out" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
-});
+// YouTube Channel Player — facade + playlist switching
+(function() {
+  const facade = document.getElementById('yt-facade');
+  if (!facade) return;
+  let iframeLoaded = false;
+
+  function loadVideo(ytId, title, autoplay) {
+    if (!ytId) return;
+    iframeLoaded = true;
+    facade.innerHTML = '<iframe width="100%" style="aspect-ratio:16/9" src="https://www.youtube.com/embed/' +
+      encodeURIComponent(ytId) + (autoplay ? '?autoplay=1' : '') +
+      '" title="STARMILK — ' + (title || '').replace(/"/g, '&quot;') +
+      '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+  }
+
+  facade.querySelector('.yt-facade-btn')?.addEventListener('click', function() {
+    loadVideo(this.dataset.ytId, this.dataset.ytTitle, true);
+  });
+
+  document.querySelectorAll('.yt-playlist-item').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.yt-playlist-item').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var ytId = btn.dataset.ytId;
+      var title = btn.dataset.ytTitle;
+      if (iframeLoaded) {
+        loadVideo(ytId, title, true);
+      } else {
+        var facadeBtn = facade.querySelector('.yt-facade-btn');
+        if (facadeBtn) {
+          facadeBtn.dataset.ytId = ytId;
+          facadeBtn.dataset.ytTitle = title;
+          facadeBtn.setAttribute('aria-label', 'Play STARMILK — ' + title);
+          var img = facadeBtn.querySelector('img');
+          if (img) {
+            img.src = 'https://i.ytimg.com/vi/' + encodeURIComponent(ytId) + '/hqdefault.jpg';
+            img.alt = 'STARMILK — ' + title + ' thumbnail';
+          }
+        }
+      }
+    });
+  });
+})();
 
 // Lazy load the vision video — only play when in viewport
 (function() {
