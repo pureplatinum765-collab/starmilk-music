@@ -2516,6 +2516,83 @@
     .card-gold:hover { transform: translateY(-3px); box-shadow: 7px 9px 0 rgba(12,9,12,.28); }
     .card-icon { border-radius: 2px; background: #3d3039; border-color: rgba(232,215,193,.14); }
     .nav-links.mobile-open { background: #211b21; backdrop-filter: none; -webkit-backdrop-filter: none; }
+
+    /* Section palette score — a quiet movement from ink to water, orchard, honey, then dusk.
+       This preserves STARMILK's nocturne while preventing every section from collapsing into one blue-black surface. */
+    #stream {
+      background: linear-gradient(135deg, #252a38 0%, #202638 52%, #1d2734 100%);
+      border-top: 1px solid rgba(214,222,221,.08);
+    }
+    #stream .card { background: #2c3140; border: 1px solid rgba(214,222,221,.13); }
+    #stream .card-icon { background: #3a4350; }
+
+    #the-vision {
+      background: linear-gradient(142deg, #34263b 0%, #28223a 54%, #202c3b 100%);
+      border-top: 1px solid rgba(226,197,164,.08);
+    }
+    #the-vision .card,
+    #inside-out .card { background: #30283a; border-color: rgba(214,194,217,.13); }
+
+    #inside-out {
+      background: linear-gradient(128deg, #202b3c 0%, #27354b 48%, #31334a 100%);
+      border-top: 1px solid rgba(145,198,207,.12);
+    }
+
+    #orchard {
+      background: linear-gradient(137deg, #253226 0%, #2b3727 46%, #343a29 100%);
+      border-top: 1px solid rgba(220,193,114,.12);
+    }
+    #orchard .section-title { color: #e4d9bd; }
+    .orchard-shell { background: #1f2b20; border-color: rgba(220,193,114,.34); }
+    .orchard-hint { background: #283123; border-top-color: rgba(220,193,114,.18); color: rgba(232,223,196,.72); }
+    .orchard-fruit-info { background: #2b3224; border-color: rgba(225,190,109,.48); box-shadow: 5px 7px 0 rgba(14,17,11,.28); border-radius: 3px; }
+
+    #river {
+      background: linear-gradient(180deg, #231b39 0%, #20314a 36%, #2e5963 70%, #b7d7ca 100%);
+    }
+    #river-canvas { opacity: .82; mix-blend-mode: screen; }
+    .river-overlay { background: radial-gradient(circle at 50% 22%, rgba(255,246,220,.1), transparent 52%); }
+    .river-title { color: #edf3e7; text-shadow: none; }
+    .river-caption { color: rgba(237,243,231,.82); }
+    .tributary { border-radius: 3px; background: rgba(27,55,63,.66); border-color: rgba(219,234,211,.36); color: #e7efdc; }
+    .river-leaf { border-radius: 2px; background: rgba(34,72,77,.62); box-shadow: none; }
+    .river-ocean-copy { color: #f3f0d9; text-shadow: none; }
+
+    #lyrics { background: #342718; }
+    #lyrics[data-temperature='tender'] { background: #5a3820; }
+    #lyrics[data-temperature='heavy'] { background: #3a2742; }
+    #lyrics[data-temperature='hopeful'] { background: #263a49; }
+    #lyrics::before { background: radial-gradient(circle at 50% 50%, rgba(255,232,170,.08), transparent 58%); }
+    .lyrics-songs { background: rgba(48,34,18,.48); border-color: rgba(241,210,142,.22); border-radius: 3px; }
+    .lyrics-stage { background: rgba(36,27,18,.6); border-color: rgba(241,210,142,.25); border-radius: 3px; }
+    .lyrics-song { border-radius: 2px; background: rgba(71,48,22,.4); }
+    .lyrics-controls button { border-radius: 2px; background: rgba(77,51,20,.46); }
+
+    #games {
+      background:
+        linear-gradient(90deg, transparent 0 9%, rgba(226,154,93,.24) 9.05%, transparent 9.12% 90.88%, rgba(145,198,207,.22) 90.95%, transparent 91%),
+        linear-gradient(139deg, #302638 0%, #2a2638 50%, #24313c 100%);
+    }
+    #games .game-shell { background: #27202e; border-color: rgba(226,192,158,.18); }
+    #games .game-card { background: #31283a; border-color: rgba(226,192,158,.14); }
+    #games .game-card h3 { color: #e6c99f; }
+
+    #support { background: linear-gradient(138deg, #332b28 0%, #3b302a 48%, #2f3031 100%); }
+    #support blockquote { background: #40332b; border-left-color: #d49a61; box-shadow: 5px 6px 0 rgba(18,13,12,.2); }
+    #support .card { background: #3a302b; border-color: rgba(237,215,183,.15); }
+    #support .note { background: #2f3935; border-color: rgba(161,203,188,.28); }
+
+    #vip { background: linear-gradient(138deg, #332a3d 0%, #2c293a 52%, #302f3a 100%); }
+    #vip .vip-card { background: #322b3a; border-color: rgba(211,190,221,.17); }
+    #vip .btn-patreon { border-radius: 3px; background: #473750; border-color: rgba(219,195,228,.32); box-shadow: 4px 5px 0 rgba(17,12,20,.2); }
+    #vip .btn-patreon:hover { background: #57415f; box-shadow: 5px 6px 0 rgba(17,12,20,.25); }
+
+    #connect { background: linear-gradient(138deg, #202936 0%, #273542 48%, #2b3c40 100%); }
+    #connect .soc-btn { border-radius: 3px; background: #2c3942; border-color: rgba(181,211,208,.2); box-shadow: 4px 5px 0 rgba(11,17,20,.22); }
+    #connect .soc-btn:hover { background: #354952; box-shadow: 5px 6px 0 rgba(11,17,20,.28); }
+
+    #radio { background: linear-gradient(140deg, #2c2632 0%, #322832 55%, #2a3440 100%); }
+    footer { background: linear-gradient(180deg, #222b35, #1c2029); border-top-color: rgba(214,222,221,.12); }
     @media (max-width: 680px) {
       .radio-floating.open { border-radius: 4px 4px 0 0; backdrop-filter: none; -webkit-backdrop-filter: none; }
     }
