@@ -66,24 +66,23 @@
     const parkingLot = document.getElementById('parking-lot-overlay');
     if (!parkingLot || hasShownInitialPrompt) return;
 
-    const showPrompt = () => {
+    const markPortalComplete = () => {
       if (hasShownInitialPrompt) return;
       hasShownInitialPrompt = true;
       _ss.setItem('starmilkMoodPromptShown', '1');
-      setTimeout(openMoodSelector, 350);
     };
 
     const observer = new MutationObserver(() => {
       if (parkingLot.classList.contains('exited') || parkingLot.classList.contains('hidden')) {
         observer.disconnect();
-        showPrompt();
+        markPortalComplete();
       }
     });
 
     observer.observe(parkingLot, { attributes: true, attributeFilter: ['class'] });
 
     setTimeout(() => {
-      if (!document.body.classList.contains('parking-lot-active')) showPrompt();
+      if (!document.body.classList.contains('parking-lot-active')) markPortalComplete();
     }, 1600);
   }
 

@@ -3,7 +3,7 @@
   const _ls = (function() { const m = {}; const s = window['local'+'Storage']; return { getItem(k) { try { return s.getItem(k); } catch { return m[k] ?? null; } }, setItem(k, v) { try { s.setItem(k, v); } catch { m[k] = v; } } }; })();
 
 
-  const IDLE_MS = 30000;
+  const IDLE_MS = 180000;
   const FADE_MS = 5000;
   const overlay = document.getElementById('the-clearing');
   const returnLink = document.getElementById('clearing-return');
@@ -32,7 +32,9 @@
   function isBlockedByOverlay() {
     const parkingLotOverlay = document.getElementById('parking-lot-overlay');
     const moodRingOverlay = document.getElementById('mood-ring-overlay');
-    return document.hidden || isOverlayVisible(parkingLotOverlay) || isOverlayVisible(moodRingOverlay);
+    const radio = document.getElementById('radio-floating');
+    const isListening = radio?.classList.contains('open') || document.getElementById('radio-play')?.getAttribute('aria-pressed') === 'true';
+    return document.hidden || isListening || isOverlayVisible(parkingLotOverlay) || isOverlayVisible(moodRingOverlay);
   }
 
   function hideClearing() {
