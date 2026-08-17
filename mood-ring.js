@@ -49,6 +49,8 @@
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
     window.dispatchEvent(new CustomEvent('starmilk:moodRingVisibility', { detail: { open: true } }));
+    window.dispatchEvent(new CustomEvent('starmilk:surfaceOpen', { detail: { target: 'mood' } }));
+    overlay.querySelector('.mood-orb')?.focus();
   }
 
   function setMood(mood, shouldScroll) {
@@ -66,24 +68,23 @@
     const parkingLot = document.getElementById('parking-lot-overlay');
     if (!parkingLot || hasShownInitialPrompt) return;
 
-    const showPrompt = () => {
+    const markPortalComplete = () => {
       if (hasShownInitialPrompt) return;
       hasShownInitialPrompt = true;
       _ss.setItem('starmilkMoodPromptShown', '1');
-      setTimeout(openMoodSelector, 350);
     };
 
     const observer = new MutationObserver(() => {
       if (parkingLot.classList.contains('exited') || parkingLot.classList.contains('hidden')) {
         observer.disconnect();
-        showPrompt();
+        markPortalComplete();
       }
     });
 
     observer.observe(parkingLot, { attributes: true, attributeFilter: ['class'] });
 
     setTimeout(() => {
-      if (!document.body.classList.contains('parking-lot-active')) showPrompt();
+      if (!document.body.classList.contains('parking-lot-active')) markPortalComplete();
     }, 1600);
   }
 
@@ -97,5 +98,14 @@
   }
 
   trigger.addEventListener('click', openMoodSelector);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && overlay.classList.contains('open')) {
+      closeMoodSelector();
+      trigger.focus();
+    }
+  });
+  window.addEventListener('starmilk:requestClose', (event) => {
+    if (event.detail?.target === 'mood') closeMoodSelector();
+  });
   maybeShowPromptAfterParkingLot();
 })();

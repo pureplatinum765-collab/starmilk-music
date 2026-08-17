@@ -102,6 +102,8 @@
     minimapVisible: true,
     isMobile: false,
     musicPanelOpen: true,
+    lastHudUpdate: 0,
+    lastMinimapUpdate: 0,
   };
 
   // ─── Audio engine ──────────────────────────────────────────────────
@@ -343,6 +345,15 @@
     });
     document.addEventListener('keyup', e => state.keys.delete(e.code));
     window.addEventListener('resize', resize);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden || !state.active) return;
+      state.keys.clear();
+      state.joystick.on = false;
+      state.joystick.dx = 0;
+      state.joystick.dy = 0;
+      state.accumulator = 0;
+      state.lastTs = performance.now();
+    });
   }
 
   // ─── Launch injection ───────────────────────────────────────────────
@@ -460,6 +471,8 @@
   // ═══════════════════════════════════════════════════════════════
 
   function launchGame() {
+    if (state.active) return;
+    window.dispatchEvent(new CustomEvent('starmilk:surfaceOpen', { detail: { target: 'game' } }));
     ensureAudio();
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     generateRun();
@@ -470,19 +483,27 @@
     state.lastTs = performance.now();
     state.startTime = performance.now();
     state.accumulator = 0;
+    state.lastHudUpdate = 0;
+    state.lastMinimapUpdate = 0;
     state.raf = requestAnimationFrame(loop);
-    updateHud();
+    updateHud(state.lastTs, true);
     sfxAmbientHum();
   }
 
   function exitGame() {
     state.active = false;
     cancelAnimationFrame(state.raf);
+    state.raf = null;
+    state.accumulator = 0;
     overlay.style.display = 'none';
     popup.style.display = 'none';
     powerPrompt.style.display = 'none';
     mapScreen.style.display = 'none';
   }
+
+  window.addEventListener('starmilk:requestClose', (event) => {
+    if (event.detail?.target === 'game' && state.active) exitGame();
+  });
 
   function resize() {
     if (!overlay) return;
@@ -614,7 +635,7 @@
     // Update trail age
     state.player.trail.forEach(t => { t.age += dt; });
 
-    updateHud();
+    updateHud(ts);
   }
 
   // ─── Collision ───────────────────────────────────────────────────────────
@@ -722,7 +743,10 @@
     ctx.restore();
 
     // Minimap (unaffected by screen shake)
-    if (state.minimapVisible) renderMinimap(ts);
+    if (state.minimapVisible && ts - state.lastMinimapUpdate >= 100) {
+      renderMinimap(ts);
+      state.lastMinimapUpdate = ts;
+    }
   }
 
   // ─── Background particles ───────────────────────────────────────────
@@ -1106,13 +1130,14 @@
     return `${m}:${sec < 10 ? '0' : ''}${sec}`;
   }
 
-  function updateHud() {
+  function updateHud(now = performance.now(), force = false) {
+    if (!force && now - state.lastHudUpdate < 125) return;
+    state.lastHudUpdate = now;
     const t = TRACKS.map(track => {
       const s = state.tracks[track.id];
       const done = s.discovered ? '✓' : '○';
       return `${done} ${track.title}: ${s.frags}/${track.fragsNeed}`;
     }).join(' | ');
-    const now = performance.now();
     const starVisionLeft = Math.max(0, Math.ceil((state.activePowerUps.starVisionUntil - now) / 1000));
     const speedLeft = Math.max(0, Math.ceil((state.activePowerUps.cosmicSpeedUntil - now) / 1000));
     const timeStr = formatTime(state.elapsedMs);

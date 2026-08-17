@@ -1,0 +1,80 @@
+/* STARMILK refactor UI coordinator.
+   Owns navigation state and transient-surface coordination. */
+(function () {
+  'use strict';
+
+  const html = document.documentElement;
+  const nav = document.getElementById('nav');
+  const menu = document.querySelector('.nav-links');
+  const menuButton = document.getElementById('nav-hamburger');
+  const radio = document.getElementById('radio-floating');
+  const chat = document.getElementById('starmilk-chat-panel');
+  const mood = document.getElementById('mood-ring-overlay');
+  const clearing = document.getElementById('the-clearing');
+
+  const closeKnownSurfaces = (except) => {
+    if (except !== 'chat' && chat?.classList.contains('open')) {
+      window.dispatchEvent(new CustomEvent('starmilk:requestClose', { detail: { target: 'chat' } }));
+    }
+    if (except !== 'radio' && radio?.classList.contains('open')) {
+      window.dispatchEvent(new CustomEvent('starmilk:requestClose', { detail: { target: 'radio' } }));
+    }
+    if (except !== 'mood' && mood?.classList.contains('open')) {
+      window.dispatchEvent(new CustomEvent('starmilk:requestClose', { detail: { target: 'mood' } }));
+    }
+    if (except !== 'clearing' && clearing?.classList.contains('visible')) {
+      window.dispatchEvent(new CustomEvent('starmilk:requestClose', { detail: { target: 'clearing' } }));
+    }
+    if (except !== 'game') {
+      window.dispatchEvent(new CustomEvent('starmilk:requestClose', { detail: { target: 'game' } }));
+    }
+  };
+
+  window.addEventListener('starmilk:surfaceOpen', (event) => closeKnownSurfaces(event.detail?.target));
+
+  if (menuButton && menu) {
+    menuButton.addEventListener('click', () => {
+      const open = menu.classList.toggle('mobile-open');
+      menuButton.setAttribute('aria-expanded', String(open));
+      menuButton.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    });
+    menu.querySelectorAll('a[href^="#"]').forEach((link) => link.addEventListener('click', () => {
+      menu.classList.remove('mobile-open');
+      menuButton.setAttribute('aria-expanded', 'false');
+      menuButton.setAttribute('aria-label', 'Open menu');
+    }));
+  }
+
+  const sections = [...document.querySelectorAll('section[id]')];
+  const links = [...document.querySelectorAll('.nav-links a[href^="#"]')];
+  const map = new Map(links.map((link) => [link.getAttribute('href')?.slice(1), link]));
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio).slice(0, 1).forEach((entry) => {
+        links.forEach((link) => link.removeAttribute('data-active'));
+        map.get(entry.target.id)?.setAttribute('data-active', 'true');
+      });
+    }, { rootMargin: '-35% 0px -55% 0px', threshold: [0.05, .2, .5] });
+    sections.forEach((section) => observer.observe(section));
+  }
+
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      nav?.classList.toggle('scrolled', window.scrollY > 20);
+      ticking = false;
+    });
+  }, { passive: true });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && menu?.classList.contains('mobile-open')) {
+      menu.classList.remove('mobile-open');
+      menuButton?.setAttribute('aria-expanded', 'false');
+      menuButton?.focus();
+    }
+  });
+
+  html.dataset.starmilkRebuild = 'true';
+})();

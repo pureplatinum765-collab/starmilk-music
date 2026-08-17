@@ -26,6 +26,10 @@
   const TICK_RATE = 1000 / 60;
   let lastLoopTime = 0;
   let accumulator = 0;
+  let frameId = null;
+  let laserCooldownMs = 0;
+  let lastStatsPaint = 0;
+  let lastPowerPaint = 0;
 
   // ─── Level definitions (6 levels) ─────────────────────────────
   const LEVELS = [
@@ -59,7 +63,7 @@
     right: false,
     touchX: null,
     score: 0,
-    highScore: 0,
+    highScore: loadHighScore(),
     lives: 3,
     levelIndex: 0,
     levelCleared: false,
@@ -81,6 +85,22 @@
   };
 
   let audioCtx;
+
+  function loadHighScore() {
+    try {
+      return Number.parseInt(localStorage.getItem('starmilk-brick-breaker-high-score') || '0', 10) || 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  function persistHighScore() {
+    if (state.score <= state.highScore) return;
+    state.highScore = state.score;
+    try {
+      localStorage.setItem('starmilk-brick-breaker-high-score', String(state.highScore));
+    } catch (_) { /* Storage is optional. */ }
+  }
 
   // ═══════════════════════════════════════════════════════════════
   //  AUDIO
@@ -125,6 +145,8 @@
     const panel = canvas.closest('.bb-panel') || canvas.parentElement;
     const rect = panel.getBoundingClientRect();
     const dpr = DPR();
+    const oldW = canvas.width;
+    const oldH = canvas.height;
     // Use full panel width and tall aspect — leave room for UI below
     const w = Math.floor(rect.width * dpr);
     // Expanded height: use up to 82% of viewport height
@@ -138,8 +160,32 @@
 
     canvas.width = w;
     canvas.height = h;
-    state.paddle.y = canvas.height - 34 * dpr;
-    state.paddle.x = canvas.width / 2 - state.paddle.w / 2;
+    if (state.running && oldW && oldH) {
+      const sx = w / oldW;
+      const sy = h / oldH;
+      const scale = Math.min(sx, sy);
+      state.paddle.x *= sx;
+      state.paddle.y *= sy;
+      state.paddle.w *= sx;
+      state.paddle.h *= sy;
+      state.paddle.speed *= sx;
+      state.balls.forEach(ball => {
+        ball.x *= sx; ball.y *= sy; ball.vx *= sx; ball.vy *= sy; ball.r *= scale;
+      });
+      state.bricks.forEach(brick => {
+        brick.x *= sx; brick.y *= sy; brick.w *= sx; brick.h *= sy;
+      });
+      state.particles.forEach(particle => {
+        particle.x *= sx; particle.y *= sy; particle.vx *= sx; particle.vy *= sy; particle.size *= scale;
+      });
+      state.powerDrops.forEach(drop => {
+        drop.x *= sx; drop.y *= sy; drop.vy *= sy; drop.r *= scale;
+      });
+      state.lasers.forEach(laser => { laser.x *= sx; laser.y *= sy; laser.vy *= sy; });
+    } else {
+      state.paddle.y = canvas.height - 34 * dpr;
+      state.paddle.x = canvas.width / 2 - state.paddle.w / 2;
+    }
     buildStars();
     if (!state.running) draw();
   }
@@ -287,9 +333,11 @@
     return false;
   }
 
-  function updatePowerStatus() {
+  function updatePowerStatus(force = false) {
     if (!powerWrap) return;
     const now = performance.now();
+    if (!force && now - lastPowerPaint < 250) return;
+    lastPowerPaint = now;
     const items = [];
     if (state.effects.widerUntil > now) {
       const sec = Math.ceil((state.effects.widerUntil - now) / 1000);
@@ -303,9 +351,10 @@
       const sec = Math.ceil((state.effects.laserUntil - now) / 1000);
       items.push(`<span style="color:#a78bfa">◆ LASER ${sec}s</span>`);
     }
-    powerWrap.innerHTML = items.length
+    const markup = items.length
       ? items.join('  ')
       : '<span style="color:var(--muted);font-size:.72rem;letter-spacing:.06em">CATCH FALLING POWER-UPS TO ACTIVATE</span>';
+    if (powerWrap.innerHTML !== markup) powerWrap.innerHTML = markup;
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -323,6 +372,8 @@
     state.combo = 0;
     state.maxCombo = 0;
     state.paddle.w = 130 * dpr;
+    state.paddle.h = 14 * dpr;
+    state.paddle.speed = 8 * dpr;
     state.effects = { widerUntil: 0, slowUntil: 0, laserUntil: 0 };
     state.balls = [resetBall(true)];
     state.particles = [];
@@ -331,19 +382,27 @@
     state.paddleTrail = [];
     state.screenShake = { x: 0, y: 0, intensity: 0, decay: 0.85 };
     state.transition = { active: false, text: '', alpha: 0, ringRadius: 0, startTime: 0 };
+    laserCooldownMs = 0;
+    lastStatsPaint = 0;
+    lastPowerPaint = 0;
     buildLevel();
-    updateStats('Press Space or tap to launch.');
-    updatePowerStatus();
+    updateStats('Press Space or tap to launch.', true);
+    updatePowerStatus(true);
     lastLoopTime = performance.now();
     accumulator = 0;
-    requestAnimationFrame(loop);
+    if (frameId) cancelAnimationFrame(frameId);
+    frameId = requestAnimationFrame(loop);
   }
 
-  function updateStats(extra) {
+  function updateStats(extra, force = false) {
+    const now = performance.now();
+    if (!force && now - lastStatsPaint < 125) return;
+    lastStatsPaint = now;
     const note = extra ? ` · ${extra}` : '';
     const highStr = state.highScore > 0 ? ` · High: ${state.highScore}` : '';
     const comboStr = state.combo > 1 ? ` · Combo: ${state.combo}x` : '';
-    stats.textContent = `Score: ${state.score}${highStr} · Lives: ${state.lives} · Level: ${state.levelIndex + 1}/${LEVELS.length}${comboStr}${note}`;
+    const text = `Score: ${state.score}${highStr} · Lives: ${state.lives} · Level: ${state.levelIndex + 1}/${LEVELS.length}${comboStr}${note}`;
+    if (stats.textContent !== text) stats.textContent = text;
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -560,11 +619,11 @@
       state.combo = 0;
       beep(120, 0.22, 'sawtooth', 0.06);
       state.screenShake.intensity = 8;
-      if (state.lives < 0) {
+      if (state.lives <= 0) {
         state.running = false;
         state.gameOver = true;
-        state.highScore = Math.max(state.highScore, state.score);
-        updateStats('Game Over!');
+        persistHighScore();
+        updateStats('Game Over!', true);
         return;
       }
       state.balls = [resetBall(true)];
@@ -576,8 +635,8 @@
       if (state.levelIndex >= LEVELS.length) {
         state.running = false;
         state.gameWon = true;
-        state.highScore = Math.max(state.highScore, state.score);
-        updateStats('You cleared the galaxy!');
+        persistHighScore();
+        updateStats('You cleared the galaxy!', true);
         beep(880, 0.24, 'triangle', 0.07);
         return;
       }
@@ -598,8 +657,12 @@
     // Update power-up status display
     updatePowerStatus();
 
-    // Periodic laser fire
-    if (active('laser') && now % 15 < 1) spawnLaser();
+    // Explicit timing prevents frame alignment from causing a laser flood.
+    laserCooldownMs = Math.max(0, laserCooldownMs - TICK_RATE);
+    if (active('laser') && laserCooldownMs === 0) {
+      spawnLaser();
+      laserCooldownMs = 220;
+    }
   }
 
   function destroyBrick(brick, idx, multiplier) {
@@ -880,6 +943,7 @@
   function loop(ts) {
     if (!state.running && !state.gameOver && !state.gameWon) {
       draw();
+      frameId = null;
       return;
     }
 
@@ -896,8 +960,10 @@
     }
 
     draw();
-    if (state.running) requestAnimationFrame(loop);
-    else draw();
+    if (state.running) frameId = requestAnimationFrame(loop);
+    else {
+      frameId = null;
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -905,6 +971,7 @@
   // ═══════════════════════════════════════════════════════════════
 
   function openGame() {
+    window.dispatchEvent(new CustomEvent('starmilk:surfaceOpen', { detail: { target: 'game' } }));
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
     initAudio();
@@ -914,16 +981,25 @@
   }
 
   function closeGame() {
+    persistHighScore();
     overlay.classList.remove('open');
     overlay.setAttribute('aria-hidden', 'true');
     state.running = false;
     state.gameOver = false;
     state.gameWon = false;
+    state.left = false;
+    state.right = false;
+    state.touchX = null;
+    if (frameId) cancelAnimationFrame(frameId);
+    frameId = null;
   }
 
   launchBtn.addEventListener('click', openGame);
   closeBtn.addEventListener('click', closeGame);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closeGame(); });
+  window.addEventListener('starmilk:requestClose', (event) => {
+    if (event.detail?.target === 'game' && overlay.classList.contains('open')) closeGame();
+  });
 
   window.addEventListener('keydown', (e) => {
     if (!overlay.classList.contains('open')) return;
@@ -945,6 +1021,7 @@
   });
 
   canvas.addEventListener('pointermove', (e) => {
+    if (!overlay.classList.contains('open')) return;
     const rect = canvas.getBoundingClientRect();
     state.touchX = (e.clientX - rect.left) * DPR();
   });
@@ -952,6 +1029,7 @@
   canvas.addEventListener('pointerleave', () => { state.touchX = null; });
 
   canvas.addEventListener('pointerdown', (e) => {
+    if (!overlay.classList.contains('open')) return;
     if ((state.gameOver || state.gameWon) && state._restartBtn) {
       const rect = canvas.getBoundingClientRect();
       const x = (e.clientX - rect.left) * DPR();
@@ -978,5 +1056,16 @@
   });
 
   window.addEventListener('resize', resizeCanvas);
+  window.addEventListener('blur', () => {
+    state.left = false;
+    state.right = false;
+    state.touchX = null;
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) return;
+    state.left = false;
+    state.right = false;
+    state.touchX = null;
+  });
   resizeCanvas();
 })();

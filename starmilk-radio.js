@@ -33,6 +33,7 @@
   const shell        = document.getElementById('radio-embed-shell');
   const searchInput  = document.getElementById('radio-search');
   const countEl      = document.getElementById('radio-count');
+  const statusEl     = document.getElementById('radio-status');
   const favCountEl   = document.getElementById('fav-count');
   const tabs         = document.querySelectorAll('[data-radio-tab]');
   const tabPanels    = document.querySelectorAll('[data-radio-panel]');
@@ -52,12 +53,33 @@
   let activeTab          = 'radio';
   let isShuffleActive    = false;
   let isPlaying          = false;
+  let widgetReady        = false;
+  let widgetToken        = 0;
+  let widgetTimeout      = 0;
+  let userRequestedPlay  = false;
 
   // FIX 1: track canonical URL so swapTrack skips rebuild when same track already loaded
   let currentIframeUrl   = '';
 
   // FIX 2: guard so tryDiscover never runs more than once
   let discoverDone       = false;
+
+  const setPlayerStatus = (state, message) => {
+    if (!statusEl) return;
+    statusEl.dataset.state = state;
+    statusEl.textContent = message;
+  };
+
+  const invalidateWidget = () => {
+    widgetToken += 1;
+    widgetReady = false;
+    scWidget = null;
+    if (widgetTimeout) {
+      clearTimeout(widgetTimeout);
+      widgetTimeout = 0;
+    }
+    return widgetToken;
+  };
 
   /* ─── Favorites ─────────────────────────────────────────────── */
   let favorites = (() => {
@@ -118,11 +140,12 @@
 
   /* ─── SC API ─────────────────────────────────────────────────── */
   const loadSCAPI = () => new Promise((resolve) => {
-    if (scAPILoaded && typeof SC !== 'undefined') { resolve(true); return; }
+    if (typeof SC !== 'undefined') { scAPILoaded = true; resolve(true); return; }
     const existing = document.querySelector(`script[src="${SC_API_URL}"]`);
     if (existing) {
       if (scAPILoaded) { resolve(true); return; }
       existing.addEventListener('load', () => { scAPILoaded = true; resolve(true); }, { once: true });
+      existing.addEventListener('error', () => resolve(false), { once: true });
       return;
     }
     const s = document.createElement('script');
@@ -149,23 +172,57 @@
     return f;
   };
 
-  // FIX 3: pending scoped inside bindWidget — no bleed across rapid swapTrack calls
-  const bindWidget = async (iframe, autoplay = false) => {
+  const bindWidget = async (iframe, token, autoplay = false) => {
     try {
-      await loadSCAPI();
-      if (typeof SC === 'undefined' || !SC.Widget) return;
-      scWidget = SC.Widget(iframe);
-      let pending = autoplay && userHasInteracted;
-      scWidget.bind(SC.Widget.Events.FINISH, () => { isPlaying = false; refreshPlayBtn(); nextTrack(true); });
-      scWidget.bind(SC.Widget.Events.ERROR,  () => setTimeout(() => nextTrack(true), 1500));
-      scWidget.bind(SC.Widget.Events.PLAY,   () => { isPlaying = true;  refreshPlayBtn(); });
-      scWidget.bind(SC.Widget.Events.PAUSE,  () => { isPlaying = false; refreshPlayBtn(); });
-      if (pending) {
-        scWidget.bind(SC.Widget.Events.READY, () => {
-          if (pending) { pending = false; scWidget.play(); }
-        });
+      const loaded = await loadSCAPI();
+      if (!loaded || token !== widgetToken || typeof SC === 'undefined' || !SC.Widget) {
+        if (token === widgetToken) setPlayerStatus('error', 'Player could not load. Try another track.');
+        return;
       }
-    } catch (_) {}
+
+      const widget = SC.Widget(iframe);
+      const isCurrent = () => token === widgetToken;
+      widgetTimeout = window.setTimeout(() => {
+        if (!isCurrent() || widgetReady) return;
+        setPlayerStatus('error', 'Still waiting for SoundCloud. Try play again.');
+      }, 10000);
+
+      widget.bind(SC.Widget.Events.READY, () => {
+        if (!isCurrent()) return;
+        widgetReady = true;
+        scWidget = widget;
+        clearTimeout(widgetTimeout);
+        widgetTimeout = 0;
+        setPlayerStatus('ready', userRequestedPlay && autoplay ? 'Ready. Starting the signal…' : 'Ready when you are.');
+        if (autoplay && userRequestedPlay) widget.play();
+      });
+      widget.bind(SC.Widget.Events.FINISH, () => {
+        if (!isCurrent()) return;
+        isPlaying = false;
+        refreshPlayBtn();
+        nextTrack(true);
+      });
+      widget.bind(SC.Widget.Events.ERROR, () => {
+        if (!isCurrent()) return;
+        isPlaying = false;
+        refreshPlayBtn();
+        setPlayerStatus('error', 'This track cannot play here. Choose another.');
+      });
+      widget.bind(SC.Widget.Events.PLAY, () => {
+        if (!isCurrent()) return;
+        isPlaying = true;
+        refreshPlayBtn();
+        setPlayerStatus('playing', 'Playing from STARMILK Radio.');
+      });
+      widget.bind(SC.Widget.Events.PAUSE, () => {
+        if (!isCurrent()) return;
+        isPlaying = false;
+        refreshPlayBtn();
+        setPlayerStatus('ready', 'Paused.');
+      });
+    } catch (_) {
+      if (token === widgetToken) setPlayerStatus('error', 'Player setup failed. Try again.');
+    }
   };
 
   /* ─── Track loading ──────────────────────────────────────────── */
@@ -187,6 +244,7 @@
     if (allTracks.length) trackNameEl.textContent = allTracks[0].name;
     refreshFavCount();
     tryDiscover();
+    if (hasOpened && allTracks.length && !currentIframeUrl) swapTrack(false);
   };
 
   const tryDiscover = async () => {
@@ -296,7 +354,7 @@
       nameEl.textContent = track.name;
       nameEl.setAttribute('aria-label', `Play ${track.name}`);
       // FIX 4: index captured at build time — no DOM name-lookup at click time
-      nameEl.addEventListener('click', () => { currentIndex = globalIdx; swapTrack(true); });
+      nameEl.addEventListener('click', () => { userHasInteracted = true; userRequestedPlay = true; currentIndex = globalIdx; swapTrack(true); });
 
       const heartBtn = document.createElement('button');
       heartBtn.type = 'button';
@@ -359,7 +417,6 @@
   };
 
   /* ─── Playback ───────────────────────────────────────────────── */
-  // FIX 1: skip iframe rebuild if same track already loaded
   const swapTrack = (autoplay = false) => {
     if (!allTracks.length) return;
     const track = allTracks[currentIndex];
@@ -370,17 +427,18 @@
     maybePoem();
 
     const canonical = embedUrl(track, false);
-
-    if (currentIframeUrl === canonical) {
-      if (autoplay && userHasInteracted && scWidget) scWidget.play();
-      return;
-    }
-
     currentIframeUrl = canonical;
-    scWidget = null;
+    const token = invalidateWidget();
+    isPlaying = false;
+    refreshPlayBtn();
+    setPlayerStatus('loading', `Loading ${track.name}…`);
     const iframe = ensureIframe();
-    iframe.src = embedUrl(track, autoplay && userHasInteracted);
-    bindWidget(iframe, autoplay && userHasInteracted);
+    iframe.src = 'about:blank';
+    requestAnimationFrame(() => {
+      if (token !== widgetToken) return;
+      iframe.src = canonical;
+      bindWidget(iframe, token, autoplay && userHasInteracted);
+    });
   };
 
   const nextTrack = (autoplay = false) => {
@@ -398,6 +456,8 @@
 
   const prevTrack = () => {
     if (!allTracks.length) return;
+    userHasInteracted = true;
+    userRequestedPlay = true;
     currentIndex = (currentIndex - 1 + allTracks.length) % allTracks.length;
     swapTrack(true);
   };
@@ -419,17 +479,18 @@
 
   // FIX 3: force iframe build on first tap when scWidget is null
   const togglePlay = () => {
-    if (!scWidget) {
+    userHasInteracted = true;
+    userRequestedPlay = true;
+    if (!scWidget || !widgetReady) {
       userHasInteracted = true;
       if (allTracks.length) {
-        currentIframeUrl = '';
         swapTrack(true);
       }
       return;
     }
     scWidget.isPaused((paused) => {
-      if (paused) { scWidget.play(); isPlaying = true; }
-      else        { scWidget.pause(); isPlaying = false; }
+      if (paused) { scWidget.play(); isPlaying = true; setPlayerStatus('loading', 'Resuming…'); }
+      else        { scWidget.pause(); isPlaying = false; setPlayerStatus('ready', 'Paused.'); }
       refreshPlayBtn();
     });
   };
@@ -482,41 +543,48 @@
     if (sb) sb.innerHTML = SVG.share;
   };
 
+  const closeRadio = ({ restoreFocus = false } = {}) => {
+    floating.classList.remove('open');
+    floating.classList.add('collapsed');
+    badge.setAttribute('aria-expanded', 'false');
+    if (restoreFocus) badge.focus();
+  };
+
   badge.addEventListener('click', (e) => {
     e.stopPropagation();
     userHasInteracted = true;
     const nowOpen = floating.classList.toggle('open');
     floating.classList.toggle('collapsed', !nowOpen);
     badge.setAttribute('aria-expanded', String(nowOpen));
+    if (nowOpen) window.dispatchEvent(new CustomEvent('starmilk:surfaceOpen', { detail: { target: 'radio' } }));
     if (nowOpen && !hasOpened) {
       hasOpened = true;
       injectIcons();
       buildFavQueue();
       refreshFavCount();
-      if (allTracks.length) swapTrack(true);
+      if (allTracks.length) swapTrack(false);
     }
   });
 
   if (closeBtn) {
     closeBtn.addEventListener('click', () => {
-      floating.classList.remove('open');
-      floating.classList.add('collapsed');
-      badge.setAttribute('aria-expanded', 'false');
+      closeRadio();
     });
   }
 
   floating.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && floating.classList.contains('open')) {
-      floating.classList.remove('open');
-      floating.classList.add('collapsed');
-      badge.setAttribute('aria-expanded', 'false');
-      badge.focus();
+      closeRadio({ restoreFocus: true });
     }
+  });
+
+  window.addEventListener('starmilk:requestClose', (event) => {
+    if (event.detail?.target === 'radio') closeRadio();
   });
 
   if (prevBtn)     prevBtn.addEventListener('click',    prevTrack);
   if (playBtn)     playBtn.addEventListener('click',    togglePlay);
-  if (nextBtn)     nextBtn.addEventListener('click',    () => nextTrack(true));
+  if (nextBtn)     nextBtn.addEventListener('click',    () => { userHasInteracted = true; userRequestedPlay = true; nextTrack(true); });
   if (shuffleBtn)  shuffleBtn.addEventListener('click', toggleShuffle);
   if (likeBtn)     likeBtn.addEventListener('click',    () => toggleFav(allTracks[currentIndex]));
   if (searchInput) searchInput.addEventListener('input', handleSearch);

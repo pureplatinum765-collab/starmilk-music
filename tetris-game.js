@@ -132,6 +132,7 @@
   let gameOver = false;
   let paused = false;
   let running = false;
+  let highScore = readHighScore();
   let animFrameId = null;
   let dropTimer = 0;
   let lastTime = 0;
@@ -160,6 +161,22 @@
   let dasTimer = 0;
   let dasActive = false;
   let keysDown = { left: false, right: false };
+
+  function readHighScore() {
+    try {
+      return Number.parseInt(localStorage.getItem('starmilk-tetris-high-score') || '0', 10) || 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  function persistHighScore() {
+    if (score <= highScore) return;
+    highScore = score;
+    try {
+      localStorage.setItem('starmilk-tetris-high-score', String(highScore));
+    } catch (_) { /* Storage is optional. */ }
+  }
 
   // ═══════════════════════════════════════════════════════════════
   //  AUDIO
@@ -516,13 +533,14 @@
   function triggerGameOver() {
     gameOver = true;
     running = false;
+    persistHighScore();
     sfxGameOver();
     updateStats('GAME OVER');
   }
 
   function updateStats(extra) {
     if (!statsEl) return;
-    const parts = [`Score: ${score}`, `Level: ${level}`, `Lines: ${lines}`];
+    const parts = [`Score: ${score}`, `High: ${highScore}`, `Level: ${level}`, `Lines: ${lines}`];
     if (extra) parts.push(extra);
     statsEl.textContent = parts.join(' \u2022 ');
   }
@@ -886,6 +904,7 @@
   // ═══════════════════════════════════════════════════════════════
 
   function openGame() {
+    window.dispatchEvent(new CustomEvent('starmilk:surfaceOpen', { detail: { target: 'game' } }));
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
     initAudio();
@@ -895,11 +914,15 @@
   }
 
   function closeGame() {
+    persistHighScore();
     overlay.classList.remove('open');
     overlay.setAttribute('aria-hidden', 'true');
     running = false;
     gameOver = false;
     paused = false;
+    softDropping = false;
+    dasDir = 0;
+    keysDown = { left: false, right: false };
     if (animFrameId) {
       cancelAnimationFrame(animFrameId);
       animFrameId = null;
@@ -909,6 +932,9 @@
   launchBtn.addEventListener('click', openGame);
   if (closeBtn) closeBtn.addEventListener('click', closeGame);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closeGame(); });
+  window.addEventListener('starmilk:requestClose', (event) => {
+    if (event.detail?.target === 'game' && overlay.classList.contains('open')) closeGame();
+  });
 
   window.addEventListener('keydown', (e) => {
     if (!overlay.classList.contains('open')) return;
@@ -1103,6 +1129,14 @@
 
   window.addEventListener('resize', () => {
     if (overlay.classList.contains('open')) resizeCanvas();
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden || !running) return;
+    paused = true;
+    softDropping = false;
+    dasDir = 0;
+    keysDown = { left: false, right: false };
   });
 
   // Initial sizing (hidden, but ready)
