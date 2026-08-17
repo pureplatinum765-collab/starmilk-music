@@ -1,5 +1,6 @@
 /* STARMILK Inked Relic Synapse conductor.
-   Design rule: playback is a ritual state, never a generic neon visualizer. */
+   Design rule: playback is a ritual state. SoundCloud transport timing drives
+   cadence; real BPM is used only when the widget exposes it. */
 (function () {
   'use strict';
 
@@ -21,7 +22,14 @@
     phase: 'rest',
     energy: 0,
     targetEnergy: 0,
+    pulse: 0,
     seed: 28,
+    trackKey: '',
+    cadenceBpm: 88,
+    tempo: 0,
+    positionMs: 0,
+    relativePosition: 0,
+    progressAt: 0,
     nodes: [],
     width: 0,
     height: 0,
@@ -32,6 +40,8 @@
     track: 'The field is listening',
   };
 
+  const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+  const finite = (value) => Number.isFinite(Number(value));
   const hash = (value) => {
     let result = 2166136261;
     for (let index = 0; index < value.length; index += 1) {
@@ -40,7 +50,6 @@
     }
     return result >>> 0;
   };
-
   const random = (seed) => {
     let value = seed + 0x6D2B79F5;
     return () => {
@@ -56,17 +65,14 @@
     const r = random(state.seed);
     const compact = state.width < 720;
     const count = compact ? 16 : 23;
-    state.nodes = Array.from({ length: count }, (_, index) => {
-      const lane = index % 4;
-      return {
-        x: compact ? .08 + r() * .84 : .39 + r() * .55,
-        y: .10 + r() * .78,
-        size: .8 + r() * 2.4,
-        phase: r() * Math.PI * 2,
-        drift: .28 + r() * .72,
-        lane,
-      };
-    });
+    state.nodes = Array.from({ length: count }, (_, index) => ({
+      x: compact ? .08 + r() * .84 : .39 + r() * .55,
+      y: .10 + r() * .78,
+      size: .8 + r() * 2.4,
+      phase: r() * Math.PI * 2,
+      drift: .28 + r() * .72,
+      lane: index % 4,
+    }));
   };
 
   const resize = () => {
@@ -83,6 +89,24 @@
   };
 
   const ease = (current, target, amount) => current + (target - current) * amount;
+  const positionNow = (now) => state.phase === 'playing'
+    ? state.positionMs + Math.max(0, now - state.progressAt)
+    : state.positionMs;
+
+  const cadence = (now, intensity) => {
+    const bpm = state.tempo || state.cadenceBpm;
+    const beatMs = 60000 / bpm;
+    const beat = positionNow(now) / beatMs;
+    const beatIndex = Math.floor(beat);
+    const phase = beat - beatIndex;
+    const downbeat = beatIndex % 4 === 0 ? 1 : .64;
+    const hit = Math.exp(-Math.pow(phase / .16, 2)) * downbeat;
+    const lift = Math.exp(-Math.pow((phase - .5) / .22, 2)) * .18;
+    const phrase = .55 + .45 * Math.sin((state.relativePosition || beat / 128) * Math.PI * 8 + state.seed * .0001);
+    const target = state.phase === 'playing' ? clamp(.15 + hit * .85 + lift + phrase * .14, 0, 1) : 0;
+    state.pulse = ease(state.pulse, target, .22);
+    return { beat, beatIndex, beatMs, pulse: state.pulse * intensity };
+  };
 
   const draw = (now) => {
     state.raf = 0;
@@ -91,17 +115,27 @@
     const isAfterglow = now < state.afterglowUntil;
     state.energy = ease(state.energy, state.targetEnergy, Math.min(.18, delta / 180));
     const active = state.energy > .012 || isAfterglow;
-    hero.style.setProperty('--synapse-energy', state.energy.toFixed(3));
+    const baseIntensity = Math.max(state.energy, isAfterglow ? .12 : 0);
+    const rhythm = cadence(now, baseIntensity);
+    const intensity = baseIntensity * (.46 + rhythm.pulse * .72);
+    hero.style.setProperty('--synapse-energy', intensity.toFixed(3));
+    hero.style.setProperty('--synapse-pulse', rhythm.pulse.toFixed(3));
+    hero.style.setProperty('--synapse-beat', `${Math.round(rhythm.beatMs)}ms`);
     ctx.clearRect(0, 0, state.width, state.height);
 
     if (!reduceMotion.matches && active) {
-      const intensity = Math.max(state.energy, isAfterglow ? .12 : 0);
       const t = now * .001;
       const nodes = state.nodes;
+      const waveHead = Math.floor(rhythm.beat * 1.5) % Math.max(nodes.length, 1);
       const point = (node) => ({
-        x: node.x * state.width + Math.sin(t * node.drift + node.phase) * (5 + intensity * 10),
-        y: node.y * state.height + Math.cos(t * node.drift * .8 + node.phase) * (4 + intensity * 8),
+        x: node.x * state.width + Math.sin(t * node.drift + node.phase) * (5 + intensity * 12 + rhythm.pulse * 9),
+        y: node.y * state.height + Math.cos(t * node.drift * .8 + node.phase) * (4 + intensity * 8 + rhythm.pulse * 6),
       });
+      const activation = (index) => {
+        const forward = (index - waveHead + nodes.length) % nodes.length;
+        const distance = Math.min(forward, nodes.length - forward);
+        return Math.exp(-Math.pow(distance / 1.6, 2)) * rhythm.pulse;
+      };
 
       ctx.lineWidth = 1;
       for (let i = 0; i < nodes.length; i += 1) {
@@ -111,7 +145,8 @@
           const distance = Math.hypot(a.x - b.x, a.y - b.y);
           const threshold = Math.min(state.width, state.height) * .24;
           if (distance > threshold) continue;
-          const alpha = (1 - distance / threshold) * (.035 + intensity * .18);
+          const accent = Math.max(activation(i), activation(j));
+          const alpha = (1 - distance / threshold) * (.025 + intensity * .16 + accent * .18);
           ctx.strokeStyle = `rgba(226, 180, 126, ${alpha.toFixed(3)})`;
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
@@ -122,20 +157,20 @@
 
       nodes.forEach((node, index) => {
         const p = point(node);
-        const pulse = .55 + Math.sin(t * (1.8 + node.drift) + node.phase) * .45;
-        const radius = node.size + intensity * (2.2 + pulse * 2);
-        const glow = (.08 + intensity * .44) * (.58 + pulse * .42);
-        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 6);
+        const passing = activation(index);
+        const pulse = .45 + Math.sin(t * (1.8 + node.drift) + node.phase) * .22 + passing * .72;
+        const radius = node.size + intensity * (1.8 + pulse * 2) + passing * 4;
+        const glow = (.06 + intensity * .35 + passing * .34) * (.66 + pulse * .34);
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * (5 + passing * 2));
         gradient.addColorStop(0, `rgba(245, 222, 175, ${glow.toFixed(3)})`);
         gradient.addColorStop(.25, `rgba(198, 138, 79, ${(glow * .58).toFixed(3)})`);
         gradient.addColorStop(1, 'rgba(198, 138, 79, 0)');
         ctx.fillStyle = gradient;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, radius * 6, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, radius * (5 + passing * 2), 0, Math.PI * 2);
         ctx.fill();
-
-        if (index % 3 === 0) {
-          ctx.fillStyle = `rgba(232, 223, 207, ${(glow * .9).toFixed(3)})`;
+        if (index % 3 === 0 || passing > .38) {
+          ctx.fillStyle = `rgba(232, 223, 207, ${Math.min(.9, glow * 1.2).toFixed(3)})`;
           ctx.fillRect(p.x - .5, p.y - .5, 1, 1);
         }
       });
@@ -149,16 +184,33 @@
   };
 
   const setStatus = (detail = {}) => {
-    const phase = detail.phase || 'rest';
+    const incomingPhase = detail.phase || 'rest';
+    const phase = incomingPhase === 'progress'
+      ? (state.phase === 'playing' ? 'playing' : 'loading')
+      : incomingPhase;
     const track = detail.trackName || state.track;
-    state.track = track;
-    state.seed = hash(`${detail.trackUrl || track}:${detail.trackIndex || 0}`);
-    buildNodes();
+    const trackKey = `${detail.trackUrl || track}:${detail.trackIndex || 0}`;
+    if (trackKey !== state.trackKey) {
+      state.trackKey = trackKey;
+      state.track = track;
+      state.seed = hash(trackKey);
+      state.cadenceBpm = 72 + (state.seed % 7) * 8;
+      state.tempo = 0;
+      state.positionMs = 0;
+      state.relativePosition = 0;
+      buildNodes();
+    }
+    if (finite(detail.tempo) && Number(detail.tempo) >= 48 && Number(detail.tempo) <= 220) state.tempo = Number(detail.tempo);
+    if (finite(detail.currentPosition)) {
+      state.positionMs = Math.max(0, Number(detail.currentPosition));
+      state.progressAt = performance.now();
+    }
+    if (finite(detail.relativePosition)) state.relativePosition = clamp(Number(detail.relativePosition), 0, 1);
     state.phase = phase;
     const playing = phase === 'playing';
     const loading = phase === 'loading';
     const afterglow = phase === 'paused' || phase === 'finished';
-    if (state.afterglowTimer) {
+    if (incomingPhase !== 'progress' && state.afterglowTimer) {
       window.clearTimeout(state.afterglowTimer);
       state.afterglowTimer = 0;
     }
@@ -177,7 +229,7 @@
     }
 
     if (playing) {
-      statusState.textContent = 'The field is awake';
+      statusState.textContent = state.tempo ? 'The field moves in time' : 'The field is awake';
       statusTrack.textContent = track;
     } else if (loading) {
       statusState.textContent = 'Tuning the river';

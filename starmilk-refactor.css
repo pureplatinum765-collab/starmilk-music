@@ -330,7 +330,7 @@ body:has(.radio-floating.open) .starmilk-chat-toggle, body:has(.radio-floating.o
 }
 
 /* Inked Relic Synapse: a restrained conduction score, not a separate UI era. */
-#hero { --synapse-energy: 0; }
+#hero { --synapse-energy: 0; --synapse-pulse: 0; --synapse-beat: 800ms; }
 .synapse-conductor { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; pointer-events: none; opacity: .94; mix-blend-mode: screen; }
 .hero-content { position: relative; z-index: 2; }
 .hero-synapse-status { position: absolute; top: 6.7rem; left: var(--gutter); z-index: 2; display: grid; gap: .15rem; max-width: min(22rem, calc(100% - 2 * var(--gutter))); margin: 0; color: rgba(232,223,207,.66); font-size: .64rem; letter-spacing: .14em; line-height: 1.35; text-transform: uppercase; }
@@ -341,7 +341,7 @@ body:has(.radio-floating.open) .starmilk-chat-toggle, body:has(.radio-floating.o
 #hero[data-conduction="listening"]::after { border-color: rgba(226,180,126,.64); box-shadow: 20px 22px 0 rgba(0,0,0,.22), 0 0 calc(42px * var(--synapse-energy)) rgba(198,138,79,.28); transform: rotate(7deg) scale(calc(1 + var(--synapse-energy) * .018)); }
 body.starmilk-playing .hero-title { text-shadow: 0 0 calc(34px * var(--synapse-energy)) rgba(226,180,126,.16); }
 body.starmilk-playing .hero-eyebrow { color: #f2c891; }
-body.starmilk-playing .radio-live-dot { animation: synapse-live 1.8s var(--ease) infinite; box-shadow: 0 0 0 0 rgba(226,180,126,.5); }
+body.starmilk-playing .radio-live-dot { animation: synapse-live var(--synapse-beat) var(--ease) infinite; box-shadow: 0 0 0 0 rgba(226,180,126,.5); }
 body.starmilk-playing .radio-badge { color: var(--honey-soft); }
 body.starmilk-playing #radio::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 78% 72%, rgba(226,180,126,.16), transparent 24rem); opacity: calc(.25 + var(--synapse-energy) * .75); }
 body.starmilk-playing #river-canvas, body.starmilk-playing #orchard-canvas { filter: saturate(1.12) contrast(1.03); }
@@ -349,6 +349,7 @@ body.starmilk-playing .card, body.starmilk-playing .game-shell { transition-dura
 body.starmilk-playing .card:hover, body.starmilk-playing .game-shell:hover { box-shadow: 0 0 0 1px rgba(226,180,126,.42) inset; }
 body.starmilk-tuning .hero-synapse-status::before { border-color: var(--river); animation: synapse-tune 1.1s linear infinite; }
 body.starmilk-afterglow #hero::after { border-color: rgba(226,180,126,.34); transition: border-color 1.3s var(--ease), box-shadow 1.3s var(--ease), transform 1.3s var(--ease); }
+body.starmilk-playing .hero-synapse-status::before { border-color: rgba(242,200,145,calc(.52 + var(--synapse-pulse) * .48)); box-shadow: 0 0 calc(9px + var(--synapse-pulse) * 12px) rgba(226,180,126,calc(.14 + var(--synapse-pulse) * .42)); transform: scale(calc(1 + var(--synapse-pulse) * .48)); }
 @keyframes synapse-live { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(226,180,126,.44); } 52% { transform: scale(1.35); box-shadow: 0 0 0 .58rem rgba(226,180,126,0); } }
 @keyframes synapse-tune { to { transform: rotate(1turn); } }
 @media (max-width: 760px) {
@@ -360,4 +361,24 @@ body.starmilk-afterglow #hero::after { border-color: rgba(226,180,126,.34); tran
   body.starmilk-playing .radio-live-dot, body.starmilk-tuning .hero-synapse-status::before { animation: none; }
   body.starmilk-playing .hero-title { text-shadow: none; }
   #hero[data-conduction="listening"]::after { transform: rotate(7deg); }
+}
+
+/* Surface handoffs: separate instruments answer with one quiet transition language. */
+#radio-embed-shell { position: fixed; left: -9999px; top: -9999px; width: 300px; height: 166px; opacity: 0; overflow: hidden; pointer-events: none; }
+#radio-embed-shell iframe { display: block; width: 300px; height: 166px; border: 0; }
+.radio-floating { transition: opacity .24s var(--ease), transform .24s var(--ease); transform-origin: right bottom; }
+.radio-floating.open { opacity: 1; transform: translate3d(0,0,0) scale(1); }
+.radio-floating.open[data-surface-entering="true"] { opacity: 0; transform: translate3d(0,14px,0) scale(.985); }
+.radio-floating[data-surface-closing="true"] { opacity: 0; pointer-events: none; transform: translate3d(0,10px,0) scale(.985); }
+.starmilk-chat-panel { display: flex; visibility: hidden; opacity: 0; pointer-events: none; transform: translate3d(0,14px,0) scale(.985); transform-origin: right bottom; transition: opacity .24s var(--ease), transform .24s var(--ease), visibility 0s linear .24s; }
+.starmilk-chat-panel.open { visibility: visible; opacity: 1; pointer-events: auto; transform: translate3d(0,0,0) scale(1); transition-delay: 0s; }
+.mood-ring-overlay { display: grid; visibility: hidden; opacity: 0; pointer-events: none; transition: opacity .28s var(--ease), visibility 0s linear .28s; }
+.mood-ring-overlay.open { visibility: visible; opacity: 1; pointer-events: auto; transition-delay: 0s; }
+.mood-ring-card { transform: translate3d(0,18px,0) scale(.972); transform-origin: center; transition: transform .32s var(--ease), box-shadow .32s var(--ease); }
+.mood-ring-overlay.open .mood-ring-card { transform: translate3d(0,0,0) scale(1); }
+body.starmilk-surface-shift .hero-synapse-status::before { animation: surface-handoff .46s var(--ease) both; }
+@keyframes surface-handoff { 0% { transform: scale(.7); opacity: .35; } 45% { transform: scale(1.8); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .radio-floating, .starmilk-chat-panel, .mood-ring-overlay, .mood-ring-card { transition-duration: .01ms; }
+  body.starmilk-surface-shift .hero-synapse-status::before { animation: none; }
 }

@@ -39,6 +39,16 @@ A direct canvas probe confirmed this contract quantitatively: the rest canvas ha
 
 The bounded cleanup was re-tested in the refreshed browser runtime: `starmilk-afterglow` was present immediately after a pause and absent after 1.55 seconds, with the hero returning to the at-rest message. The final console inspection contained only the deliberate validation expressions and no application error.
 
+## Rhythm and Surface Refinement
+
+The next refinement treats **SoundCloud transport time** as a distinct creative signal. The official Widget API emits `PLAY_PROGRESS` with `currentPosition` and `relativePosition`; the radio now publishes those values through the existing semantic contract. The conductor uses an artist-owned BPM value when SoundCloud exposes one, otherwise a deterministic per-track cadence. This produces travelling activation and varied downbeat pressure while remaining explicit that it is a transport-led score rather than a claimed waveform or beat analysis. [4]
+
+The Radio, Guide, and Mood selector now share a short exit-and-enter language. Radio eases out before collapsing; Guide rises from a compact lower-right origin; Mood resolves from a modest card lift. The coordinator emits one brief hero handoff pulse as focus changes, without reintroducing overlapping panels. All motion is neutralized by the existing reduced-motion query.
+
+Live browser testing identified one active-cascade regression: after the legacy CSS was retired, the SoundCloud transport iframe reverted to static geometry and could visibly leak into the Radio panel if its external document failed. The canonical stylesheet now restores the original hidden off-screen transport shell. A fresh rendered pass confirmed the Radio panel is clean while its live iframe remains fixed off-canvas at `-9999px` with full `300px × 166px` transport dimensions.
+
+The fully rendered ritual was opened from a fresh portal state. Radio moved the hero to “Tuning the river”; the live iframe loaded from the public STARMILK DNA URL, while the sandbox did not complete a visible third-party playback session. Independent cadence probes confirmed distinct CSS pulse values at different real-transport-shaped positions, and full handoff checks confirmed Radio → Guide, Guide → Mood, and Mood → Radio close the outgoing surface before the incoming surface settles. The browser console remained free of application error.
+
 ## External Design and Runtime Evidence
 
 The implementation is intentionally light. MDN documents `AnalyserNode` as the route for real-time frequency or time-domain analysis when an application owns an audio source, while the current SoundCloud iframe does not expose that source to the page. The conductor therefore uses real player state now and retains a narrow path for future same-origin audio analysis. MDN also recommends creating or resuming audio context from an explicit user gesture, and the system begins only from the existing play control. The reduced-motion edition preserves the listening-state language without continuous canvas activity. [1] [2] [3]
@@ -46,3 +56,4 @@ The implementation is intentionally light. MDN documents `AnalyserNode` as the r
 [1]: https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode "MDN: AnalyserNode"
 [2]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices "MDN: Web Audio API best practices"
 [3]: https://web.dev/articles/prefers-reduced-motion "web.dev: prefers-reduced-motion"
+[4]: https://developers.soundcloud.com/docs/api/html5-widget "SoundCloud: Widget API"

@@ -1,5 +1,7 @@
 (() => {
   'use strict';
+  /* Inked Relic Synapse transport: publish honest SoundCloud timing, not
+     synthetic spectrum data, so the page can conduct the listening ritual. */
 
   const SC_PROFILE  = 'https://soundcloud.com/star-milk-645735333';
   const EMBED_COLOR = '%23f59e0b';
@@ -57,10 +59,12 @@
   let widgetToken        = 0;
   let widgetTimeout      = 0;
   let userRequestedPlay  = false;
+  let currentTrackTempo  = 0;
+  let radioCloseTimer    = 0;
 
   /* Inked Relic Synapse contract: semantic playback is honest for an embedded
      cross-origin player and leaves room for later same-origin audio analysis. */
-  const emitAudioState = (phase) => {
+  const emitAudioState = (phase, transport = {}) => {
     const track = allTracks[currentIndex];
     window.dispatchEvent(new CustomEvent('starmilk:audioState', {
       detail: {
@@ -70,6 +74,9 @@
         trackIndex: currentIndex,
         source: 'soundcloud-embed',
         analysis: 'semantic',
+        currentPosition: Number(transport.currentPosition || 0),
+        relativePosition: Number(transport.relativePosition || 0),
+        tempo: Number(transport.tempo || currentTrackTempo || 0),
       },
     }));
   };
@@ -210,6 +217,12 @@
         clearTimeout(widgetTimeout);
         widgetTimeout = 0;
         setPlayerStatus('ready', userRequestedPlay && autoplay ? 'Ready. Starting the signal…' : 'Ready when you are.');
+        widget.getCurrentSound?.((sound) => {
+          if (!isCurrent()) return;
+          const bpm = Number(sound?.bpm || 0);
+          currentTrackTempo = bpm >= 48 && bpm <= 220 ? bpm : 0;
+          emitAudioState('loading', { tempo: currentTrackTempo });
+        });
         if (autoplay && userRequestedPlay) widget.play();
       });
       widget.bind(SC.Widget.Events.FINISH, () => {
@@ -232,6 +245,10 @@
         refreshPlayBtn();
         setPlayerStatus('playing', 'Playing from STARMILK Radio.');
         emitAudioState('playing');
+      });
+      widget.bind(SC.Widget.Events.PLAY_PROGRESS, (progress) => {
+        if (!isCurrent() || !isPlaying) return;
+        emitAudioState('progress', progress || {});
       });
       widget.bind(SC.Widget.Events.PAUSE, () => {
         if (!isCurrent()) return;
@@ -447,6 +464,7 @@
     maybePoem();
 
     const canonical = embedUrl(track, false);
+    currentTrackTempo = 0;
     currentIframeUrl = canonical;
     const token = invalidateWidget();
     isPlaying = false;
@@ -565,17 +583,33 @@
   };
 
   const closeRadio = ({ restoreFocus = false } = {}) => {
+    if (radioCloseTimer) window.clearTimeout(radioCloseTimer);
     floating.classList.remove('open');
-    floating.classList.add('collapsed');
+    floating.dataset.surfaceClosing = 'true';
     badge.setAttribute('aria-expanded', 'false');
+    radioCloseTimer = window.setTimeout(() => {
+      floating.classList.add('collapsed');
+      delete floating.dataset.surfaceClosing;
+      radioCloseTimer = 0;
+    }, 240);
     if (restoreFocus) badge.focus();
   };
 
   badge.addEventListener('click', (e) => {
     e.stopPropagation();
     userHasInteracted = true;
-    const nowOpen = floating.classList.toggle('open');
-    floating.classList.toggle('collapsed', !nowOpen);
+    const nowOpen = !floating.classList.contains('open');
+    if (nowOpen) {
+      if (radioCloseTimer) window.clearTimeout(radioCloseTimer);
+      radioCloseTimer = 0;
+      delete floating.dataset.surfaceClosing;
+      floating.classList.remove('collapsed');
+      floating.classList.add('open');
+      floating.dataset.surfaceEntering = 'true';
+      requestAnimationFrame(() => delete floating.dataset.surfaceEntering);
+    } else {
+      closeRadio();
+    }
     badge.setAttribute('aria-expanded', String(nowOpen));
     if (nowOpen) window.dispatchEvent(new CustomEvent('starmilk:surfaceOpen', { detail: { target: 'radio' } }));
     if (nowOpen && !hasOpened) {
