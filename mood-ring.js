@@ -49,6 +49,8 @@
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
     window.dispatchEvent(new CustomEvent('starmilk:moodRingVisibility', { detail: { open: true } }));
+    window.dispatchEvent(new CustomEvent('starmilk:surfaceOpen', { detail: { target: 'mood' } }));
+    overlay.querySelector('.mood-orb')?.focus();
   }
 
   function setMood(mood, shouldScroll) {
@@ -96,5 +98,14 @@
   }
 
   trigger.addEventListener('click', openMoodSelector);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && overlay.classList.contains('open')) {
+      closeMoodSelector();
+      trigger.focus();
+    }
+  });
+  window.addEventListener('starmilk:requestClose', (event) => {
+    if (event.detail?.target === 'mood') closeMoodSelector();
+  });
   maybeShowPromptAfterParkingLot();
 })();

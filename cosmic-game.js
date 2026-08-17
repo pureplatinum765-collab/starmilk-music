@@ -472,6 +472,7 @@
 
   function launchGame() {
     if (state.active) return;
+    window.dispatchEvent(new CustomEvent('starmilk:surfaceOpen', { detail: { target: 'game' } }));
     ensureAudio();
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     generateRun();
@@ -499,6 +500,10 @@
     powerPrompt.style.display = 'none';
     mapScreen.style.display = 'none';
   }
+
+  window.addEventListener('starmilk:requestClose', (event) => {
+    if (event.detail?.target === 'game' && state.active) exitGame();
+  });
 
   function resize() {
     if (!overlay) return;

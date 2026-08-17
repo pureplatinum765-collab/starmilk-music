@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-starmilk-rebuild="true">
 <head>
   <meta charset="UTF-8" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -119,7 +119,7 @@
     }
   </script>
 
-  <style>
+  <style media="not all" id="starmilk-legacy-styles">
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -3705,7 +3705,7 @@
     }
 
   </style>
-  <link rel="stylesheet" href="starmilk-depth.css">
+  <link rel="stylesheet" href="starmilk-refactor.css">
 </head>
 <body>
 
@@ -4466,10 +4466,13 @@ Stay as long as you like.</p>
 <script src="the-river.js" defer></script>
 <script src="honey-drip.js" defer></script>
 <script src="starmilk-radio.js" defer></script>
+<script src="starmilk-ui.js" defer></script>
 
 <script>
 (function () {
   'use strict';
+
+  if (document.documentElement.dataset.starmilkRebuild === 'true') return;
 
   const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const isMobile = window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent);
@@ -5025,10 +5028,10 @@ if ('serviceWorker' in navigator) {
 </script>
 
 <!-- ═══ STARMILK CHATBOT WIDGET ═══ -->
-<button class="starmilk-chat-toggle" id="starmilk-chat-toggle" aria-label="Chat with STARMILK" title="Chat with STARMILK">✨</button>
+<button class="starmilk-chat-toggle" id="starmilk-chat-toggle" aria-label="Open STARMILK guide" aria-expanded="false" aria-controls="starmilk-chat-panel" title="Open STARMILK guide">✦</button>
 <div class="starmilk-chat-panel" id="starmilk-chat-panel">
   <div class="starmilk-chat-head">
-    <h4>⭐ STARMILK</h4>
+    <h4>STARMILK GUIDE</h4>
     <button id="starmilk-chat-close" aria-label="Close chat">✕</button>
   </div>
   <div class="starmilk-chat-messages" id="starmilk-chat-messages"></div>
@@ -5041,21 +5044,11 @@ if ('serviceWorker' in navigator) {
     <a href="https://patreon.com/STARMILKLABZ" target="_blank" rel="noopener">Patreon</a>
   </div>
   <div class="starmilk-chat-input">
-    <input type="text" id="starmilk-chat-in" placeholder="Ask me anything..." autocomplete="off" />
-    <button id="starmilk-chat-voice" class="chat-voice-btn" aria-label="Voice input" title="Speak">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-        <line x1="12" y1="19" x2="12" y2="23"/>
-        <line x1="8" y1="23" x2="16" y2="23"/>
-      </svg>
-    </button>
+    <input type="text" id="starmilk-chat-in" placeholder="Ask about music, the river, games…" autocomplete="off" maxlength="600" />
     <button id="starmilk-chat-send">Send</button>
   </div>
 </div>
-<script src="starmilk-cosmos.js"></script>
-<script src="starmilk-depth.js" defer></script>
-<script src="starmilk-chat.js" defer></script>
+<script src="starmilk-guide.js" defer></script>
 
 <!--
   ══════════════════════════════════════════════════

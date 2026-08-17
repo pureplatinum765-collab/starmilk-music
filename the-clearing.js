@@ -44,7 +44,9 @@
   }
 
   function revealClearing() {
-    if (isShowing || isBlockedByOverlay()) return;
+    if (isShowing) return;
+    window.dispatchEvent(new CustomEvent('starmilk:surfaceOpen', { detail: { target: 'clearing' } }));
+    if (isBlockedByOverlay()) return;
     priorFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     isShowing = true;
     overlay.classList.add('visible');
@@ -76,4 +78,7 @@
   });
 
   window.addEventListener('starmilk:openClearing', revealClearing);
+  window.addEventListener('starmilk:requestClose', (event) => {
+    if (event.detail?.target === 'clearing' && isShowing) hideClearing({ restoreFocus: false });
+  });
 })();

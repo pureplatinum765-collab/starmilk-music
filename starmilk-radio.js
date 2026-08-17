@@ -543,12 +543,20 @@
     if (sb) sb.innerHTML = SVG.share;
   };
 
+  const closeRadio = ({ restoreFocus = false } = {}) => {
+    floating.classList.remove('open');
+    floating.classList.add('collapsed');
+    badge.setAttribute('aria-expanded', 'false');
+    if (restoreFocus) badge.focus();
+  };
+
   badge.addEventListener('click', (e) => {
     e.stopPropagation();
     userHasInteracted = true;
     const nowOpen = floating.classList.toggle('open');
     floating.classList.toggle('collapsed', !nowOpen);
     badge.setAttribute('aria-expanded', String(nowOpen));
+    if (nowOpen) window.dispatchEvent(new CustomEvent('starmilk:surfaceOpen', { detail: { target: 'radio' } }));
     if (nowOpen && !hasOpened) {
       hasOpened = true;
       injectIcons();
@@ -560,19 +568,18 @@
 
   if (closeBtn) {
     closeBtn.addEventListener('click', () => {
-      floating.classList.remove('open');
-      floating.classList.add('collapsed');
-      badge.setAttribute('aria-expanded', 'false');
+      closeRadio();
     });
   }
 
   floating.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && floating.classList.contains('open')) {
-      floating.classList.remove('open');
-      floating.classList.add('collapsed');
-      badge.setAttribute('aria-expanded', 'false');
-      badge.focus();
+      closeRadio({ restoreFocus: true });
     }
+  });
+
+  window.addEventListener('starmilk:requestClose', (event) => {
+    if (event.detail?.target === 'radio') closeRadio();
   });
 
   if (prevBtn)     prevBtn.addEventListener('click',    prevTrack);

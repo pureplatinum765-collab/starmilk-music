@@ -971,6 +971,7 @@
   // ═══════════════════════════════════════════════════════════════
 
   function openGame() {
+    window.dispatchEvent(new CustomEvent('starmilk:surfaceOpen', { detail: { target: 'game' } }));
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
     initAudio();
@@ -996,6 +997,9 @@
   launchBtn.addEventListener('click', openGame);
   closeBtn.addEventListener('click', closeGame);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closeGame(); });
+  window.addEventListener('starmilk:requestClose', (event) => {
+    if (event.detail?.target === 'game' && overlay.classList.contains('open')) closeGame();
+  });
 
   window.addEventListener('keydown', (e) => {
     if (!overlay.classList.contains('open')) return;
