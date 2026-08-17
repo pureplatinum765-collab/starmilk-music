@@ -58,6 +58,22 @@
   let widgetTimeout      = 0;
   let userRequestedPlay  = false;
 
+  /* Inked Relic Synapse contract: semantic playback is honest for an embedded
+     cross-origin player and leaves room for later same-origin audio analysis. */
+  const emitAudioState = (phase) => {
+    const track = allTracks[currentIndex];
+    window.dispatchEvent(new CustomEvent('starmilk:audioState', {
+      detail: {
+        phase,
+        trackName: track?.name || 'STARMILK Radio',
+        trackUrl: track?.url || '',
+        trackIndex: currentIndex,
+        source: 'soundcloud-embed',
+        analysis: 'semantic',
+      },
+    }));
+  };
+
   // FIX 1: track canonical URL so swapTrack skips rebuild when same track already loaded
   let currentIframeUrl   = '';
 
@@ -200,6 +216,7 @@
         if (!isCurrent()) return;
         isPlaying = false;
         refreshPlayBtn();
+        emitAudioState('paused');
         nextTrack(true);
       });
       widget.bind(SC.Widget.Events.ERROR, () => {
@@ -207,18 +224,21 @@
         isPlaying = false;
         refreshPlayBtn();
         setPlayerStatus('error', 'This track cannot play here. Choose another.');
+        emitAudioState('error');
       });
       widget.bind(SC.Widget.Events.PLAY, () => {
         if (!isCurrent()) return;
         isPlaying = true;
         refreshPlayBtn();
         setPlayerStatus('playing', 'Playing from STARMILK Radio.');
+        emitAudioState('playing');
       });
       widget.bind(SC.Widget.Events.PAUSE, () => {
         if (!isCurrent()) return;
         isPlaying = false;
         refreshPlayBtn();
         setPlayerStatus('ready', 'Paused.');
+        emitAudioState('paused');
       });
     } catch (_) {
       if (token === widgetToken) setPlayerStatus('error', 'Player setup failed. Try again.');
@@ -432,6 +452,7 @@
     isPlaying = false;
     refreshPlayBtn();
     setPlayerStatus('loading', `Loading ${track.name}…`);
+    emitAudioState('loading');
     const iframe = ensureIframe();
     iframe.src = 'about:blank';
     requestAnimationFrame(() => {
