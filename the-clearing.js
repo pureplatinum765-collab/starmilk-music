@@ -3,23 +3,18 @@
   const _ls = (function() { const m = {}; const s = window['local'+'Storage']; return { getItem(k) { try { return s.getItem(k); } catch { return m[k] ?? null; } }, setItem(k, v) { try { s.setItem(k, v); } catch { m[k] = v; } } }; })();
 
 
-  const IDLE_MS = 180000;
   const FADE_MS = 5000;
   const overlay = document.getElementById('the-clearing');
   const returnLink = document.getElementById('clearing-return');
-  if (!overlay || !returnLink) return;
+  const triggers = Array.from(document.querySelectorAll('[data-clearing-trigger]'));
+  if (!overlay || !returnLink || !triggers.length) return;
 
-  let idleTimer = null;
   let fadeTimer = null;
-  let pollingTimer = null;
   let isShowing = false;
-
-  const events = ['mousemove', 'mousedown', 'click', 'scroll', 'keydown', 'touchstart', 'touchmove', 'pointerdown', 'wheel'];
+  let priorFocus = null;
 
   function clearTimers() {
-    if (idleTimer) clearTimeout(idleTimer);
     if (fadeTimer) clearTimeout(fadeTimer);
-    if (pollingTimer) clearTimeout(pollingTimer);
   }
 
   function isOverlayVisible(node) {
@@ -37,15 +32,20 @@
     return document.hidden || isListening || isOverlayVisible(parkingLotOverlay) || isOverlayVisible(moodRingOverlay);
   }
 
-  function hideClearing() {
+  function hideClearing({ restoreFocus = true } = {}) {
     isShowing = false;
+    clearTimers();
     overlay.classList.remove('revealed', 'visible');
     overlay.style.transition = '';
     overlay.style.opacity = '0';
     overlay.setAttribute('aria-hidden', 'true');
+    if (restoreFocus && priorFocus instanceof HTMLElement) priorFocus.focus();
+    priorFocus = null;
   }
 
   function revealClearing() {
+    if (isShowing || isBlockedByOverlay()) return;
+    priorFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     isShowing = true;
     overlay.classList.add('visible');
     overlay.setAttribute('aria-hidden', 'false');
@@ -59,37 +59,21 @@
     fadeTimer = setTimeout(() => {
       overlay.classList.add('revealed');
       _ls.setItem('starmilkClearingFound', 'true');
+      returnLink.focus();
     }, FADE_MS);
   }
 
-  function scheduleIdle() {
-    clearTimers();
-    if (isShowing) return;
-
-    if (isBlockedByOverlay()) {
-      pollingTimer = setTimeout(scheduleIdle, 1000);
-      return;
-    }
-
-    idleTimer = setTimeout(revealClearing, IDLE_MS);
-  }
-
-  function onActivity() {
-    if (isShowing) return;
-    scheduleIdle();
-  }
-
-  events.forEach((eventName) => window.addEventListener(eventName, onActivity, { passive: true }));
-
-  returnLink.addEventListener('click', (event) => {
-    event.preventDefault();
-    hideClearing();
-    scheduleIdle();
+  triggers.forEach((trigger) => {
+    trigger.addEventListener('click', revealClearing);
   });
 
-  window.addEventListener('starmilk:parkingLotDismissed', scheduleIdle);
-  window.addEventListener('starmilk:moodRingVisibility', scheduleIdle);
-  document.addEventListener('visibilitychange', scheduleIdle);
+  returnLink.addEventListener('click', () => {
+    hideClearing();
+  });
 
-  scheduleIdle();
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && isShowing) hideClearing();
+  });
+
+  window.addEventListener('starmilk:openClearing', revealClearing);
 })();
