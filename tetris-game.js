@@ -903,7 +903,10 @@
   //  EVENT HANDLERS
   // ═══════════════════════════════════════════════════════════════
 
-  function openGame() {
+  let launchFocus = null;
+
+  function openGame(event) {
+    launchFocus = event?.currentTarget instanceof HTMLElement ? event.currentTarget : document.activeElement;
     window.dispatchEvent(new CustomEvent('starmilk:surfaceOpen', { detail: { target: 'game' } }));
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
@@ -911,9 +914,10 @@
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     resizeCanvas();
     startGame();
+    requestAnimationFrame(() => closeBtn?.focus());
   }
 
-  function closeGame() {
+  function closeGame({ restoreFocus = true } = {}) {
     persistHighScore();
     overlay.classList.remove('open');
     overlay.setAttribute('aria-hidden', 'true');
@@ -927,17 +931,24 @@
       cancelAnimationFrame(animFrameId);
       animFrameId = null;
     }
+    if (restoreFocus && launchFocus instanceof HTMLElement && launchFocus.isConnected) launchFocus.focus();
+    launchFocus = null;
   }
 
   launchBtn.addEventListener('click', openGame);
   if (closeBtn) closeBtn.addEventListener('click', closeGame);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closeGame(); });
   window.addEventListener('starmilk:requestClose', (event) => {
-    if (event.detail?.target === 'game' && overlay.classList.contains('open')) closeGame();
+    if (event.detail?.target === 'game' && overlay.classList.contains('open')) closeGame({ restoreFocus: false });
   });
 
   window.addEventListener('keydown', (e) => {
     if (!overlay.classList.contains('open')) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeGame();
+      return;
+    }
     if (gameOver) {
       if (e.code === 'Space' || e.code === 'Enter') {
         startGame();

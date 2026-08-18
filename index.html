@@ -4972,23 +4972,6 @@ void main(){
 
 <!-- ═══ COSMIC WORM ═════════════════════════════════════════════════════ -->
 <script src="tetris-game.js" defer></script>
-<script>
-document.getElementById('nav-hamburger')?.addEventListener('click', function() {
-  const links = document.querySelector('.nav-links');
-  const open = links.classList.toggle('mobile-open');
-  this.textContent = open ? '✕' : '☰';
-  this.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-});
-// Close mobile menu when a link is clicked
-document.querySelectorAll('.nav-links a, .nav-links button').forEach(el => {
-  el.addEventListener('click', () => {
-    document.querySelector('.nav-links').classList.remove('mobile-open');
-    const hamburger = document.getElementById('nav-hamburger');
-    if (hamburger) { hamburger.textContent = '☰'; hamburger.setAttribute('aria-label', 'Open menu'); }
-  });
-});
-</script>
-
 
 <script>
 // YouTube Lite Facade — load iframe only on click

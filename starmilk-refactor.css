@@ -278,6 +278,7 @@ body:has(.radio-floating.open) .starmilk-chat-toggle, body:has(.radio-floating.o
 /* One dialog visual contract for reflection, mood, and game experiences. */
 .mood-ring-overlay, .clearing-overlay, .bb-overlay, .tetris-overlay { position: fixed; inset: 0; z-index: var(--layer-dialog); display: none; place-items: center; padding: 1rem; background: rgba(10,8,12,.84); color: var(--paper); }
 .mood-ring-overlay.open, .clearing-overlay.visible { display: grid; }
+.bb-overlay.open, .tetris-overlay.open { display: grid; }
 .mood-ring-card { width: min(34rem, 100%); padding: clamp(1.5rem, 5vw, 3.5rem); border: 1px solid var(--line-strong); background: #28202a; box-shadow: 18px 20px 0 rgba(0,0,0,.32); }
 .mood-ring-title { margin: 0 0 1.5rem; color: var(--paper); font: 400 clamp(2rem, 5vw, 3.4rem)/.95 var(--font-display); letter-spacing: -.04em; }
 .mood-ring-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
@@ -286,7 +287,6 @@ body:has(.radio-floating.open) .starmilk-chat-toggle, body:has(.radio-floating.o
 .clearing-overlay { background: #1d2126; text-align: center; }
 .clearing-poem { max-width: 27rem; margin: 0; color: var(--paper); font: italic clamp(1.5rem, 4vw, 3.3rem)/1.18 var(--font-display); white-space: pre-line; }
 .clearing-return { margin-top: 2rem; padding: .7rem 1rem; border: 1px solid var(--honey); background: transparent; color: var(--honey-soft); cursor: pointer; text-transform: uppercase; letter-spacing: .12em; font-size: .72rem; }
-.bb-overlay[style*="display: flex"], .tetris-overlay[style*="display: flex"] { display: grid !important; }
 .bb-panel { width: min(62rem, 100%); max-height: calc(100svh - 2rem); overflow: auto; border: 1px solid var(--line-strong); background: #1a1720; box-shadow: 16px 18px 0 rgba(0,0,0,.34); }
 .bb-head { display: flex; align-items: center; justify-content: space-between; padding: .8rem 1rem; border-bottom: 1px solid var(--line); }
 .bb-head h3 { margin: 0; font: 400 1.4rem/1 var(--font-display); }

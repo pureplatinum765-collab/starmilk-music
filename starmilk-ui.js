@@ -25,9 +25,9 @@
     if (except !== 'clearing' && clearing?.classList.contains('visible')) {
       window.dispatchEvent(new CustomEvent('starmilk:requestClose', { detail: { target: 'clearing' } }));
     }
-    if (except !== 'game') {
-      window.dispatchEvent(new CustomEvent('starmilk:requestClose', { detail: { target: 'game' } }));
-    }
+    // Every new transient surface, including another game, clears active game runtimes.
+    // Game launchers announce before opening themselves, so this closes only prior games.
+    window.dispatchEvent(new CustomEvent('starmilk:requestClose', { detail: { target: 'game' } }));
   };
 
   let surfaceShiftTimer = 0;
