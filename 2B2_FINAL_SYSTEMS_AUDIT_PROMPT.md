@@ -55,16 +55,16 @@ The final result succeeds only if it:
 
 | Checkpoint | State | Action actually performed | Evidence/inference boundary | Status |
 |---|---|---|---|---|
-| Canon | Current 2B2 v2.3 retrieved | Notion canonical-state fetch | Canon is prompt-system operational, not runtime-verified | Pending |
-| Neutral ingress / purpose lock | Final integrated audit | Scope frozen to STARMILK technical and artist-direct growth paths | No defect or revenue outcome presumed | Pending |
-| 1 — Capture | Merged source and live build | Pending | Pending | Pending |
-| 2 — Magnet + orient | Salient visitor and business paths | Pending | Pending | Pending |
-| 3 — Invariant filter + challenge | Suspected defects/opportunities | Pending | Pending | Pending |
-| 4 — Compile + reconstruct | Evidence register | Pending | Pending | Pending |
-| 5 — Friction + dispatch | Research and validation plan | Pending | Pending | Pending |
-| 6 — Converge + execute | Confirmed refinements | Pending | Pending | Pending |
-| 7 — Return + test + evolve | Final validation | Pending | Pending | Pending |
-| Persistence | Notion receipt | Pending | Pending | Pending |
+| Canon | Current 2B2 v2.3 retrieved | Notion canonical-state fetch | Canon is prompt-system operational, not runtime-verified | Pass |
+| Neutral ingress / purpose lock | Final integrated audit | Scope frozen to STARMILK technical and artist-direct growth paths | No defect or revenue outcome presumed | Pass |
+| 1 — Capture | Merged source and live build | Deployed site and source opened | Capture recorded in `final_audit_evidence.md` | Pass |
+| 2 — Magnet + orient | Salient visitor and business paths | Listening, support, membership, and surface exit paths mapped | Audience value assumptions deferred | Pass |
+| 3 — Invariant filter + challenge | Suspected defects/opportunities | Settled transitions and deployed script set retested | Only legacy credential file confirmed for remediation | Pass |
+| 4 — Compile + reconstruct | Evidence register | Technical evidence and platform research recorded | Recommendations are not revenue forecasts | Pass |
+| 5 — Friction + dispatch | Research and validation plan | Live controls, syntax checks, source scans, official research run | Mobile capture unavailable in this runtime | Pass |
+| 6 — Converge + execute | Confirmed refinement | Inactive `starmilk-chat.js` deleted | Production did not load the removed file | Pass |
+| 7 — Return + test + evolve | Final validation | Active modules syntax-checked; credential value absent | Fresh 375px physical capture remains a boundary | Pass |
+| Persistence | Notion receipt | [Final audit receipt](https://app.notion.com/p/3c2a78d1dba7813b89abd24927f6e051?pvs=204) created | Write receipt returned by Notion | Pass |
 
 ## Non-Negotiable Truth Boundary
 
