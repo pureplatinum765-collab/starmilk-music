@@ -51,6 +51,8 @@
     isShowing = true;
     overlay.classList.add('visible');
     overlay.setAttribute('aria-hidden', 'false');
+    // Inked Relic overlays stay cinematic, but keyboard users enter a usable surface immediately.
+    returnLink.focus({ preventScroll: true });
     overlay.style.transition = `opacity ${FADE_MS}ms ease`;
     overlay.style.opacity = '0';
 
@@ -61,7 +63,6 @@
     fadeTimer = setTimeout(() => {
       overlay.classList.add('revealed');
       _ls.setItem('starmilkClearingFound', 'true');
-      returnLink.focus();
     }, FADE_MS);
   }
 

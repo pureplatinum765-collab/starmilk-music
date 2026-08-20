@@ -154,6 +154,7 @@
   // ─── DOM references ───────────────────────────────────────────────
   let overlay, playArea, canvas, ctx, hud, popup, mapScreen, musicPanel, musicFrame, playlist;
   let powerPrompt, minimapCanvas, minimapCtx, musicToggleBtn, controlsTray;
+  let exitButton, launchFocus = null;
   let W = 0, H = 0;
 
   // ═══════════════════════════════════════════════════════════════
@@ -194,9 +195,9 @@
     minimapCtx = minimapCanvas.getContext('2d');
     playArea.appendChild(minimapCanvas);
 
-    const exit = floatingBtn('✕ Exit Cosmos', 'right:1rem;top:1rem;');
-    exit.onclick = exitGame;
-    playArea.appendChild(exit);
+    exitButton = floatingBtn('✕ Exit Cosmos', 'right:1rem;top:1rem;');
+    exitButton.onclick = () => exitGame();
+    playArea.appendChild(exitButton);
 
     const controlsBtn = floatingBtn('☰ Controls', 'left:1rem;top:1rem;border-color:rgba(124,58,237,.5);');
     controlsTray = document.createElement('div');
@@ -339,6 +340,11 @@
   function setupInput() {
     document.addEventListener('keydown', e => {
       if (!state.active) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        exitGame();
+        return;
+      }
       ensureAudio();
       state.keys.add(e.code);
       if (e.code.startsWith('Arrow')) e.preventDefault();
@@ -470,8 +476,10 @@
   //  GAME LIFECYCLE
   // ═══════════════════════════════════════════════════════════════
 
-  function launchGame() {
+  function launchGame(event) {
     if (state.active) return;
+    launchFocus = event?.currentTarget instanceof HTMLElement ? event.currentTarget : document.activeElement;
+    window.dispatchEvent(new CustomEvent('starmilk:requestClose', { detail: { target: 'game' } }));
     window.dispatchEvent(new CustomEvent('starmilk:surfaceOpen', { detail: { target: 'game' } }));
     ensureAudio();
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
@@ -488,9 +496,10 @@
     state.raf = requestAnimationFrame(loop);
     updateHud(state.lastTs, true);
     sfxAmbientHum();
+    requestAnimationFrame(() => exitButton?.focus());
   }
 
-  function exitGame() {
+  function exitGame({ restoreFocus = true } = {}) {
     state.active = false;
     cancelAnimationFrame(state.raf);
     state.raf = null;
@@ -499,10 +508,12 @@
     popup.style.display = 'none';
     powerPrompt.style.display = 'none';
     mapScreen.style.display = 'none';
+    if (restoreFocus && launchFocus instanceof HTMLElement && launchFocus.isConnected) launchFocus.focus();
+    launchFocus = null;
   }
 
   window.addEventListener('starmilk:requestClose', (event) => {
-    if (event.detail?.target === 'game' && state.active) exitGame();
+    if (event.detail?.target === 'game' && state.active) exitGame({ restoreFocus: false });
   });
 
   function resize() {

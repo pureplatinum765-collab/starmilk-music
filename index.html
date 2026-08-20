@@ -3791,6 +3791,11 @@
       <span class="gstar" style="left:50%;top:85%; --sz:1.3rem; --dur:3.9s; --del:0.5s">✦</span>
     </div>
 
+    <p id="hero-synapse-status" class="hero-synapse-status" role="status" aria-live="polite" aria-atomic="true" data-state="rest">
+      <span id="synapse-state">The field is at rest</span>
+      <span id="synapse-track">Press play to awaken it</span>
+    </p>
+
     <div class="hero-content">
       <p class="hero-eyebrow">Cosmic Electronic Music</p>
       <h1 class="hero-title">STARMILK</h1>
@@ -3824,7 +3829,7 @@
       <span class="label reveal">Continuous Transmission</span>
       <h2 class="section-title reveal" id="radio-h">STARMILK Radio</h2>
       <p class="radio-section-copy reveal">Tune into a single infinite stream: songs, ambient textures, and spoken-word messages from the river between frequencies.</p>
-      <p class="radio-section-copy reveal" style="margin-top:.8rem;font-size:.88rem;opacity:.7">Open STARMILK Radio in the corner to begin listening. 302 tracks. Infinite shuffle. No ads.</p>
+      <p class="radio-section-copy reveal" style="margin-top:.8rem;font-size:.88rem;opacity:.7">Open STARMILK Radio in the corner to begin listening. Full catalog. Infinite shuffle. No ads.</p>
     </div>
   </section>
 
@@ -4206,7 +4211,7 @@
         <p>Listen to STARMILK directly and support the music.</p>
         <!-- SoundCloud embed removed: shows 'Verification Required' white box in iframe.
              Replaced with direct link button below. -->
-        <p style="color:rgba(140,133,120,.5);font-size:.85rem;font-style:italic;margin:1rem 0;">302 tracks. Always free. Infinite shuffle.</p>
+        <p style="color:rgba(140,133,120,.5);font-size:.85rem;font-style:italic;margin:1rem 0;">Full catalog. Always free. Infinite shuffle.</p>
         <a class="btn" href="https://soundcloud.com/star-milk-645735333" target="_blank" rel="noopener noreferrer">Open on SoundCloud</a>
       </div>
     </div>
@@ -4366,6 +4371,9 @@
 
       <p id="radio-poem" class="radio-poem"></p>
       <p id="radio-status" class="radio-status" data-state="idle" aria-live="polite">Select a track to begin.</p>
+      <p id="radio-fallback" class="radio-fallback" hidden aria-live="polite">
+        SoundCloud playback is unavailable in this browser. <a id="radio-fallback-link" href="https://soundcloud.com/star-milk-645735333" target="_blank" rel="noopener noreferrer">Listen on SoundCloud</a>
+      </p>
       <div id="radio-embed-shell" aria-hidden="true"></div>
 
       <!-- Transport -->
@@ -4383,7 +4391,7 @@
           <circle cx="7.5" cy="7.5" r="5" stroke="currentColor" stroke-width="1.4"/>
           <path d="M12 12l3.5 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
         </svg>
-        <input type="search" id="radio-search" class="radio-search" placeholder="Search 302 tracks…" aria-label="Search tracks">
+        <input type="search" id="radio-search" class="radio-search" placeholder="Search the catalog…" aria-label="Search tracks">
       </div>
       <p id="radio-count" class="radio-count"></p>
       <div id="radio-queue" class="radio-queue" role="listbox" aria-label="Track list"></div>
@@ -4467,6 +4475,7 @@ Stay as long as you like.</p>
 <script src="honey-drip.js" defer></script>
 <script src="starmilk-radio.js" defer></script>
 <script src="starmilk-ui.js" defer></script>
+<script src="starmilk-conductor.js" defer></script>
 
 <script>
 (function () {
@@ -4966,23 +4975,6 @@ void main(){
 
 <!-- ═══ COSMIC WORM ═════════════════════════════════════════════════════ -->
 <script src="tetris-game.js" defer></script>
-<script>
-document.getElementById('nav-hamburger')?.addEventListener('click', function() {
-  const links = document.querySelector('.nav-links');
-  const open = links.classList.toggle('mobile-open');
-  this.textContent = open ? '✕' : '☰';
-  this.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-});
-// Close mobile menu when a link is clicked
-document.querySelectorAll('.nav-links a, .nav-links button').forEach(el => {
-  el.addEventListener('click', () => {
-    document.querySelector('.nav-links').classList.remove('mobile-open');
-    const hamburger = document.getElementById('nav-hamburger');
-    if (hamburger) { hamburger.textContent = '☰'; hamburger.setAttribute('aria-label', 'Open menu'); }
-  });
-});
-</script>
-
 
 <script>
 // YouTube Lite Facade — load iframe only on click

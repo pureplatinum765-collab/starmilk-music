@@ -1,5 +1,5 @@
-/* STARMILK refactor UI coordinator.
-   Owns navigation state and transient-surface coordination. */
+/* STARMILK Inked Relic Synapse coordinator.
+   Owns navigation, transient-surface safety, and a subtle shared handoff cue. */
 (function () {
   'use strict';
 
@@ -25,12 +25,28 @@
     if (except !== 'clearing' && clearing?.classList.contains('visible')) {
       window.dispatchEvent(new CustomEvent('starmilk:requestClose', { detail: { target: 'clearing' } }));
     }
+    // A non-game surface clears any active game. Game launchers close existing games
+    // immediately before they announce their own opening, so the new overlay is not
+    // accidentally closed by this coordinator during the same synchronous event.
     if (except !== 'game') {
       window.dispatchEvent(new CustomEvent('starmilk:requestClose', { detail: { target: 'game' } }));
     }
   };
 
-  window.addEventListener('starmilk:surfaceOpen', (event) => closeKnownSurfaces(event.detail?.target));
+  let surfaceShiftTimer = 0;
+  window.addEventListener('starmilk:surfaceOpen', (event) => {
+    const target = event.detail?.target || 'surface';
+    closeKnownSurfaces(target);
+    document.body.dataset.starmilkSurface = target;
+    document.body.classList.remove('starmilk-surface-shift');
+    void document.body.offsetWidth;
+    document.body.classList.add('starmilk-surface-shift');
+    if (surfaceShiftTimer) window.clearTimeout(surfaceShiftTimer);
+    surfaceShiftTimer = window.setTimeout(() => {
+      document.body.classList.remove('starmilk-surface-shift');
+      surfaceShiftTimer = 0;
+    }, 460);
+  });
 
   if (menuButton && menu) {
     menuButton.addEventListener('click', () => {
