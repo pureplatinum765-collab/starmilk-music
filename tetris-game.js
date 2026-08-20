@@ -907,6 +907,7 @@
 
   function openGame(event) {
     launchFocus = event?.currentTarget instanceof HTMLElement ? event.currentTarget : document.activeElement;
+    window.dispatchEvent(new CustomEvent('starmilk:requestClose', { detail: { target: 'game' } }));
     window.dispatchEvent(new CustomEvent('starmilk:surfaceOpen', { detail: { target: 'game' } }));
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');

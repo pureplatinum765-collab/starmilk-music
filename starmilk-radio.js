@@ -36,6 +36,8 @@
   const searchInput  = document.getElementById('radio-search');
   const countEl      = document.getElementById('radio-count');
   const statusEl     = document.getElementById('radio-status');
+  const fallbackEl   = document.getElementById('radio-fallback');
+  const fallbackLink = document.getElementById('radio-fallback-link');
   const favCountEl   = document.getElementById('fav-count');
   const tabs         = document.querySelectorAll('[data-radio-tab]');
   const tabPanels    = document.querySelectorAll('[data-radio-panel]');
@@ -91,6 +93,20 @@
     if (!statusEl) return;
     statusEl.dataset.state = state;
     statusEl.textContent = message;
+  };
+
+  const clearFallback = () => {
+    if (fallbackEl) fallbackEl.hidden = true;
+  };
+
+  const showFallback = (track = allTracks[currentIndex]) => {
+    if (!fallbackEl) return;
+    const target = track?.url || SC_PROFILE;
+    if (fallbackLink) {
+      fallbackLink.href = target;
+      fallbackLink.textContent = track?.name ? `Listen to ${track.name} on SoundCloud` : 'Listen on SoundCloud';
+    }
+    fallbackEl.hidden = false;
   };
 
   const invalidateWidget = () => {
@@ -188,6 +204,7 @@
       f.id = 'starmilk-radio-iframe';
       f.title = 'STARMILK Radio Player';
       f.allow = 'autoplay';
+      f.referrerPolicy = 'strict-origin-when-cross-origin';
       f.setAttribute('scrolling', 'no');
       f.setAttribute('frameborder', 'no');
       shell.appendChild(f);
@@ -207,7 +224,8 @@
       const isCurrent = () => token === widgetToken;
       widgetTimeout = window.setTimeout(() => {
         if (!isCurrent() || widgetReady) return;
-        setPlayerStatus('error', 'Still waiting for SoundCloud. Try play again.');
+        setPlayerStatus('error', 'SoundCloud is taking too long. Use the direct track link below.');
+        showFallback();
       }, 10000);
 
       widget.bind(SC.Widget.Events.READY, () => {
@@ -236,7 +254,8 @@
         if (!isCurrent()) return;
         isPlaying = false;
         refreshPlayBtn();
-        setPlayerStatus('error', 'This track cannot play here. Choose another.');
+        setPlayerStatus('error', 'SoundCloud could not play this track here. Use the direct track link below.');
+        showFallback();
         emitAudioState('error');
       });
       widget.bind(SC.Widget.Events.PLAY, () => {
@@ -258,7 +277,10 @@
         emitAudioState('paused');
       });
     } catch (_) {
-      if (token === widgetToken) setPlayerStatus('error', 'Player setup failed. Try again.');
+      if (token === widgetToken) {
+        setPlayerStatus('error', 'Player setup failed. Use the direct track link below.');
+        showFallback();
+      }
     }
   };
 
@@ -281,7 +303,9 @@
     if (allTracks.length) trackNameEl.textContent = allTracks[0].name;
     refreshFavCount();
     tryDiscover();
-    if (hasOpened && allTracks.length && !currentIframeUrl) swapTrack(false);
+    if (hasOpened && allTracks.length && !currentIframeUrl) {
+      setPlayerStatus('ready', 'Choose a track or press play to begin.');
+    }
   };
 
   const tryDiscover = async () => {
@@ -457,6 +481,7 @@
   const swapTrack = (autoplay = false) => {
     if (!allTracks.length) return;
     const track = allTracks[currentIndex];
+    clearFallback();
     trackNameEl.textContent = track.name;
     updateTrackArt();
     updateQueueActive();
@@ -617,7 +642,7 @@
       injectIcons();
       buildFavQueue();
       refreshFavCount();
-      if (allTracks.length) swapTrack(false);
+      if (allTracks.length) setPlayerStatus('ready', 'Choose a track or press play to begin.');
     }
   });
 
@@ -699,7 +724,7 @@
       }
       buildFavQueue();
       refreshFavCount();
-      if (allTracks.length) swapTrack(false);
+      if (allTracks.length) setPlayerStatus('ready', 'Choose a track or press play to begin.');
     } catch (_) {}
   };
 

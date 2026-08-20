@@ -25,9 +25,12 @@
     if (except !== 'clearing' && clearing?.classList.contains('visible')) {
       window.dispatchEvent(new CustomEvent('starmilk:requestClose', { detail: { target: 'clearing' } }));
     }
-    // Every new transient surface, including another game, clears active game runtimes.
-    // Game launchers announce before opening themselves, so this closes only prior games.
-    window.dispatchEvent(new CustomEvent('starmilk:requestClose', { detail: { target: 'game' } }));
+    // A non-game surface clears any active game. Game launchers close existing games
+    // immediately before they announce their own opening, so the new overlay is not
+    // accidentally closed by this coordinator during the same synchronous event.
+    if (except !== 'game') {
+      window.dispatchEvent(new CustomEvent('starmilk:requestClose', { detail: { target: 'game' } }));
+    }
   };
 
   let surfaceShiftTimer = 0;

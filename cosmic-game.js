@@ -479,6 +479,7 @@
   function launchGame(event) {
     if (state.active) return;
     launchFocus = event?.currentTarget instanceof HTMLElement ? event.currentTarget : document.activeElement;
+    window.dispatchEvent(new CustomEvent('starmilk:requestClose', { detail: { target: 'game' } }));
     window.dispatchEvent(new CustomEvent('starmilk:surfaceOpen', { detail: { target: 'game' } }));
     ensureAudio();
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();

@@ -382,3 +382,26 @@ body.starmilk-surface-shift .hero-synapse-status::before { animation: surface-ha
   .radio-floating, .starmilk-chat-panel, .mood-ring-overlay, .mood-ring-card { transition-duration: .01ms; }
   body.starmilk-surface-shift .hero-synapse-status::before { animation: none; }
 }
+
+/* Radio resilience: a concise, usable escape hatch if SoundCloud blocks its embed. */
+.radio-fallback {
+  margin: .35rem 0 0;
+  color: rgba(232, 215, 193, .76);
+  font-size: .72rem;
+  line-height: 1.45;
+}
+.radio-fallback[hidden] { display: none; }
+.radio-fallback a {
+  color: #91c6cf;
+  text-decoration-color: rgba(145, 198, 207, .55);
+  text-underline-offset: .16em;
+}
+.radio-fallback a:hover,
+.radio-fallback a:focus-visible {
+  color: #ffe0ad;
+  text-decoration-color: currentColor;
+}
+.radio-fallback a:focus-visible {
+  outline: 2px solid #91c6cf;
+  outline-offset: 3px;
+}
