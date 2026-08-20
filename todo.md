@@ -42,3 +42,19 @@
 - [x] Repair the confirmed Clearing focus delay so its active full-screen overlay moves focus to a usable control immediately.
 - [x] Verify Clearing Escape and Return restore focus to the original trigger after immediate entry focus is added.
 - [x] Apply, validate, commit, and document the confirmed refinement on the review branch.
+
+## Main Branch Finalization
+
+- [ ] Confirm Pull Request #23 is clean, current, and has successful checks immediately before merging.
+- [ ] Merge Pull Request #23 into `main` as explicitly authorized.
+- [ ] Verify the merged `main` branch head and final pull-request state.
+
+## Final 2B2 Integrated Debug and Growth Pass
+
+- [x] Compile a neutral 2B2 master prompt and final acceptance matrix for technical, accessibility, conversion, and revenue review.
+- [x] Audit the merged production site through real controls, browser diagnostics, responsive checks, and source review; mobile automation is explicitly bounded by the unavailable Playwright browser-install capability.
+- [x] Separate confirmed defects, evidence boundaries, and strategic growth opportunities without introducing speculative fixes.
+- [x] Research artist-direct revenue and conversion patterns relevant to STARMILK's existing listening, support, and membership pathways.
+- [x] Remove the inactive legacy chatbot source that contains a client-exposed anonymous credential, after confirming the deployed Guide is the only loaded runtime.
+- [x] Implement, validate, and document only safe, high-impact confirmed refinements on a new review branch.
+- [ ] Persist the final 2B2 receipt and deliver a prioritized technical and revenue-growth report.
