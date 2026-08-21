@@ -3855,8 +3855,7 @@
 
       <!-- STARMILK vision video -->
       <div class="vision-video reveal">
-        <video class="vision-player" autoplay loop muted playsinline poster="star-wizard.jpg">
-          <source src="starmilk-vision.mp4" type="video/mp4" />
+        <video class="vision-player" loop muted playsinline preload="none" poster="star-wizard.jpg" data-starmilk-src="starmilk-vision.mp4">
         </video>
         <div class="vision-video-vignette" aria-hidden="true"></div>
       </div>
@@ -4986,25 +4985,49 @@ document.querySelector('.yt-facade-btn')?.addEventListener('click', function() {
   showcase.innerHTML = '<iframe width="100%" style="aspect-ratio:16/9" src="https://www.youtube.com/embed/' + ytId + '?autoplay=1" title="STARMILK — Inside Out" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
 });
 
-// Lazy load the vision video — only play when in viewport
+// Defer the large vision video until its section is actually reached.
 (function() {
   const visionVideo = document.querySelector('.vision-player');
   if (!visionVideo) return;
-  // Remove autoplay attr, we'll control it via IntersectionObserver
-  visionVideo.removeAttribute('autoplay');
-  visionVideo.pause();
+  const source = visionVideo.dataset.starmilkSrc;
+  const visionSection = visionVideo.closest('#the-vision');
+  let loaded = false;
+  let inView = false;
+  const loadVideo = () => {
+    if (loaded || !source) return;
+    const mediaSource = document.createElement('source');
+    mediaSource.src = source;
+    mediaSource.type = 'video/mp4';
+    visionVideo.appendChild(mediaSource);
+    visionVideo.load();
+    loaded = true;
+  };
+  const playWhenReady = () => {
+    if (inView) visionVideo.play().catch(() => {});
+  };
+  visionVideo.addEventListener('canplay', playWhenReady);
   
   const videoObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.play().catch(() => {});
+      inView = entry.isIntersecting;
+      if (inView) {
+        loadVideo();
+        playWhenReady();
       } else {
-        entry.target.pause();
+        visionVideo.pause();
       }
     });
-  }, { threshold: 0.25 });
+  }, { threshold: 0.15, rootMargin: '0px 0px 120px 0px' });
   
-  videoObserver.observe(visionVideo);
+  videoObserver.observe(visionSection || visionVideo);
+  requestAnimationFrame(() => {
+    const rect = (visionSection || visionVideo).getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      inView = true;
+      loadVideo();
+      playWhenReady();
+    }
+  });
 })();
 </script>
 
