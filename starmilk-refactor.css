@@ -383,6 +383,67 @@ body.starmilk-surface-shift .hero-synapse-status::before { animation: surface-ha
   body.starmilk-surface-shift .hero-synapse-status::before { animation: none; }
 }
 
+/* Mobile restoration: a single unobstructed reading and play zone. */
+@media (max-width: 680px) {
+  html, body { overflow-x: clip; }
+
+  #parking-lot-overlay { isolation: isolate; }
+  .parking-lot-stage { z-index: 1; }
+  .parking-lot-aperture { width: min(72vw, 20rem); left: 50%; top: 31%; opacity: .88; }
+  .parking-lot-ring { left: 50%; top: 31%; }
+  .parking-lot-content { z-index: 3; align-self: end; padding: 0 1.25rem 15svh; }
+  .parking-lot-copy { max-width: 100%; }
+  #parking-lot-line-1 { font-size: clamp(3.2rem, 15vw, 4.8rem); line-height: .92; }
+  #parking-lot-line-2 { max-width: 17rem; margin-top: .75rem; }
+
+  .radio-floating.collapsed { right: 4.7rem; bottom: .75rem; max-width: calc(100vw - 5.55rem); }
+  .radio-floating.collapsed .radio-badge { min-height: 2.9rem; padding: .55rem .7rem; white-space: nowrap; }
+  .radio-badge-label { overflow: hidden; text-overflow: ellipsis; }
+  .starmilk-chat-toggle { right: .75rem; bottom: .75rem; width: 3.1rem; height: 3.1rem; }
+  .starmilk-chat-panel { right: .65rem; bottom: 4.55rem; width: calc(100vw - 1.3rem); max-height: calc(100svh - 6rem); }
+  body.starmilk-mobile-reading .radio-floating.collapsed,
+  body.starmilk-mobile-reading .starmilk-chat-toggle {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(1rem);
+  }
+  body:has(.bb-overlay.open) .radio-floating,
+  body:has(.bb-overlay.open) .starmilk-chat-toggle {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .bb-overlay.open { display: grid; place-items: center; padding: .5rem; overflow: hidden; }
+  .bb-panel { width: 100%; max-height: calc(100dvh - 1rem); padding: .75rem; border-radius: 0; overflow-y: auto; }
+  .bb-head { align-items: flex-start; margin-bottom: .5rem; }
+  .bb-head h3 { max-width: calc(100% - 5.5rem); font-size: clamp(1.25rem, 7vw, 1.7rem); line-height: 1.05; }
+  .bb-close { min-height: 2.75rem; }
+  .bb-canvas-wrap { max-height: 56svh; aspect-ratio: 1 / 1.08; }
+  #brick-breaker-canvas { height: auto; }
+  .bb-ui { margin-top: .55rem; gap: .45rem; }
+  .bb-mobile { display: flex; }
+
+  #river { min-height: 600svh; }
+  .river-copy { top: 8svh; width: min(86vw, 22rem); }
+  .river-title { font-size: clamp(2.25rem, 12vw, 3.25rem); line-height: .96; }
+  .river-caption { font-size: .9rem; line-height: 1.45; }
+  .tributary { display: none; top: 42svh !important; left: 1rem !important; right: 1rem !important; width: auto; padding: .48rem .65rem; font-size: .62rem; text-align: center !important; letter-spacing: .05em; white-space: normal; }
+  .tributary.visible { display: block; }
+  .river-leaf { display: none; }
+  .river-ocean-copy { bottom: 17svh; padding: 0 1.25rem; font-size: 1rem; line-height: 1.4; }
+
+  #lyrics { display: block; min-height: auto; overflow: visible; }
+  .lyrics-shell { width: 100%; padding: 4rem 1rem 5.5rem; }
+  .lyrics-head { text-align: left; margin-bottom: 1.5rem; }
+  .lyrics-head .section-title { font-size: clamp(2.2rem, 12vw, 3.2rem); line-height: .96; }
+  .lyrics-intro { font-size: 1rem; }
+  .lyrics-layout { gap: 1rem; }
+  .lyrics-stage { min-height: 17rem; padding: 1rem; }
+  .honey-line { font-size: clamp(1.55rem, 8vw, 2.1rem); overflow-wrap: anywhere; }
+  .lyrics-songs { gap: .5rem; padding: .6rem; }
+  .lyrics-song { padding: .7rem; }
+}
+
 /* Radio resilience: a concise, usable escape hatch if SoundCloud blocks its embed. */
 .radio-fallback {
   margin: .35rem 0 0;

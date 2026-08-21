@@ -9,6 +9,7 @@
   const leaves = Array.from(section.querySelectorAll('.river-leaf'));
   const tributaries = Array.from(section.querySelectorAll('.tributary'));
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const compactMobile = window.matchMedia('(max-width: 680px)');
   let w = 0;
   let h = 0;
   let progress = 0;
@@ -104,7 +105,9 @@
     section.style.setProperty('--river-progress', progress.toFixed(3));
     tributaries.forEach((node) => {
       const at = Number(node.dataset.progress || 0);
-      const visible = progress >= at - 0.08 && progress <= at + 0.25;
+      const visible = compactMobile.matches
+        ? Math.abs(progress - at) <= 0.12
+        : progress >= at - 0.08 && progress <= at + 0.25;
       node.classList.toggle('visible', visible);
     });
 

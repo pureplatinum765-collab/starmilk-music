@@ -75,3 +75,23 @@
 - [x] Repair the deferred vision-video observer so the media source is attached and playback begins when the Vision section is reached.
 - [x] Implement and verify a high-confidence recovery on a dedicated review branch.
 - [x] Deliver the incident report with findings, remediation, and remaining evidence boundaries.
+
+## Recovery Finalization
+
+- [ ] Merge the browser- and source-validated production recovery under the user’s standing authorization.
+- [ ] Confirm the resulting live deployment serves the readable hero and deferred Vision media behavior.
+
+## Screenshot-Confirmed Mobile Regression Recovery
+
+- [ ] Preserve the four supplied 375px screenshots as the mobile incident baseline and document their confirmed failures.
+- [ ] Restore a stable mobile game viewport: visible controls, correct overlay dimensions, no hidden playfield below the fold, and safe Escape/Close exit.
+- [ ] Stop fixed Radio and Mood controls from obstructing page content or each other at 375px.
+- [ ] Repair River and Lyric mobile layouts so artwork, headings, copy, and controls do not clip, overlap, or exceed the viewport.
+- [ ] Validate all repaired views on an actual 375px browser runtime before any review or merge.
+- [ ] Inventory the user-approved STARMILK photos and place them as deliberate, distinct mobile visual anchors.
+- [ ] Restore a calm mobile visual sequence with one focal image per section, controlled type scale, generous breathing room, and no competing fixed controls.
+- [ ] Restore Brick Breaker’s missing paddle/platform and validate that the mobile game remains fully playable within the viewport.
+- [ ] Compile and persist a 2B2 Notion quality gate that names every screenshot-confirmed mobile, motion, photo-placement, and playability requirement.
+- [ ] Require the 2B2 gate to pass on the actual 375px runtime before a recovery branch can be reviewed or merged.
+- [ ] Inventory the user-approved photos already supplied for STARMILK and place them as deliberate, distinct mobile visual anchors.
+- [ ] Restore a calm mobile visual hierarchy: one dominant image or focal point per section, controlled type scale, safe spacing, and no competing fixed controls.

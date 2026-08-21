@@ -145,17 +145,16 @@
     const panel = canvas.closest('.bb-panel') || canvas.parentElement;
     const rect = panel.getBoundingClientRect();
     const dpr = DPR();
+    const isCompactMobile = window.matchMedia('(max-width: 680px)').matches;
     const oldW = canvas.width;
     const oldH = canvas.height;
-    // Use full panel width and tall aspect — leave room for UI below
+    // Use full panel width while reserving visible space for the paddle and controls.
     const w = Math.floor(rect.width * dpr);
-    // Expanded height: use up to 82% of viewport height
-    let h = Math.floor(window.innerHeight * dpr * 0.82);
-    // Enforce minimum 4:3 ratio (taller than wide is ok)
-    const minH = Math.floor(w * 0.75);
+    let h = Math.floor(window.innerHeight * dpr * (isCompactMobile ? 0.48 : 0.82));
+    // Mobile uses a compact 1:1.08 arena so the platform never falls below the viewport.
+    const minH = Math.floor(w * (isCompactMobile ? 1.08 : 0.75));
     if (h < minH) h = minH;
-    // Cap max
-    const maxH = Math.floor(window.innerHeight * dpr * 0.88);
+    const maxH = Math.floor(window.innerHeight * dpr * (isCompactMobile ? 0.56 : 0.88));
     if (h > maxH) h = maxH;
 
     canvas.width = w;
