@@ -76,20 +76,20 @@ a { color: inherit; }
   background: radial-gradient(circle at 54% 38%, rgba(199,138,79,.16), transparent 24rem), linear-gradient(120deg, rgba(90,62,90,.28), transparent 50%);
 }
 #parking-lot-overlay.exited { opacity: 0; visibility: hidden; pointer-events: none; }
-.parking-lot-stage { position: absolute; inset: 0; pointer-events: none; }
-.parking-lot-aperture { position: absolute; width: min(44vw, 520px); aspect-ratio: 1; left: 56%; top: 50%; transform: translate(-50%, -50%) rotate(-4deg); overflow: hidden; border: 1px solid rgba(232,223,207,.4); box-shadow: 18px 18px 0 rgba(10,7,10,.35); }
+.parking-lot-stage { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.parking-lot-aperture { position: absolute; width: min(40vw, 480px); aspect-ratio: 1; left: 66%; top: 49%; transform: translate(-50%, -50%) rotate(-4deg); overflow: hidden; border: 1px solid rgba(232,223,207,.4); box-shadow: 18px 18px 0 rgba(10,7,10,.35); }
 .parking-lot-portrait { width: 100%; height: 100%; object-fit: cover; filter: saturate(.68) contrast(1.05) sepia(.18); mix-blend-mode: luminosity; }
-.parking-lot-ring { position: absolute; border: 1px solid rgba(232,223,207,.14); border-radius: 50%; left: 56%; top: 50%; transform: translate(-50%,-50%); }
+.parking-lot-ring { position: absolute; border: 1px solid rgba(232,223,207,.14); border-radius: 50%; left: 66%; top: 49%; transform: translate(-50%,-50%); }
 .parking-lot-ring--one { width: min(72vw, 800px); aspect-ratio: 1; }
 .parking-lot-ring--two { width: min(58vw, 650px); aspect-ratio: 1; }
 .parking-lot-ring--three { width: min(90vw, 1000px); aspect-ratio: 1; opacity: .5; }
 .parking-lot-ring--four { width: min(34vw, 420px); aspect-ratio: 1; border-color: rgba(198,138,79,.45); }
 #parking-lot-rain { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .26; pointer-events: none; }
-.parking-lot-content { position: relative; z-index: 2; width: var(--page); padding: var(--gutter); }
-.parking-lot-copy { max-width: 30rem; }
+.parking-lot-content { position: relative; z-index: 3; width: var(--page); padding: var(--gutter); }
+.parking-lot-copy { max-width: 34rem; isolation: isolate; }
 .parking-lot-line { margin: 0; opacity: 0; transform: translateY(12px); transition: opacity .65s var(--ease), transform .65s var(--ease); }
 .parking-lot-line.visible { opacity: 1; transform: none; }
-#parking-lot-line-1 { font: 400 clamp(4.5rem, 12vw, 10rem)/.82 var(--font-display); letter-spacing: -.06em; }
+#parking-lot-line-1 { font: 400 clamp(4rem, 9vw, 8rem)/.86 var(--font-display); letter-spacing: -.055em; text-shadow: 0 2px 0 rgba(22,16,22,.95), 5px 6px 0 rgba(22,16,22,.22); }
 #parking-lot-line-2 { max-width: 20rem; margin-top: 1.5rem; color: var(--paper-dim); font-size: .95rem; }
 .parking-lot-ready, .parking-lot-skip { appearance: none; border: 1px solid var(--line-strong); background: rgba(20,14,19,.78); color: var(--paper); cursor: pointer; transition: background .2s var(--ease), color .2s var(--ease), transform .2s var(--ease); }
 .parking-lot-ready { margin-top: 2rem; padding: .85rem 1.15rem; text-transform: uppercase; letter-spacing: .14em; font-size: .72rem; }

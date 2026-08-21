@@ -58,3 +58,20 @@
 - [x] Remove the inactive legacy chatbot source that contains a client-exposed anonymous credential, after confirming the deployed Guide is the only loaded runtime.
 - [x] Implement, validate, and document only safe, high-impact confirmed refinements on a new review branch.
 - [x] Persist the final 2B2 receipt and deliver a prioritized technical and revenue-growth report.
+
+## Post-Merge Live Smoke Test
+
+- [x] Confirm the public deployment serves the final main-branch guide and has removed the legacy chatbot runtime.
+- [x] Exercise the primary panel, game, Escape, and focus-recovery paths through the live site.
+- [x] Inspect the live browser console and report the final smoke-test state.
+
+## Production Regression Incident Audit
+
+- [x] Preserve deployed visual, DOM, console, network, and response-header evidence from the reported regression.
+- [x] Audit live performance, third-party payloads, security headers, client exposure, and runtime errors.
+- [x] Diff the current main branch against the pre-regression production state to isolate the visual and functional regression.
+- [x] Restore a fully readable STARMILK hero wordmark that is not obscured by the portal artwork.
+- [x] Defer the inherited 12 MB vision video until its section is meaningfully reached or the visitor requests playback.
+- [x] Repair the deferred vision-video observer so the media source is attached and playback begins when the Vision section is reached.
+- [x] Implement and verify a high-confidence recovery on a dedicated review branch.
+- [x] Deliver the incident report with findings, remediation, and remaining evidence boundaries.
