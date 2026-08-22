@@ -34,9 +34,9 @@ Restore the real 375px STARMILK experience before adding features. The source of
 | Mobile portal is a visible photo-led reveal | 375px recording or successive screenshots | Pass — `starmilk-mobile-entry-final.png` shows the portrait, entry action, and Skip intro in one viewport |
 | Brick Breaker paddle/platform and Close are visible | 375px game screenshot plus active-game DOM probe | Pass — `starmilk-mobile-brick-final.png` shows the orange paddle, ball, arena, score, and Close action |
 | River and Honey text do not clip or overlap | 375px section screenshots plus overflow check | Pass — `starmilk-mobile-river-final.png`, `starmilk-mobile-lyrics-final.png` |
-| Radio and Mood never cover content or each other | 375px fixed-zone screenshot plus geometry probe | Pass in River/Lyrics reading states and active Brick Breaker dialog — final utility interaction probe pending |
+| Radio and Mood never cover content or each other | 375px fixed-zone screenshot plus geometry probe | Pass — real 375px probe confirms Radio and Guide opacity `0` with `pointer-events: none` in River and Lyrics states; active-game capture confirms utility suppression |
 | Approved photo assets are visibly placed with purpose | Source asset inventory plus 375px screenshots | Pending |
-| Reduced motion and Escape close paths remain intact | Browser interaction probe | Pending |
+| Reduced motion and Escape close paths remain intact | Browser interaction probe | Escape path passes — real probe opens Brick Breaker with focus on its Close control, then returns focus to `#brick-breaker-launch` after Escape |
 | No recovery branch merges without all preceding rows passing | Review checklist | Pending |
 
 ## 375px Capture Findings — 2026-08-21
@@ -48,3 +48,5 @@ The first River capture reproduced the label pile-up. The recovery now restricts
 The final 375px River capture shows one visible tributary layer, a clear heading, and unobstructed ocean copy. The final Lyric River capture shows the full track-selection stack without the Radio or Guide utilities covering it. The persistent-utility safe zone is coordinated with River/Lyrics central-viewport presence rather than a literal 55% intersection threshold, which long sections could never satisfy on a 375×812 viewport.
 
 The final Entry capture shows the available approved STARMILK portrait with the entry call-to-action and Skip intro in the 375px viewport. The final Brick Breaker capture shows its paddle/platform, ball, compact arena, score, controls, and Close action in the same viewport. A subsequent post-fix Brick Breaker capture verifies that persistent Radio/Guide controls are suppressed whenever the game dialog is open, avoiding visual bleed beneath the active modal.
+
+The final interaction probe was run in a 375×812 browser viewport. It confirmed that both River and Lyrics activate `starmilk-mobile-reading`, while the collapsed Radio and Guide controls report opacity `0` and `pointer-events: none`. Brick Breaker opened with focus on its Close action; Escape closed the dialog and restored focus to `#brick-breaker-launch`.

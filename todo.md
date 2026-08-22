@@ -95,3 +95,9 @@
 - [ ] Require the 2B2 gate to pass on the actual 375px runtime before a recovery branch can be reviewed or merged.
 - [ ] Inventory the user-approved photos already supplied for STARMILK and place them as deliberate, distinct mobile visual anchors.
 - [ ] Restore a calm mobile visual hierarchy: one dominant image or focal point per section, controlled type scale, safe spacing, and no competing fixed controls.
+
+## Mobile Recovery Release Continuation
+
+- [x] Reconfirm pull request #26 source state, GitHub Actions blocking condition, and merge eligibility.
+- [x] Complete fresh interaction probes for the recovery branch's mobile safe zones and game exit behavior.
+- [ ] Merge pull request #26 after the repository-side check condition permits it, then verify the live main deployment at 375px.
