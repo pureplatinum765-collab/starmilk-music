@@ -125,3 +125,4 @@
 
 - [x] Replace observer-entry-dependent scene assignment with a deterministic center-of-viewport section calculation.
 - [x] Re-run desktop, tablet, 375px phone, and reduced-motion interaction probes after the scene-selection correction.
+- [ ] Version the corrected tapestry controller URL so prior browser caches cannot retain the superseded transition logic.
