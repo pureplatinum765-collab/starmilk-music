@@ -112,4 +112,16 @@
 
 ## Tapestry Release Delivery Repair
 
-- [ ] Version the mobile UI coordinator asset and verify that Lyric River once again suppresses fixed Radio and Guide utilities at 375px.
+- [x] Version the mobile UI coordinator asset and verify that Lyric River once again suppresses fixed Radio and Guide utilities at 375px.
+
+## Tapestry Interaction Validation
+
+- [x] Probe scene progression, calculated scroll progress, and plate contrast at desktop, tablet, and 375px mobile viewports.
+- [x] Verify color transitions across Stream, Lyrics, Orchard, Games, Support, VIP, and Connect without control interception.
+- [x] Verify the `prefers-reduced-motion` fallback and protected River/Lyrics mobile state.
+- [x] Record viewport-specific findings and corrective work, if required.
+
+## Tapestry Transition Repair
+
+- [x] Replace observer-entry-dependent scene assignment with a deterministic center-of-viewport section calculation.
+- [x] Re-run desktop, tablet, 375px phone, and reduced-motion interaction probes after the scene-selection correction.
