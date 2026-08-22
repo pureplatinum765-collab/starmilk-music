@@ -12,6 +12,24 @@
   const mood = document.getElementById('mood-ring-overlay');
   const clearing = document.getElementById('the-clearing');
 
+  const compactReadingSections = [document.getElementById('river'), document.getElementById('lyrics')].filter(Boolean);
+  const compactViewport = window.matchMedia('(max-width: 680px)');
+  if (compactReadingSections.length && 'IntersectionObserver' in window) {
+    const activeReadingSections = new Set();
+    const syncReadingState = () => {
+      document.body.classList.toggle('starmilk-mobile-reading', compactViewport.matches && activeReadingSections.size > 0);
+    };
+    const readingObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) activeReadingSections.add(entry.target);
+        else activeReadingSections.delete(entry.target);
+      });
+      syncReadingState();
+    }, { rootMargin: '-20% 0px -20% 0px', threshold: 0 });
+    compactReadingSections.forEach((section) => readingObserver.observe(section));
+    compactViewport.addEventListener?.('change', syncReadingState);
+  }
+
   const closeKnownSurfaces = (except) => {
     if (except !== 'chat' && chat?.classList.contains('open')) {
       window.dispatchEvent(new CustomEvent('starmilk:requestClose', { detail: { target: 'chat' } }));
