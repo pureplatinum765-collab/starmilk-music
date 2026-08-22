@@ -109,3 +109,7 @@
 - [x] Integrate approved looping movement only where it improves the listening ritual, with a poster fallback and reduced-motion alternative.
 - [x] Ensure the tapestry never intercepts controls, damages text contrast, or reintroduces fixed-control collisions at 375px.
 - [x] Capture desktop and 375px evidence, then ship the art-direction integration through a review branch.
+
+## Tapestry Release Delivery Repair
+
+- [ ] Version the mobile UI coordinator asset and verify that Lyric River once again suppresses fixed Radio and Guide utilities at 375px.
