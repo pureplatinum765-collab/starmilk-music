@@ -1002,7 +1002,11 @@
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     resizeCanvas();
     startGame();
-    requestAnimationFrame(() => closeBtn?.focus());
+    requestAnimationFrame(() => {
+      resizeCanvas();
+      closeBtn?.focus();
+    });
+    window.setTimeout(resizeCanvas, 120);
   }
 
   function closeGame({ restoreFocus = true } = {}) {
