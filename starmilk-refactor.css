@@ -415,11 +415,12 @@ body.starmilk-surface-shift .hero-synapse-status::before { animation: surface-ha
 
   .bb-overlay.open { display: grid; place-items: center; padding: .5rem; overflow: hidden; }
   .bb-panel { width: 100%; max-height: calc(100dvh - 1rem); padding: .75rem; border-radius: 0; overflow-y: auto; }
+  #brick-breaker-overlay .bb-panel { display: flex; flex-direction: column; }
   .bb-head { align-items: flex-start; margin-bottom: .5rem; }
   .bb-head h3 { max-width: calc(100% - 5.5rem); font-size: clamp(1.25rem, 7vw, 1.7rem); line-height: 1.05; }
   .bb-close { min-height: 2.75rem; }
-  .bb-canvas-wrap { max-height: 56svh; aspect-ratio: 1 / 1.08; }
-  #brick-breaker-canvas { height: auto; }
+  #brick-breaker-overlay .bb-canvas-wrap { flex: 0 0 min(46svh, 23rem); height: min(46svh, 23rem); max-height: none; aspect-ratio: auto; overflow: hidden; }
+  #brick-breaker-canvas { width: 100%; height: 100% !important; }
   .bb-ui { margin-top: .55rem; gap: .45rem; }
   .bb-mobile { display: flex; }
 
