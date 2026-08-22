@@ -101,3 +101,11 @@
 - [x] Reconfirm pull request #26 source state, GitHub Actions blocking condition, and merge eligibility.
 - [x] Complete fresh interaction probes for the recovery branch's mobile safe zones and game exit behavior.
 - [ ] Merge pull request #26 after the repository-side check condition permits it, then verify the live main deployment at 375px.
+
+## Approved Visual Tapestry Integration
+
+- [x] Catalog the supplied rink imagery and clips by visual role, color family, and safe text-overlay placement.
+- [x] Compose a restrained scroll-reactive photo tapestry that shifts between indigo, rose, and ochre without overwhelming the page hierarchy.
+- [x] Integrate approved looping movement only where it improves the listening ritual, with a poster fallback and reduced-motion alternative.
+- [x] Ensure the tapestry never intercepts controls, damages text contrast, or reintroduces fixed-control collisions at 375px.
+- [x] Capture desktop and 375px evidence, then ship the art-direction integration through a review branch.

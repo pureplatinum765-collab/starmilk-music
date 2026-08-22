@@ -3706,7 +3706,7 @@
     }
 
   </style>
-  <link rel="stylesheet" href="starmilk-refactor.css?v=f0dd766">
+  <link rel="stylesheet" href="starmilk-refactor.css?v=tapestry-20260822">
 </head>
 <body>
 
@@ -3745,6 +3745,16 @@
 <!-- WebGL cosmic background -->
 <canvas id="starfield" aria-hidden="true"></canvas>
 <!-- 2D particle overlay (stars + gold particles) — created in JS if WebGL available -->
+
+<!-- Approved STARMILK rink tapestry: visual atmosphere only, never an interaction layer. -->
+<div class="starmilk-tapestry" aria-hidden="true">
+  <span class="tapestry-plate tapestry-plate--cosmic" style="--tapestry-image:url('assets/tapestry/rink-cosmic.webp')"></span>
+  <span class="tapestry-plate tapestry-plate--twilight" style="--tapestry-image:url('assets/tapestry/rink-twilight.webp')"></span>
+  <span class="tapestry-plate tapestry-plate--moonlit" style="--tapestry-image:url('assets/tapestry/rink-moonlit.webp')"></span>
+  <span class="tapestry-plate tapestry-plate--rose" style="--tapestry-image:url('assets/tapestry/rink-rose.webp')"></span>
+  <span class="tapestry-plate tapestry-plate--ochre" style="--tapestry-image:url('assets/tapestry/rink-ochre.webp')"></span>
+  <span class="tapestry-plate tapestry-plate--constellation" style="--tapestry-image:url('assets/tapestry/rink-constellation.webp')"></span>
+</div>
 
 <div class="wrap" role="main">
 
@@ -4475,6 +4485,7 @@ Stay as long as you like.</p>
 <script src="honey-drip.js" defer></script>
 <script src="starmilk-radio.js" defer></script>
 <script src="starmilk-ui.js" defer></script>
+<script src="starmilk-tapestry.js?v=tapestry-20260822" defer></script>
 <script src="starmilk-conductor.js" defer></script>
 
 <script>
