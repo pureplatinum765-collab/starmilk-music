@@ -143,11 +143,32 @@
 
   function resizeCanvas() {
     const panel = canvas.closest('.bb-panel') || canvas.parentElement;
+    const stage = canvas.closest('.bb-canvas-wrap');
     const rect = panel.getBoundingClientRect();
     const dpr = DPR();
-    const isCompactMobile = window.matchMedia('(max-width: 680px)').matches;
+    const isCompactMobile = Math.min(window.innerWidth, window.screen?.width || window.innerWidth) <= 680;
     const oldW = canvas.width;
     const oldH = canvas.height;
+    if (isCompactMobile && stage) {
+      const stageHeight = Math.min(Math.floor(window.innerHeight * 0.46), 368);
+      panel.style.display = 'flex';
+      panel.style.flexDirection = 'column';
+      stage.style.flex = `0 0 ${stageHeight}px`;
+      stage.style.height = `${stageHeight}px`;
+      stage.style.maxHeight = 'none';
+      stage.style.overflow = 'hidden';
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+    } else if (stage) {
+      panel.style.removeProperty('display');
+      panel.style.removeProperty('flex-direction');
+      stage.style.removeProperty('flex');
+      stage.style.removeProperty('height');
+      stage.style.removeProperty('max-height');
+      stage.style.removeProperty('overflow');
+      canvas.style.removeProperty('width');
+      canvas.style.removeProperty('height');
+    }
     // Use full panel width while reserving visible space for the paddle and controls.
     const w = Math.floor(rect.width * dpr);
     let h = Math.floor(window.innerHeight * dpr * (isCompactMobile ? 0.48 : 0.82));
