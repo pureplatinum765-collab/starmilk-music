@@ -33,7 +33,7 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; background: var(--ink-deep); }
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; background: var(--ink-deep); }
 body {
   margin: 0;
   min-width: 320px;
@@ -57,6 +57,13 @@ body::before {
   mix-blend-mode: soft-light;
 }
 body.parking-lot-active { height: 100svh; overflow: hidden; }
+body.starmilk-menu-open {
+  position: fixed;
+  inset-inline: 0;
+  top: var(--starmilk-menu-scroll-offset, 0);
+  width: 100%;
+  overflow: hidden;
+}
 button, input { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; }
@@ -194,7 +201,7 @@ body.starmilk-playing .tapestry-plate--constellation { opacity: .18; filter: sat
 
 nav {
   position: sticky; top: 0; z-index: var(--layer-nav);
-  width: 100%; min-height: 4.75rem; padding: 1rem var(--gutter);
+  width: 100%; min-height: 4.5rem; padding: 1rem var(--gutter);
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
   border-bottom: 1px solid transparent;
   background: rgba(23,19,26,.78);
@@ -209,9 +216,10 @@ nav.scrolled { min-height: 4rem; background: rgba(23,19,26,.94); border-color: v
 .nav-links a, .mood-ring-trigger, #mood-ring-trigger { border: 0; background: transparent; color: rgba(232,223,207,.64); cursor: pointer; text-decoration: none; font-size: .72rem; letter-spacing: .11em; text-transform: uppercase; transition: color .2s var(--ease); }
 .nav-links a:hover, .nav-links a[data-active="true"], .mood-ring-trigger:hover, #mood-ring-trigger:hover { color: var(--honey-soft); }
 .nav-visualizer-link { padding: .45rem .6rem; border: 1px solid var(--line); color: var(--river) !important; }
+.nav-visualizer-link svg { display: block; width: .5rem; height: .5rem; flex: 0 0 .5rem; }
 .mood-ring-trigger, #mood-ring-trigger { width: 1.25rem; height: 1.25rem; padding: 0; border-radius: 50%; background: conic-gradient(from 100deg, var(--honey), var(--river), var(--plum-soft), var(--honey)); }
 
-section { position: relative; overflow: clip; padding: var(--space) var(--gutter); border-top: 1px solid rgba(232,223,207,.08); }
+section { position: relative; overflow: clip; scroll-margin-top: 5rem; padding: var(--space) var(--gutter); border-top: 1px solid rgba(232,223,207,.08); }
 .section-inner, .lyrics-shell { width: var(--page); margin: 0 auto; }
 .label { display: block; margin-bottom: .9rem; color: var(--honey-soft); font-size: .68rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; }
 .section-title { max-width: 12ch; margin: 0; color: var(--paper); font: 400 clamp(2.6rem, 5.5vw, 5.7rem)/.96 var(--font-display); letter-spacing: -.045em; }
@@ -364,6 +372,20 @@ footer { padding: 5rem var(--gutter) 6rem; border-top: 1px solid var(--line); ba
 .starmilk-chat-input input { min-width: 0; flex: 1; border: 1px solid var(--line); border-radius: 0; background: rgba(8,8,10,.35); color: var(--paper); padding: .6rem; }
 .starmilk-chat-input button { border: 1px solid var(--honey); background: transparent; color: var(--honey-soft); padding: .6rem .7rem; cursor: pointer; }
 body:has(.radio-floating.open) .starmilk-chat-toggle, body:has(.radio-floating.open) .starmilk-chat-panel { opacity: 0; pointer-events: none; }
+body.starmilk-menu-open .radio-floating,
+body.starmilk-menu-open .starmilk-chat-toggle,
+body.starmilk-menu-open .starmilk-chat-panel { visibility: hidden; pointer-events: none; }
+
+.nav-backdrop {
+  position: fixed;
+  inset: 4rem 0 0;
+  z-index: -1;
+  background: rgba(14,11,16,.68);
+  backdrop-filter: blur(3px);
+  cursor: pointer;
+}
+.nav-backdrop[hidden] { display: none; }
+body.starmilk-menu-open nav { z-index: var(--layer-panel); }
 
 /* One dialog visual contract for reflection, mood, and game experiences. */
 .mood-ring-overlay, .clearing-overlay, .bb-overlay, .tetris-overlay { position: fixed; inset: 0; z-index: var(--layer-dialog); display: none; place-items: center; padding: 1rem; background: rgba(10,8,12,.84); color: var(--paper); }
@@ -389,12 +411,14 @@ body:has(.radio-floating.open) .starmilk-chat-toggle, body:has(.radio-floating.o
   :root { --page: min(100%, calc(100vw - 2rem)); --gutter: 1rem; --space: 4.5rem; }
   .parking-lot-aperture { width: 75vw; left: 57%; top: 35%; opacity: .5; }
   .parking-lot-content { padding-top: 48svh; }
-  nav { min-height: 4rem; }
-  .nav-hamburger { display: block; }
-  .nav-links { position: fixed; inset: 4rem 0 auto 0; display: none; align-items: stretch; flex-direction: column; gap: 0; padding: .75rem 1rem 1rem; border-bottom: 1px solid var(--line); background: #17131a; }
+  nav { min-height: 4rem; padding-block: .625rem; }
+  .nav-hamburger { display: grid; place-items: center; min-width: 2.75rem; min-height: 2.75rem; cursor: pointer; }
+  .nav-links { position: fixed; inset: 4rem 0 auto 0; z-index: 1; display: none; max-height: calc(100svh - 4rem); overflow-y: auto; overscroll-behavior: contain; align-items: stretch; flex-direction: column; gap: 0; padding: .75rem 1rem max(1rem, env(safe-area-inset-bottom)); border-bottom: 1px solid var(--line); background: var(--ink); box-shadow: 0 18px 40px rgba(0,0,0,.32); }
   .nav-links.mobile-open { display: flex; }
   .nav-links li, .nav-links a { width: 100%; }
-  .nav-links a { display: block; padding: .75rem 0; }
+  .nav-links a { display: flex; min-height: 2.75rem; align-items: center; padding: .75rem 0; }
+  .nav-links .nav-visualizer-link { justify-content: space-between; }
+  .nav-links #mood-ring-trigger { min-width: 2.75rem; min-height: 2.75rem; }
   .hero-content { margin-left: 0; }
   #hero { min-height: 43rem; }
   #hero::before { background: linear-gradient(0deg, #171219 5%, rgba(23,18,25,.86) 48%, rgba(23,18,25,.1) 100%), url("star-wizard.jpg") 70% 10% / 130% auto no-repeat; }

@@ -40,9 +40,11 @@
   }
 
   function closeMoodSelector() {
+    const wasOpen = overlay.classList.contains('open');
     overlay.classList.remove('open');
     overlay.setAttribute('aria-hidden', 'true');
     window.dispatchEvent(new CustomEvent('starmilk:moodRingVisibility', { detail: { open: false } }));
+    if (wasOpen) window.dispatchEvent(new CustomEvent('starmilk:surfaceClosed', { detail: { target: 'mood' } }));
   }
 
   function openMoodSelector() {
