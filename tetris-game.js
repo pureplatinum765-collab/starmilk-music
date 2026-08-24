@@ -919,6 +919,7 @@
   }
 
   function closeGame({ restoreFocus = true } = {}) {
+    const wasOpen = overlay.classList.contains('open');
     persistHighScore();
     overlay.classList.remove('open');
     overlay.setAttribute('aria-hidden', 'true');
@@ -934,6 +935,7 @@
     }
     if (restoreFocus && launchFocus instanceof HTMLElement && launchFocus.isConnected) launchFocus.focus();
     launchFocus = null;
+    if (wasOpen) window.dispatchEvent(new CustomEvent('starmilk:surfaceClosed', { detail: { target: 'game' } }));
   }
 
   launchBtn.addEventListener('click', openGame);

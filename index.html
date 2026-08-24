@@ -3706,7 +3706,7 @@
     }
 
   </style>
-  <link rel="stylesheet" href="starmilk-refactor.css?v=tapestry-20260822">
+  <link rel="stylesheet" href="starmilk-refactor.css?v=menu-recovery-20260824">
 </head>
 <body>
 
@@ -3761,14 +3761,14 @@
   <!-- Nav -->
   <nav id="nav" aria-label="Main navigation">
     <span class="nav-logo">STARMILK</span>
-    <button type="button" class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false">
+    <button type="button" class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
         <line x1="3" y1="7" x2="21" y2="7"/>
         <line x1="3" y1="12" x2="21" y2="12"/>
         <line x1="3" y1="17" x2="21" y2="17"/>
       </svg>
     </button>
-    <ul class="nav-links">
+    <ul class="nav-links" id="nav-links" aria-label="Site menu">
       <li><a href="#stream">Listen</a></li>
       <li><a href="#the-vision">Explore</a></li>
       <li><a href="#games">Play</a></li>
@@ -3779,6 +3779,7 @@
       </a></li>
       <li><button type="button" id="mood-ring-trigger" class="mood-ring-trigger" aria-label="Change mood"></button></li>
     </ul>
+    <div class="nav-backdrop" id="nav-backdrop" aria-hidden="true" hidden></div>
   </nav>
 
   <!-- ═══ HERO ═══════════════════════════════════════════════════ -->
@@ -4478,13 +4479,13 @@ Stay as long as you like.</p>
   </div>
 </div>
 
-<script src="mood-ring.js" defer></script>
-<script src="the-clearing.js" defer></script>
+<script src="mood-ring.js?v=menu-recovery-20260824" defer></script>
+<script src="the-clearing.js?v=menu-recovery-20260824" defer></script>
 <script src="orchard.js" defer></script>
 <script src="the-river.js" defer></script>
 <script src="honey-drip.js" defer></script>
-<script src="starmilk-radio.js" defer></script>
-<script src="starmilk-ui.js?v=tapestry-20260822" defer></script>
+<script src="starmilk-radio.js?v=menu-recovery-20260824" defer></script>
+<script src="starmilk-ui.js?v=menu-recovery-20260824" defer></script>
 <script src="starmilk-tapestry.js?v=tapestry-transition-20260822" defer></script>
 <script src="starmilk-conductor.js" defer></script>
 
@@ -4979,13 +4980,13 @@ void main(){
 })();
 </script>
 
-<script src="brick-breaker-game.js?v=f0dd766" defer></script>
+<script src="brick-breaker-game.js?v=menu-recovery-20260824" defer></script>
 
 <!-- ═══ STARMILK COSMIC QUEST ════════════════════════════════════════════ -->
-<script src="cosmic-game.js" defer></script>
+<script src="cosmic-game.js?v=menu-recovery-20260824" defer></script>
 
 <!-- ═══ COSMIC WORM ═════════════════════════════════════════════════════ -->
-<script src="tetris-game.js" defer></script>
+<script src="tetris-game.js?v=menu-recovery-20260824" defer></script>
 
 <script>
 // YouTube Lite Facade — load iframe only on click
@@ -5056,9 +5057,9 @@ if ('serviceWorker' in navigator) {
 
 <!-- ═══ STARMILK CHATBOT WIDGET ═══ -->
 <button class="starmilk-chat-toggle" id="starmilk-chat-toggle" aria-label="Open STARMILK guide" aria-expanded="false" aria-controls="starmilk-chat-panel" title="Open STARMILK guide">✦</button>
-<div class="starmilk-chat-panel" id="starmilk-chat-panel">
+<div class="starmilk-chat-panel" id="starmilk-chat-panel" role="dialog" aria-modal="false" aria-labelledby="starmilk-chat-title" aria-hidden="true">
   <div class="starmilk-chat-head">
-    <h4>STARMILK GUIDE</h4>
+    <h4 id="starmilk-chat-title">STARMILK GUIDE</h4>
     <button id="starmilk-chat-close" aria-label="Close chat">✕</button>
   </div>
   <div class="starmilk-chat-messages" id="starmilk-chat-messages"></div>
@@ -5075,7 +5076,7 @@ if ('serviceWorker' in navigator) {
     <button id="starmilk-chat-send">Send</button>
   </div>
 </div>
-<script src="starmilk-guide.js" defer></script>
+<script src="starmilk-guide.js?v=menu-recovery-20260824" defer></script>
 
 <!--
   ══════════════════════════════════════════════════
