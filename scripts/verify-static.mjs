@@ -25,6 +25,12 @@ check(index.includes(`<link rel="canonical" href="${expectedOrigin}" />`), "inde
 check(index.includes(`<meta property="og:url" content="${expectedOrigin}" />`), "index.html Open Graph URL is not canonical");
 check(index.includes("<meta name=\"twitter:image\" content=\"https://starmilk.org/star-wizard.jpg\" />"), "index.html Twitter image is not hosted on the canonical domain");
 check(index.includes(`"url": "${expectedOrigin}"`) && index.includes("\"image\": \"https://starmilk.org/star-wizard.jpg\""), "index.html MusicGroup JSON-LD is not canonical");
+check(index.includes('<link rel="stylesheet" href="starmilk-depth.css">'), "index.html must load the pre-refactor depth system");
+check(!index.includes('href="starmilk-refactor.css'), "index.html must not reactivate the Manus refactor stylesheet");
+check(!index.includes('media="not all" id="starmilk-legacy-styles"'), "the recovered visual system must remain active");
+check(!index.includes('data-starmilk-rebuild="true"'), "the recovery must not disable the original visual runtime");
+check(index.includes('data-starmilk-src="starmilk-vision.mp4"') && index.includes('preload="none"'), "the large vision film must stay deferred");
+check(index.includes('<script src="starmilk-guide.js" defer></script>'), "the safer STARMILK guide must remain enabled");
 check(readFileSync(join(root, "CNAME"), "utf8").trim() === "starmilk.org", "CNAME must contain exactly starmilk.org");
 
 for (const filename of ["manifest.json", "starmilk-tracks.json"]) {
