@@ -126,6 +126,8 @@ The repository verifier was extended so future CI now fails if:
 - the semantic token skeleton disappears,
 - the raw skip-link layer escape returns.
 
+GitHub Actions run **#34 / 37236227074** was triggered by the draft PR but failed before executing any workflow steps. The job record reports `steps: []` and `runner_id: 0`. Therefore this run is an **infrastructure failure, not a test result**; the Node verifier has not yet executed in hosted CI.
+
 ### Render / interaction verification
 **BLOCKED in this connector-only implementation pass.**
 
