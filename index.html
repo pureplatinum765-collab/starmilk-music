@@ -77,6 +77,38 @@
       outline: 2px solid #fff;
       outline-offset: 2px;
     }
+    /* The founding story stays readable without animation or interaction. */
+    #our-story { scroll-margin-top: 6rem; }
+    #our-story .section-inner { max-width: 780px; }
+    .mission-letter {
+      padding: clamp(1.4rem, 4vw, 3rem);
+      background: #0d1220;
+      border: 1px solid rgba(201,148,74,.28);
+      border-radius: 12px;
+    }
+    .mission-letter p {
+      color: var(--text);
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      line-height: 1.85;
+      margin: 0 0 1.25rem;
+    }
+    .mission-letter h3 {
+      font-family: var(--font-serif, Georgia, serif);
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 400;
+      color: var(--text);
+      margin: 2rem 0 1rem;
+    }
+    .mission-letter .mission-closing { margin-bottom: 0; }
+    .hero-story-link {
+      display: block;
+      width: fit-content;
+      margin: 1.25rem auto 0;
+      padding: .6rem;
+      color: var(--text);
+      text-underline-offset: .3em;
+    }
+    .hero-story-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
   </style>
 
   <script src="parking-lot.js" defer></script>
@@ -3819,6 +3851,7 @@
       <a href="#stream" class="btn">
         Explore Music <span aria-hidden="true">&#8595;</span>
       </a>
+      <a href="#our-story" class="hero-story-link">We are all STARMILK. Our story.</a>
     </div>
 
     <div class="scroll-cue" aria-hidden="true">
@@ -3850,6 +3883,21 @@
       <span class="depth-marker-text">THE VISION LAYER</span>
     </div>
   </div>
+
+  <!-- ═══ OUR STORY ═════════════════════════════════════════════ -->
+  <section id="our-story" data-mood-section="tender" aria-labelledby="our-story-h">
+    <div class="section-inner">
+      <span class="label">The STARMILK Mothership</span>
+      <h2 class="section-title" id="our-story-h">We are all STARMILK.</h2>
+      <div class="mission-letter">
+        <p>STARMILK DNA is in us all. Through any exclusion or emotional pain we may face in our lives, if you ever feel left out or like the underdog, just know the STARMILK mothership has got your back. We in this together, fam.</p>
+        <p>This mission is still small, and there&rsquo;s a lot still evolving. But I know my passion will remain strong because of the star this is all named after.</p>
+        <h3>Elijah Star.</h3>
+        <p>He was one of the most misunderstood people I&rsquo;ve ever known, and it took his death and nine years to figure out just how misunderstood he was.</p>
+        <p class="mission-closing">May you rest in peace, brother.<br>I can hear you now.<br>Better than I ever could.</p>
+      </div>
+    </div>
+  </section>
 
   <!-- ═══ THE VISION — cinematic video + art ═══════════════════════ -->
   <section id="the-vision" class="vision-section" data-mood-section="going-round" aria-labelledby="vision-h">
