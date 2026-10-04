@@ -17,12 +17,41 @@
   --clay: #815a4d;
   --line: rgba(232, 223, 207, .17);
   --line-strong: rgba(232, 223, 207, .34);
+
+  /* Semantic design constitution: primitives above, roles below. */
+  --surface-base: var(--ink);
+  --surface-deep: var(--ink-deep);
+  --surface-raised: var(--plum);
+  --surface-soft: var(--plum-soft);
+  --text-primary: var(--paper);
+  --text-secondary: var(--paper-dim);
+  --accent-primary: var(--honey);
+  --accent-soft: var(--honey-soft);
+
   --font-display: "DM Serif Display", Georgia, serif;
   --font-body: "Plus Jakarta Sans", system-ui, sans-serif;
   --page: min(1160px, calc(100vw - 3rem));
+  --reading: min(46rem, 100%);
   --gutter: clamp(1.25rem, 4vw, 4.5rem);
   --space: clamp(5rem, 10vw, 10rem);
-  --ease: cubic-bezier(.2, .8, .2, 1);
+  --space-1: .25rem;
+  --space-2: .5rem;
+  --space-3: .75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+  --radius-sm: .25rem;
+  --radius-md: .75rem;
+  --dur-fast: 180ms;
+  --dur-base: 320ms;
+  --dur-slow: 550ms;
+  --dur-ritual: 900ms;
+  --ease-standard: cubic-bezier(.2, .8, .2, 1);
+  --ease: var(--ease-standard);
   --layer-background: 0;
   --layer-content: 1;
   --layer-nav: 40;
@@ -97,7 +126,7 @@ a { color: inherit; }
 .parking-lot-skip { position: absolute; right: var(--gutter); bottom: var(--gutter); padding: .5rem; border-color: transparent; color: var(--paper-dim); font-size: .72rem; text-transform: uppercase; letter-spacing: .12em; }
 
 /* Global structural layers */
-.skip-to-content { position: fixed; top: .75rem; left: 50%; transform: translate(-50%, -180%); z-index: 120; padding: .75rem 1rem; background: var(--honey); color: var(--ink); font-size: .78rem; font-weight: 700; text-decoration: none; transition: transform .2s var(--ease); }
+.skip-to-content { position: fixed; top: .75rem; left: 50%; transform: translate(-50%, -180%); z-index: var(--layer-entry); padding: .75rem 1rem; background: var(--honey); color: var(--ink); font-size: .78rem; font-weight: 700; text-decoration: none; transition: transform var(--dur-fast) var(--ease); }
 .skip-to-content:focus { transform: translate(-50%, 0); }
 #starfield, #starmilk-mesh, .scroll-rail, .depth-current, .depth-marker { display: none !important; }
 .wrap { position: relative; z-index: var(--layer-content); }
@@ -160,7 +189,7 @@ a { color: inherit; }
 
 /* The editorial content plane must remain more legible and visually decisive than its atmosphere. */
 #hero .hero-content, #hero .hero-synapse-status,
-#radio .section-inner, #the-vision .section-inner, #inside-out .section-inner,
+#radio .section-inner, #our-story .section-inner, #the-vision .section-inner, #inside-out .section-inner,
 #stream .section-inner, #lyrics .lyrics-shell, #orchard .section-inner,
 #games .section-inner, #support .section-inner, #vip .section-inner, #connect .section-inner,
 #river .river-sticky { position: relative; z-index: 6; }
@@ -302,6 +331,125 @@ section { position: relative; overflow: clip; padding: var(--space) var(--gutter
 .game-shell h3 { margin: 1.5rem 0 .75rem; font: 400 2rem/1 var(--font-display); }
 .game-shell p { color: rgba(232,223,207,.72); font-size: .88rem; }
 .game-shell .btn { margin-top: 1.2rem; }
+
+/* Mothership Commons: belonging arrives before biography, and the music remains the door. */
+#our-story {
+  scroll-margin-top: 5rem;
+  background:
+    linear-gradient(135deg, rgba(115,154,160,.08), transparent 38%),
+    linear-gradient(315deg, rgba(198,138,79,.07), transparent 40%),
+    var(--surface-base);
+}
+#our-story .section-inner { max-width: 64rem; }
+#our-story .section-title { max-width: 12ch; margin-bottom: var(--space-5); }
+.mission-intro {
+  max-width: var(--reading);
+  margin: 0 0 var(--space-7);
+  color: var(--text-secondary);
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  line-height: 1.75;
+}
+.mission-commons {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
+  gap: 1px;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+.mission-panel {
+  min-width: 0;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background: rgba(23,19,26,.94);
+}
+.mission-panel h3 {
+  margin: var(--space-3) 0 var(--space-5);
+  color: var(--text-primary);
+  font: 400 clamp(2rem, 5vw, 3.7rem)/.98 var(--font-display);
+  letter-spacing: -.035em;
+}
+.mission-panel p {
+  max-width: 42rem;
+  margin: 0 0 var(--space-5);
+  color: var(--text-secondary);
+  font-size: clamp(.98rem, 1.5vw, 1.08rem);
+  line-height: 1.78;
+}
+.mission-kicker {
+  display: inline-block;
+  color: var(--accent-soft);
+  font-size: .66rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.mission-dna {
+  grid-column: 1 / -1;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 88% 22%, rgba(198,138,79,.14), transparent 20rem),
+    linear-gradient(120deg, rgba(37,71,81,.42), rgba(45,33,48,.94) 62%);
+}
+.mission-dna::after {
+  content: "DNA";
+  position: absolute;
+  right: clamp(1rem, 4vw, 3rem);
+  bottom: -.12em;
+  pointer-events: none;
+  color: rgba(232,223,207,.04);
+  font: 400 clamp(6rem, 18vw, 13rem)/.8 var(--font-display);
+  letter-spacing: -.08em;
+}
+.mission-dna > * { position: relative; z-index: 1; }
+.mission-lead {
+  max-width: 39rem !important;
+  color: var(--text-primary) !important;
+  font: 400 clamp(1.35rem, 2.8vw, 2rem)/1.35 var(--font-display);
+}
+.mission-listen-link,
+.mission-return a,
+.hero-story-link {
+  color: var(--accent-soft);
+  text-decoration-thickness: 1px;
+  text-underline-offset: .3em;
+}
+.mission-listen-link {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-height: 2.75rem;
+  margin-top: var(--space-2);
+  font-size: .78rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.mission-room { background: rgba(45,33,48,.94); }
+.mission-elijah {
+  background:
+    linear-gradient(180deg, rgba(198,138,79,.07), transparent 44%),
+    rgba(32,25,31,.97);
+  border-left: 1px solid rgba(198,138,79,.28);
+}
+.mission-elijah .mission-closing {
+  margin-top: var(--space-6);
+  margin-bottom: 0;
+  color: var(--text-primary);
+  font: italic 400 clamp(1.15rem, 2.2vw, 1.5rem)/1.6 var(--font-display);
+}
+.mission-return {
+  max-width: var(--reading);
+  margin: var(--space-6) 0 0;
+  color: rgba(232,223,207,.58);
+  font-size: .78rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.hero-story-link {
+  display: block;
+  width: fit-content;
+  margin: var(--space-5) auto 0;
+  padding: var(--space-2);
+  font-size: .78rem;
+}
 
 #support { background: #63463a; }
 #support .card { grid-column: span 3; min-height: 14rem; background: rgba(28,22,25,.52); }
@@ -485,6 +633,14 @@ body.starmilk-surface-shift .hero-synapse-status::before { animation: surface-ha
   .parking-lot-copy { max-width: 100%; }
   #parking-lot-line-1 { font-size: clamp(3.2rem, 15vw, 4.8rem); line-height: .92; }
   #parking-lot-line-2 { max-width: 17rem; margin-top: .75rem; }
+
+  #our-story .section-inner { padding-top: 4.5rem; padding-bottom: 4.5rem; }
+  .mission-intro { margin-bottom: var(--space-6); }
+  .mission-commons { grid-template-columns: 1fr; }
+  .mission-dna { grid-column: 1; }
+  .mission-panel { padding: 1.4rem; }
+  .mission-elijah { border-left: 0; border-top: 1px solid rgba(198,138,79,.28); }
+  .mission-dna::after { right: .8rem; font-size: clamp(5rem, 31vw, 8rem); }
 
   .radio-floating.collapsed { right: 4.7rem; bottom: .75rem; max-width: calc(100vw - 5.55rem); }
   .radio-floating.collapsed .radio-badge { min-height: 2.9rem; padding: .55rem .7rem; white-space: nowrap; }

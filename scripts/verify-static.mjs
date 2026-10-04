@@ -27,6 +27,20 @@ check(index.includes("<meta name=\"twitter:image\" content=\"https://starmilk.or
 check(index.includes(`"url": "${expectedOrigin}"`) && index.includes("\"image\": \"https://starmilk.org/star-wizard.jpg\""), "index.html MusicGroup JSON-LD is not canonical");
 check(readFileSync(join(root, "CNAME"), "utf8").trim() === "starmilk.org", "CNAME must contain exactly starmilk.org");
 
+const stylesheet = readFileSync(join(root, "starmilk-refactor.css"), "utf8");
+check(!/<style(?:\s[^>]*)?>/.test(index), "index.html must not contain inline style blocks; starmilk-refactor.css is the canonical visual source");
+check(!index.includes("starmilk-legacy-styles"), "disabled legacy stylesheet must not return to index.html");
+check(index.includes('id="starmilk-dna-origin"'), "mission architecture is missing the STARMILK DNA origin artifact");
+check(index.includes("The song began with the pain of stigma and being misunderstood."), "STARMILK DNA origin language is missing");
+check(index.includes("STARMILK belongs to everybody."), "supporter extras must state that belonging is universal");
+check(index.includes("You can support the STARMILK mission here if you would like."), "support invitation must remain calm and optional");
+check(!index.includes("You're not just a listener — you're part of what STARMILK is becoming."), "paid support must not imply a more important kind of belonging");
+check(!index.includes("childhood trauma"), "public-facing homepage copy should use the broader STARMILK literary register");
+check(stylesheet.includes("--space-10:"), "canonical stylesheet is missing the spacing token scale");
+check(stylesheet.includes("--dur-fast:") && stylesheet.includes("--dur-ritual:"), "canonical stylesheet is missing the motion duration scale");
+check(stylesheet.includes("--surface-base:") && stylesheet.includes("--text-primary:"), "canonical stylesheet is missing semantic surface/text tokens");
+check(!/z-index:\s*120\b/.test(stylesheet), "raw skip-link z-index escaped the named layer system");
+
 for (const filename of ["manifest.json", "starmilk-tracks.json"]) {
   try {
     JSON.parse(readFileSync(join(root, filename), "utf8"));
