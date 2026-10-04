@@ -52,12 +52,15 @@
     panel.classList.remove('open');
     toggle.classList.remove('active');
     toggle.setAttribute('aria-expanded', 'false');
+    panel.setAttribute('aria-hidden', 'true');
+    window.dispatchEvent(new CustomEvent('starmilk:surfaceClosed', { detail: { target: 'guide' } }));
   };
   const openGuide = () => {
-    window.dispatchEvent(new CustomEvent('starmilk:surfaceOpen', { detail: { target: 'chat' } }));
+    window.dispatchEvent(new CustomEvent('starmilk:surfaceOpen', { detail: { target: 'guide' } }));
     panel.classList.add('open');
     toggle.classList.add('active');
     toggle.setAttribute('aria-expanded', 'true');
+    panel.setAttribute('aria-hidden', 'false');
     if (!messages.children.length) {
       addMessage('I’m your STARMILK guide. Ask for music, games, the river, lyrics, the orchard, or ways to support the work.');
     }
@@ -96,6 +99,6 @@
   closeButton?.addEventListener('click', closeGuide);
   send.addEventListener('click', handleSend);
   input.addEventListener('keydown', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); handleSend(); } });
-  window.addEventListener('starmilk:requestClose', (event) => { if (event.detail?.target === 'chat') closeGuide(); });
+  window.addEventListener('starmilk:requestClose', (event) => { if (event.detail?.target === 'guide') closeGuide(); });
   document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && panel.classList.contains('open')) { closeGuide(); toggle.focus(); } });
 })();

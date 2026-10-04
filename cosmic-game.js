@@ -153,8 +153,10 @@
 
   // ─── DOM references ───────────────────────────────────────────────
   let overlay, playArea, canvas, ctx, hud, popup, mapScreen, musicPanel, musicFrame, playlist;
-  let powerPrompt, minimapCanvas, minimapCtx, musicToggleBtn, controlsTray;
+  let powerPrompt, minimapCanvas, minimapCtx, musicToggleBtn, controlsButton, controlsTray, mapButton;
   let exitButton, launchFocus = null;
+  const rewardQueue = [];
+  let activeReward = null;
   let W = 0, H = 0;
 
   // ═══════════════════════════════════════════════════════════════
@@ -199,12 +201,20 @@
     exitButton.onclick = () => exitGame();
     playArea.appendChild(exitButton);
 
-    const controlsBtn = floatingBtn('☰ Controls', 'left:1rem;top:1rem;border-color:rgba(124,58,237,.5);');
+    controlsButton = floatingBtn('☰ Controls', 'left:1rem;top:1rem;border-color:rgba(124,58,237,.5);');
+    controlsButton.setAttribute('aria-expanded', 'false');
+    controlsButton.setAttribute('aria-controls', 'cq-controls-tray');
     controlsTray = document.createElement('div');
+    controlsTray.id = 'cq-controls-tray';
+    controlsTray.setAttribute('role', 'group');
+    controlsTray.setAttribute('aria-label', 'Cosmos controls');
+    controlsTray.setAttribute('aria-hidden', 'true');
     controlsTray.style.cssText = 'display:none;position:absolute;left:1rem;top:3.35rem;z-index:11;background:rgba(8,0,18,.9);border:1px solid rgba(124,58,237,.45);border-radius:12px;padding:.4rem;gap:.35rem;flex-direction:column;';
 
-    const mapBtn = floatingBtn('★ Star Map', 'position:static;border-color:rgba(245,158,11,.5);font-size:.62rem;padding:.34rem .72rem;');
-    mapBtn.onclick = toggleMap;
+    mapButton = floatingBtn('★ Star Map', 'position:static;border-color:rgba(245,158,11,.5);font-size:.62rem;padding:.34rem .72rem;');
+    mapButton.setAttribute('aria-expanded', 'false');
+    mapButton.setAttribute('aria-controls', 'cq-map-screen');
+    mapButton.onclick = toggleMap;
 
     const mmBtn = floatingBtn('◎ Mini Map', 'position:static;border-color:rgba(124,58,237,.5);font-size:.62rem;padding:.34rem .72rem;');
     mmBtn.onclick = () => {
@@ -213,14 +223,16 @@
       mmBtn.style.opacity = state.minimapVisible ? '1' : '.62';
     };
 
-    controlsBtn.onclick = () => {
+    controlsButton.onclick = () => {
       const open = controlsTray.style.display !== 'flex';
       controlsTray.style.display = open ? 'flex' : 'none';
+      controlsTray.setAttribute('aria-hidden', String(!open));
+      controlsButton.setAttribute('aria-expanded', String(open));
     };
 
-    controlsTray.appendChild(mapBtn);
+    controlsTray.appendChild(mapButton);
     controlsTray.appendChild(mmBtn);
-    playArea.appendChild(controlsBtn);
+    playArea.appendChild(controlsButton);
     playArea.appendChild(controlsTray);
 
     hud = document.createElement('div');
@@ -228,14 +240,27 @@
     playArea.appendChild(hud);
 
     popup = document.createElement('div');
+    popup.setAttribute('role', 'dialog');
+    popup.setAttribute('aria-modal', 'false');
+    popup.setAttribute('aria-label', 'Cosmos reward');
+    popup.setAttribute('aria-hidden', 'true');
     popup.style.cssText = 'display:none;position:absolute;z-index:40;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,92vw);background:rgba(6,0,15,.98);border:1px solid rgba(245,158,11,.5);border-radius:18px;padding:1rem;';
     overlay.appendChild(popup);
 
     powerPrompt = document.createElement('div');
+    powerPrompt.setAttribute('role', 'dialog');
+    powerPrompt.setAttribute('aria-modal', 'false');
+    powerPrompt.setAttribute('aria-labelledby', 'cq-power-title');
+    powerPrompt.setAttribute('aria-hidden', 'true');
     powerPrompt.style.cssText = 'display:none;position:absolute;right:1rem;bottom:4.6rem;z-index:25;max-width:min(360px,88vw);background:rgba(8,0,18,.92);border:1px solid rgba(147,51,234,.45);border-radius:14px;padding:.75rem;box-shadow:0 8px 24px rgba(0,0,0,.45);';
     overlay.appendChild(powerPrompt);
 
     mapScreen = document.createElement('div');
+    mapScreen.id = 'cq-map-screen';
+    mapScreen.setAttribute('role', 'dialog');
+    mapScreen.setAttribute('aria-modal', 'true');
+    mapScreen.setAttribute('aria-label', 'Cosmos star map');
+    mapScreen.setAttribute('aria-hidden', 'true');
     mapScreen.style.cssText = 'display:none;position:absolute;inset:0;background:rgba(2,0,9,.94);z-index:30;align-items:center;justify-content:center;';
     overlay.appendChild(mapScreen);
 
@@ -342,6 +367,14 @@
       if (!state.active) return;
       if (e.key === 'Escape') {
         e.preventDefault();
+        if (activeReward) {
+          dismissActiveReward();
+          return;
+        }
+        if (mapScreen.style.display === 'flex') {
+          toggleMap();
+          return;
+        }
         exitGame();
         return;
       }
@@ -484,6 +517,7 @@
     ensureAudio();
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     generateRun();
+    resetRewardQueue();
     state.active = true;
     overlay.style.display = 'block';
     resize();
@@ -500,16 +534,22 @@
   }
 
   function exitGame({ restoreFocus = true } = {}) {
+    const wasActive = state.active;
     state.active = false;
     cancelAnimationFrame(state.raf);
     state.raf = null;
     state.accumulator = 0;
     overlay.style.display = 'none';
-    popup.style.display = 'none';
-    powerPrompt.style.display = 'none';
+    resetRewardQueue();
     mapScreen.style.display = 'none';
+    mapScreen.setAttribute('aria-hidden', 'true');
+    mapButton?.setAttribute('aria-expanded', 'false');
+    controlsTray.style.display = 'none';
+    controlsTray.setAttribute('aria-hidden', 'true');
+    controlsButton.setAttribute('aria-expanded', 'false');
     if (restoreFocus && launchFocus instanceof HTMLElement && launchFocus.isConnected) launchFocus.focus();
     launchFocus = null;
+    if (wasActive) window.dispatchEvent(new CustomEvent('starmilk:surfaceClosed', { detail: { target: 'game' } }));
   }
 
   window.addEventListener('starmilk:requestClose', (event) => {
@@ -1158,17 +1198,7 @@
   // ─── Power-up UI ────────────────────────────────────────────────────────
 
   function offerPowerUpActivation(powerUp) {
-    const activateNow = () => {
-      activatePowerUp(powerUp.id);
-      powerPrompt.style.display = 'none';
-    };
-    powerPrompt.innerHTML = `<div style="font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;color:#fcd34d">${powerUp.title} collected</div><p style="margin:.35rem 0 .6rem;color:#ddccff;font-size:.86rem">Enjoying STARMILK? Support the music!</p><div style="display:flex;gap:.45rem;flex-wrap:wrap"><button id="cq-power-free" style="border:1px solid rgba(147,51,234,.55);background:rgba(16,2,30,.88);color:#f5ecff;padding:.4rem .6rem;border-radius:9px;cursor:pointer">Use Power-Up (Free)</button><button id="cq-power-donate" style="border:1px solid rgba(245,158,11,.65);background:rgba(42,15,4,.78);color:#ffd36b;padding:.4rem .6rem;border-radius:9px;cursor:pointer">Support STARMILK</button></div>`;
-    powerPrompt.style.display = 'block';
-    powerPrompt.querySelector('#cq-power-free').onclick = activateNow;
-    powerPrompt.querySelector('#cq-power-donate').onclick = () => {
-      window.open('https://www.buymeacoffee.com/starmilk', '_blank', 'noopener');
-      activateNow();
-    };
+    queueReward({ type: 'power-up', powerUp });
   }
 
   function activatePowerUp(id) {
@@ -1190,14 +1220,20 @@
   function toggleMap() {
     if (mapScreen.style.display === 'flex') {
       mapScreen.style.display = 'none';
+      mapScreen.setAttribute('aria-hidden', 'true');
+      mapButton?.setAttribute('aria-expanded', 'false');
+      mapButton?.focus();
       return;
     }
     const discovered = TRACKS.filter(t => state.tracks[t.id].discovered).length;
     const rows = TRACKS.map(t => `<li>${t.title}: ${state.tracks[t.id].discovered ? 'Discovered' : 'Hidden'} (${state.tracks[t.id].frags}/${t.fragsNeed} fragments)</li>`).join('');
     mapScreen.innerHTML = `<div style="width:min(760px,95vw);background:rgba(10,0,22,.95);border:1px solid rgba(147,51,234,.5);border-radius:18px;padding:1rem;"><h2 style="margin-bottom:.5rem;letter-spacing:.12em;text-transform:uppercase">Star Map</h2><p style="color:#aa96d3;margin-bottom:.5rem">Constellation progress: ${discovered}/${TRACKS.length} songs found | Score: ${state.score} | Time: ${formatTime(state.elapsedMs)}</p><canvas id="cq-map" width="700" height="360" style="width:100%;height:auto;border:1px solid rgba(147,51,234,.3);border-radius:12px"></canvas><ul style="margin:.8rem 0 0 1rem;line-height:1.6">${rows}</ul><button id="cq-close-map" style="margin-top:.8rem;border:1px solid rgba(245,158,11,.5);background:rgba(10,0,20,.7);color:#fcd34d;padding:.45rem .8rem;border-radius:10px;cursor:pointer">Close</button></div>`;
     mapScreen.style.display = 'flex';
+    mapScreen.setAttribute('aria-hidden', 'false');
+    mapButton?.setAttribute('aria-expanded', 'true');
     mapScreen.querySelector('#cq-close-map').onclick = toggleMap;
     drawMap();
+    requestAnimationFrame(() => mapScreen.querySelector('#cq-close-map')?.focus());
   }
 
   function drawMap() {
@@ -1237,9 +1273,67 @@
   // ─── Popup ─────────────────────────────────────────────────────────────
 
   function showPopup(inner) {
-    popup.innerHTML = `${inner}<div style="margin-top:.7rem;text-align:right"><button id="cq-close-pop" style="border:1px solid rgba(147,51,234,.5);background:#130428;color:#e8dfff;padding:.35rem .7rem;border-radius:8px;cursor:pointer">Continue</button></div>`;
+    queueReward({ type: 'discovery', inner });
+  }
+
+  function queueReward(reward) {
+    rewardQueue.push(reward);
+    presentNextReward();
+  }
+
+  function presentNextReward() {
+    if (activeReward || !state.active || !rewardQueue.length) return;
+    activeReward = rewardQueue.shift();
+    popup.style.display = 'none';
+    popup.setAttribute('aria-hidden', 'true');
+    powerPrompt.style.display = 'none';
+    powerPrompt.setAttribute('aria-hidden', 'true');
+
+    if (activeReward.type === 'power-up') {
+      const { powerUp } = activeReward;
+      powerPrompt.innerHTML = `<div id="cq-power-title" style="font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;color:#fcd34d">${powerUp.title} collected</div><p style="margin:.35rem 0 .6rem;color:#ddccff;font-size:.86rem">Enjoying STARMILK? Support the music!</p><div style="display:flex;gap:.45rem;flex-wrap:wrap"><button id="cq-power-free" style="border:1px solid rgba(147,51,234,.55);background:rgba(16,2,30,.88);color:#f5ecff;padding:.4rem .6rem;border-radius:9px;cursor:pointer">Use Power-Up (Free)</button><button id="cq-power-donate" style="border:1px solid rgba(245,158,11,.65);background:rgba(42,15,4,.78);color:#ffd36b;padding:.4rem .6rem;border-radius:9px;cursor:pointer">Support STARMILK</button></div>`;
+      powerPrompt.style.display = 'block';
+      powerPrompt.setAttribute('aria-hidden', 'false');
+      powerPrompt.querySelector('#cq-power-free').onclick = () => dismissActiveReward({ activatePowerUpId: powerUp.id });
+      powerPrompt.querySelector('#cq-power-donate').onclick = () => {
+        window.open('https://www.buymeacoffee.com/starmilk', '_blank', 'noopener');
+        dismissActiveReward({ activatePowerUpId: powerUp.id });
+      };
+      requestAnimationFrame(() => powerPrompt.querySelector('#cq-power-free')?.focus());
+      return;
+    }
+
+    popup.innerHTML = `${activeReward.inner}<div style="margin-top:.7rem;text-align:right"><button id="cq-close-pop" style="border:1px solid rgba(147,51,234,.5);background:#130428;color:#e8dfff;padding:.35rem .7rem;border-radius:8px;cursor:pointer">Continue</button></div>`;
     popup.style.display = 'block';
-    popup.querySelector('#cq-close-pop').onclick = () => { popup.style.display = 'none'; };
+    popup.setAttribute('aria-hidden', 'false');
+    popup.querySelector('#cq-close-pop').onclick = () => dismissActiveReward();
+    requestAnimationFrame(() => popup.querySelector('#cq-close-pop')?.focus());
+  }
+
+  function dismissActiveReward({ activatePowerUpId = '' } = {}) {
+    if (!activeReward) return;
+    if (activatePowerUpId) activatePowerUp(activatePowerUpId);
+    popup.style.display = 'none';
+    popup.setAttribute('aria-hidden', 'true');
+    popup.innerHTML = '';
+    powerPrompt.style.display = 'none';
+    powerPrompt.setAttribute('aria-hidden', 'true');
+    powerPrompt.innerHTML = '';
+    activeReward = null;
+    if (rewardQueue.length) requestAnimationFrame(presentNextReward);
+    else requestAnimationFrame(() => exitButton?.focus());
+  }
+
+  function resetRewardQueue() {
+    rewardQueue.length = 0;
+    activeReward = null;
+    if (!popup || !powerPrompt) return;
+    popup.style.display = 'none';
+    popup.setAttribute('aria-hidden', 'true');
+    popup.innerHTML = '';
+    powerPrompt.style.display = 'none';
+    powerPrompt.setAttribute('aria-hidden', 'true');
+    powerPrompt.innerHTML = '';
   }
 
   // ═══════════════════════════════════════════════════════════════

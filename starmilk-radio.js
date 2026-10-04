@@ -608,6 +608,7 @@
   };
 
   const closeRadio = ({ restoreFocus = false } = {}) => {
+    const wasOpen = floating.classList.contains('open');
     if (radioCloseTimer) window.clearTimeout(radioCloseTimer);
     floating.classList.remove('open');
     floating.dataset.surfaceClosing = 'true';
@@ -617,6 +618,7 @@
       delete floating.dataset.surfaceClosing;
       radioCloseTimer = 0;
     }, 240);
+    if (wasOpen) window.dispatchEvent(new CustomEvent('starmilk:surfaceClosed', { detail: { target: 'radio' } }));
     if (restoreFocus) badge.focus();
   };
 

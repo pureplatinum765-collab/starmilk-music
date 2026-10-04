@@ -33,6 +33,7 @@
   }
 
   function hideClearing({ restoreFocus = true } = {}) {
+    const wasShowing = isShowing;
     isShowing = false;
     clearTimers();
     overlay.classList.remove('revealed', 'visible');
@@ -41,6 +42,7 @@
     overlay.setAttribute('aria-hidden', 'true');
     if (restoreFocus && priorFocus instanceof HTMLElement) priorFocus.focus();
     priorFocus = null;
+    if (wasShowing) window.dispatchEvent(new CustomEvent('starmilk:surfaceClosed', { detail: { target: 'clearing' } }));
   }
 
   function revealClearing() {
