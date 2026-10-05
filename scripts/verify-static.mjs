@@ -40,7 +40,7 @@ check(index.includes('id="starmilk-starlight"'), "homepage is missing the STARMI
 check(index.includes("If you’ve ever felt misunderstood, look up."), "starlight section must speak plainly to feeling misunderstood");
 check(index.includes("There are people who will understand you."), "starlight section must plainly promise human connection");
 check(index.includes("Follow the compass of your heart."), "homepage is missing the heart-compass leadership line");
-check(index.includes('src="assets/starmilk-starlight.png"'), "starlight section must use the dedicated painterly connection artwork");
+check(index.includes('src="assets/tapestry/rink-constellation.webp"'), "starlight section must use an approved painterly STARMILK artwork until the final canonical starlight asset replaces it");
 check(!index.includes("Where quantum physics meets the old ache and decides to dance."), "hero must drop the abstract quantum-physics tagline");
 check(!index.includes("Living mythology poured straight from the wound into the light."), "hero must drop the over-explained mythology line");
 check(stylesheet.includes("--space-10:"), "canonical stylesheet is missing the spacing token scale");
