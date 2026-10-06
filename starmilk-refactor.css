@@ -713,3 +713,370 @@ body.starmilk-surface-shift .hero-synapse-status::before { animation: surface-ha
   outline: 2px solid #91c6cf;
   outline-offset: 3px;
 }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   MOTHERSHIP COMPLETION PASS · 2026-10-06
+   The rink-under-the-sky image is the visual constitution.
+   Human Maps carries the trauma-informed architecture without
+   turning the public site into a clinical interface.
+   ═══════════════════════════════════════════════════════════════ */
+
+#parking-lot-overlay {
+  background: #0b1626;
+}
+.parking-lot-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(7,13,24,.16) 0%, rgba(7,13,24,.28) 48%, rgba(7,13,24,.78) 100%),
+    url("assets/tapestry/rink-twilight.webp") center 58% / cover no-repeat;
+  filter: saturate(.78) contrast(.96);
+  transform: scale(1.015);
+}
+.parking-lot-ring,
+.parking-lot-aperture {
+  display: none !important;
+}
+#parking-lot-rain {
+  opacity: .11;
+  mix-blend-mode: soft-light;
+}
+.parking-lot-content {
+  z-index: 3;
+}
+.parking-lot-copy {
+  max-width: 38rem;
+  padding: clamp(1.25rem, 3vw, 2.25rem);
+  background: linear-gradient(90deg, rgba(9,16,29,.88), rgba(9,16,29,.54) 72%, transparent);
+  border-left: 1px solid rgba(218,185,112,.48);
+}
+.parking-lot-line:first-child {
+  color: var(--honey-soft);
+}
+
+/* The hero now opens inside the human world, not a separate glossy space UI. */
+#hero {
+  min-height: min(58rem, 100svh);
+  background: #0d1726;
+}
+#hero::before {
+  background:
+    linear-gradient(90deg, rgba(8,15,27,.92) 0%, rgba(8,15,27,.72) 42%, rgba(8,15,27,.2) 67%, rgba(8,15,27,.58) 100%),
+    linear-gradient(180deg, rgba(8,15,27,.12) 0%, rgba(8,15,27,.08) 56%, rgba(8,15,27,.68) 100%),
+    url("assets/tapestry/rink-twilight.webp") center 60% / cover no-repeat;
+  filter: saturate(.78) contrast(.98);
+}
+#hero::after {
+  width: min(70vw, 64rem);
+  height: min(70vw, 64rem);
+  aspect-ratio: auto;
+  right: -24vw;
+  top: -28vw;
+  border: 0;
+  transform: none;
+  box-shadow: none;
+  background: radial-gradient(circle, rgba(218,185,112,.11) 0%, rgba(218,185,112,.035) 26%, transparent 66%);
+}
+.hero-content {
+  width: min(46rem, 100%);
+  padding: clamp(1rem, 2.5vw, 2rem) clamp(1rem, 2.5vw, 2.2rem);
+  background: linear-gradient(90deg, rgba(8,15,27,.72), rgba(8,15,27,.34) 76%, transparent);
+  border-left: 1px solid rgba(218,185,112,.32);
+}
+.hero-eyebrow,
+.hero-story-link {
+  color: var(--honey-soft);
+}
+#starfield {
+  opacity: .16;
+}
+
+/* Human Maps */
+.human-maps-section {
+  position: relative;
+  overflow: clip;
+  background: #111827;
+  isolation: isolate;
+}
+.human-maps-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(180deg, rgba(17,24,39,.94), rgba(17,24,39,.82) 48%, rgba(17,24,39,.96)),
+    url("assets/tapestry/rink-constellation.webp") center 46% / cover no-repeat;
+  filter: saturate(.72) contrast(.96);
+}
+.human-maps-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent 0 7%, rgba(218,185,112,.05) 7% 7.1%, transparent 7.1% 92%, rgba(218,185,112,.05) 92% 92.1%, transparent 92.1%),
+    radial-gradient(circle at 76% 17%, rgba(218,185,112,.09), transparent 28%);
+}
+.human-maps-shell {
+  width: min(1180px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+.human-maps-intro {
+  max-width: 54rem;
+  margin: 1.1rem 0 2.4rem;
+  color: var(--paper-dim);
+  font: 400 clamp(1rem, 1.7vw, 1.16rem)/1.75 var(--font-display);
+}
+.human-maps-layout {
+  display: grid;
+  grid-template-columns: minmax(13rem, 17rem) minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 2.5rem);
+  align-items: start;
+}
+.human-map-tabs {
+  display: grid;
+  gap: .55rem;
+  position: sticky;
+  top: 6.4rem;
+}
+.human-map-tab {
+  appearance: none;
+  width: 100%;
+  padding: 1rem 1rem 1.05rem;
+  text-align: left;
+  color: var(--paper-dim);
+  background: rgba(15,22,35,.74);
+  border: 1px solid rgba(232,223,207,.13);
+  border-radius: 0;
+  cursor: pointer;
+  transition: border-color .18s var(--ease), background .18s var(--ease), transform .18s var(--ease), color .18s var(--ease);
+}
+.human-map-tab:hover,
+.human-map-tab:focus-visible {
+  color: var(--paper);
+  border-color: rgba(218,185,112,.48);
+}
+.human-map-tab:focus-visible {
+  outline: 2px solid var(--honey);
+  outline-offset: 2px;
+}
+.human-map-tab.is-active {
+  color: var(--paper);
+  border-color: rgba(218,185,112,.6);
+  background: rgba(27,36,51,.92);
+  transform: translateX(.3rem);
+}
+.human-map-tab-kicker {
+  display: block;
+  margin-bottom: .4rem;
+  color: var(--honey-soft);
+  font-size: .62rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.human-map-tab strong {
+  font: 400 1rem/1.35 var(--font-display);
+}
+.human-map-stage {
+  min-width: 0;
+}
+.human-map-panel {
+  position: relative;
+  min-height: 31rem;
+  padding: clamp(1.35rem, 4vw, 3rem);
+  background: rgba(12,19,31,.86);
+  border: 1px solid rgba(232,223,207,.14);
+  box-shadow: 16px 18px 0 rgba(5,8,14,.2);
+}
+.human-map-panel[hidden] {
+  display: none;
+}
+.human-map-panel::before {
+  content: "";
+  position: absolute;
+  inset: .75rem;
+  pointer-events: none;
+  border: 1px solid rgba(218,185,112,.055);
+}
+.human-map-overline,
+.human-map-mini {
+  color: var(--honey-soft);
+  font-size: .66rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.human-map-panel h3 {
+  margin: .45rem 0 1rem;
+  color: var(--paper);
+  font: 400 clamp(2rem, 5vw, 4rem)/.98 var(--font-display);
+}
+.human-map-lead {
+  max-width: 48rem;
+  color: var(--paper-dim);
+  font: 400 clamp(1rem, 1.55vw, 1.16rem)/1.72 var(--font-display);
+}
+.map-route,
+.state-route {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem;
+  margin: 2rem 0;
+}
+.map-route span,
+.state-route span {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  min-height: 2.35rem;
+  padding: .55rem .72rem;
+  color: var(--paper);
+  background: rgba(232,223,207,.045);
+  border: 1px solid rgba(232,223,207,.13);
+  font-size: .72rem;
+  letter-spacing: .055em;
+}
+.map-route span:not(:last-child)::after {
+  content: "→";
+  margin-left: .15rem;
+  color: rgba(218,185,112,.76);
+}
+.state-route span i {
+  width: .42rem;
+  height: .42rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--honey);
+  opacity: .82;
+}
+.protector-pair,
+.human-map-copy-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.protector-pair > div,
+.human-map-copy-grid > p {
+  margin: 0;
+  padding: 1rem 1.05rem;
+  color: var(--paper-dim);
+  background: rgba(232,223,207,.035);
+  border-top: 1px solid rgba(218,185,112,.3);
+  line-height: 1.65;
+}
+.protector-pair p {
+  margin: .6rem 0 0;
+  line-height: 1.65;
+}
+.human-map-principle {
+  margin: 1.5rem 0 0;
+  max-width: 50rem;
+  color: var(--paper);
+  font: italic 400 clamp(1rem, 1.7vw, 1.18rem)/1.65 var(--font-display);
+}
+.human-map-safety {
+  display: grid;
+  gap: .35rem;
+  margin-top: 1.6rem;
+  padding: 1rem 1.1rem;
+  color: var(--paper-dim);
+  background: rgba(104,50,45,.14);
+  border-left: 2px solid rgba(201,148,74,.78);
+  line-height: 1.6;
+}
+.human-map-safety strong {
+  color: var(--paper);
+}
+.returning-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: .65rem;
+  margin: 2rem 0;
+}
+.returning-grid span {
+  min-height: 7.5rem;
+  padding: 1rem;
+  background: rgba(232,223,207,.035);
+  border: 1px solid rgba(232,223,207,.12);
+}
+.returning-grid strong,
+.returning-grid small {
+  display: block;
+}
+.returning-grid strong {
+  color: var(--honey-soft);
+  font: 400 1.2rem/1.2 var(--font-display);
+}
+.returning-grid small {
+  margin-top: .5rem;
+  color: var(--paper-dim);
+  font-size: .78rem;
+  line-height: 1.5;
+}
+.human-map-quote {
+  margin: 1.8rem 0 0;
+  max-width: 48rem;
+  color: var(--paper);
+  font: italic 400 clamp(1.15rem, 2.4vw, 1.65rem)/1.5 var(--font-display);
+}
+.depth-marker--human-maps .depth-marker-num {
+  color: var(--honey-soft);
+}
+
+@media (max-width: 820px) {
+  #hero::before {
+    background:
+      linear-gradient(180deg, rgba(8,15,27,.2) 0%, rgba(8,15,27,.3) 42%, rgba(8,15,27,.84) 79%, rgba(8,15,27,.96) 100%),
+      url("assets/tapestry/rink-twilight.webp") center 58% / cover no-repeat;
+  }
+  .hero-content {
+    margin-left: 0;
+    background: linear-gradient(180deg, transparent, rgba(8,15,27,.76) 18%, rgba(8,15,27,.9));
+    border-left: 0;
+    border-top: 1px solid rgba(218,185,112,.28);
+  }
+  .parking-lot-stage::before {
+    background-position: center 54%;
+  }
+  .parking-lot-copy {
+    margin-inline: 1rem;
+    background: linear-gradient(180deg, rgba(9,16,29,.15), rgba(9,16,29,.8));
+    border-left: 0;
+    border-bottom: 1px solid rgba(218,185,112,.48);
+  }
+  .human-maps-layout {
+    grid-template-columns: 1fr;
+  }
+  .human-map-tabs {
+    position: static;
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: .4rem;
+    scroll-snap-type: x proximity;
+  }
+  .human-map-tab {
+    min-width: min(78vw, 17rem);
+    scroll-snap-align: start;
+  }
+  .human-map-tab.is-active {
+    transform: translateY(-.15rem);
+  }
+}
+@media (max-width: 620px) {
+  .protector-pair,
+  .human-map-copy-grid,
+  .returning-grid {
+    grid-template-columns: 1fr;
+  }
+  .human-map-panel {
+    min-height: 0;
+    padding: 1.15rem;
+    box-shadow: 9px 10px 0 rgba(5,8,14,.18);
+  }
+  .map-route span:not(:last-child)::after {
+    display: none;
+  }
+}
