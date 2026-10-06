@@ -2,7 +2,7 @@
   "name": "STARMILK — Cosmic Electronic Music",
   "short_name": "STARMILK",
   "description": "Born from the trembling. Raised by rivers. Electronic music direct to fans.",
-  "start_url": "/starmilk-music/",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#0b0e1a",
   "theme_color": "#0b0e1a",
