@@ -1,0 +1,17 @@
+name: Runner Smoke Test
+
+on:
+  push:
+    branches:
+      - diagnostics/actions-runner-20261006
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: GitHub-hosted runner smoke test
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Prove runner started
+        run: echo "runner-started"
