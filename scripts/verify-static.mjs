@@ -33,6 +33,10 @@ check(!index.includes("starmilk-legacy-styles"), "disabled legacy stylesheet mus
 check(index.includes('id="starmilk-dna-origin"'), "mission architecture is missing the STARMILK DNA origin artifact");
 check(index.includes("The song began with the pain of stigma and being misunderstood."), "STARMILK DNA origin language is missing");
 check(index.includes("STARMILK belongs to everybody."), "supporter extras must state that belonging is universal");
+check(index.includes('id="human-maps"'), "human maps hub must exist");
+check(index.includes("The Relational Map") && index.includes("The Nervous System Map") && index.includes("The Art of Returning"), "human maps must expose all three public paths");
+check(index.includes("Responsibility for abuse is not shared."), "relational map must preserve the abuse and coercion safety boundary");
+check(index.includes("assets/tapestry/rink-twilight.webp"), "approved rink imagery must remain a first-class visual anchor");
 check(index.includes("You can support the STARMILK mission here if you would like."), "support invitation must remain calm and optional");
 check(!index.includes("You're not just a listener — you're part of what STARMILK is becoming."), "paid support must not imply a more important kind of belonging");
 check(!index.includes("childhood trauma"), "public-facing homepage copy should use the broader STARMILK literary register");
