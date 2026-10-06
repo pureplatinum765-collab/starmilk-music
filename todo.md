@@ -126,3 +126,14 @@
 - [x] Replace observer-entry-dependent scene assignment with a deterministic center-of-viewport section calculation.
 - [x] Re-run desktop, tablet, 375px phone, and reduced-motion interaction probes after the scene-selection correction.
 - [ ] Version the corrected tapestry controller URL so prior browser caches cannot retain the superseded transition logic.
+
+
+## Mothership completion pass, 2026-10-06
+
+- [x] Make the approved rink-under-the-sky world the entrance and hero visual foundation.
+- [x] Keep the mythic/cosmic layer deeper in the site rather than making Star Wizard the visual center of gravity.
+- [x] Add the Human Maps hub with accessible tabs for The Relational Map, The Nervous System Map, and The Art of Returning.
+- [x] Keep the trauma-informed architecture human-first and non-diagnostic in public copy.
+- [x] Preserve the abuse/coercion safety boundary inside the Relational Map.
+- [x] Add keyboard-accessible tab behavior and a no-JavaScript readable fallback.
+- [x] Add static verifier coverage for the Human Maps paths and photo-led visual anchor.
