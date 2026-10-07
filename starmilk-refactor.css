@@ -963,7 +963,7 @@ body:has(.radio-floating.open) .starmilk-chat-toggle, body:has(.radio-floating.o
 .poem-note { max-width: 48ch; margin: 2.4rem 0 0; padding-top: 1.6rem; border-top: 1px solid var(--line); color: var(--paper); font: 400 clamp(.98rem, 1.3vw, 1.08rem)/1.75 var(--font-body); }
 .poem-scene { margin: 0; transform: rotate(1.6deg); border: 1px solid var(--line); box-shadow: var(--shadow-lift); background: #1b1626; }
 .poem-scene img { display: block; width: 100%; height: auto; filter: saturate(.86) contrast(1.03); }
-.river-poem-link { margin-top: 1.6rem; font-size: .82rem; letter-spacing: .04em; }
+.river-poem-link { display: block; padding: 1.4rem var(--gutter) 0; text-align: center; font-size: .8rem; letter-spacing: .05em; }
 .river-poem-link a { color: var(--honey-soft); text-decoration: none; border-bottom: 1px solid rgba(226, 180, 126, .35); padding-bottom: .15rem; }
 .river-poem-link a:hover, .river-poem-link a:focus-visible { color: var(--lamplight); border-color: rgba(255, 217, 160, .6); }
 .plaza-strip { position: relative; height: clamp(5.5rem, 11vw, 8.5rem); margin-top: clamp(1rem, 2.5vw, 2rem); background: linear-gradient(180deg, rgba(23, 20, 38, 0), rgba(79, 59, 46, .38)); }
@@ -982,6 +982,11 @@ body:has(.radio-floating.open) .starmilk-chat-toggle, body:has(.radio-floating.o
   .poem-scene img { height: 100%; object-fit: cover; object-position: 50% 74%; }
 }
 
+
+
+/* ═══ Hero composition fix — wordmark stays clear of the artwork at every width (2026-10-07c) ═══ */
+#hero::before { background: linear-gradient(90deg, #171219 0%, rgba(23, 18, 25, .97) 44%, rgba(23, 18, 25, .62) 62%, rgba(23, 18, 25, .10) 84%, rgba(23, 18, 25, .55) 100%), url("star-wizard.jpg") right 14% center / min(46vw, 660px) auto no-repeat; }
+#hero::after { width: min(45vw, 620px); right: 11%; top: 21%; }
 
 /* Inked Relic Synapse: a restrained conduction score, not a separate UI era. */
 #hero { --synapse-energy: 0; --synapse-pulse: 0; --synapse-beat: 800ms; }
