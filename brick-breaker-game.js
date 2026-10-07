@@ -74,6 +74,7 @@
     balls: [],
     bricks: [],
     particles: [],
+    fieldNote: null,
     lasers: [],
     stars: [],
     powerDrops: [],
@@ -402,6 +403,9 @@
     state.paddleTrail = [];
     state.screenShake = { x: 0, y: 0, intensity: 0, decay: 0.85 };
     state.transition = { active: false, text: '', alpha: 0, ringRadius: 0, startTime: 0 };
+    state.fieldNote = null;
+    breaksSinceNote = 0;
+    lastNoteAt = 0;
     laserCooldownMs = 0;
     lastStatsPaint = 0;
     lastPowerPaint = 0;
@@ -685,6 +689,130 @@
     }
   }
 
+  // ══════════════════════════════════════════════════════════════════════
+  //  FIELD NOTES — learning through play
+  //  A brick breaks; sometimes a small human observation rises from it,
+  //  readable for a moment, then dissolves. Play first. Discovery second.
+  // ══════════════════════════════════════════════════════════════════════
+  const FIELD_NOTES = [
+    "Your body can notice a moment before your thoughts have words for it.",
+    "Feeling welcome and being welcome are related, but not always the same thing.",
+    "Two people can leave the same moment carrying different versions of it.",
+    "A boundary and a punishment are not automatically the same thing.",
+    "Connection can change what a body expects next.",
+    "Going quiet is sometimes a person's way of staying safe, not a verdict on you.",
+    "What looks like distance is sometimes a person protecting something soft.",
+    "Speeding up and slowing down are both answers. Neither one is a flaw.",
+    "Repair rarely happens in one clean step. It usually takes a few tries.",
+    "Curiosity is easier to offer before an explanation hardens into a verdict.",
+    "Being seen whole is rare. Wanting it is universal.",
+    "Protecting someone from the truth can become its own kind of distance.",
+    "The story placed around a person is almost always smaller than the person.",
+    "A pause is not empty. It is often where the next true word forms.",
+    "People can be slow to arrive and still fully arrive.",
+    "Warmth kept at a distance is still warmth. Sometimes it is all someone has to give.",
+    "Naming what happened is not the same as excusing it.",
+    "The body often knows the room has changed before anyone says so.",
+  ];
+  const FIELD_NOTE_COOLDOWN_MS = 26000;
+  const FIELD_NOTE_MIN_BREAKS = 9;
+  let noteDeck = [];
+  let breaksSinceNote = 0;
+  let lastNoteAt = 0;
+  const collectedNotes = new Set(loadNotes());
+  function loadNotes() {
+    try { return JSON.parse(localStorage.getItem('starmilk-field-notes') || '[]'); }
+    catch (_) { return []; }
+  }
+  function persistNotes() {
+    try { localStorage.setItem('starmilk-field-notes', JSON.stringify([...collectedNotes])); }
+    catch (_) { /* Storage is optional. */ }
+  }
+  function maybeShowFieldNote(brick) {
+    const now = performance.now();
+    breaksSinceNote += 1;
+    if (breaksSinceNote < FIELD_NOTE_MIN_BREAKS) return;
+    if (now - lastNoteAt < FIELD_NOTE_COOLDOWN_MS) return;
+    if (state.fieldNote) return;
+    if (!noteDeck.length) noteDeck = FIELD_NOTES.slice().sort(() => Math.random() - .5);
+    const text = noteDeck.pop();
+    breaksSinceNote = 0;
+    lastNoteAt = now;
+    const dpr = DPR();
+    state.fieldNote = {
+      text,
+      x: brick.x + brick.w / 2,
+      y: Math.min(brick.y + brick.h / 2, canvas.height * .5),
+      alpha: 0,
+      age: 0,
+      spanX: Math.max(140 * dpr, Math.min(brick.x + brick.w / 2, canvas.width - 150 * dpr)),
+    };
+    if (!collectedNotes.has(text)) { collectedNotes.add(text); persistNotes(); renderNotesButton(); }
+  }
+  function drawFieldNote() {
+    const note = state.fieldNote;
+    if (!note) return;
+    const dpr = DPR();
+    note.age += 1;
+    if (note.age < 30) note.alpha = note.age / 30;
+    else if (note.age > 300) note.alpha = Math.max(0, 1 - (note.age - 300) / 45);
+    else note.alpha = 1;
+    if (note.age > 345) { state.fieldNote = null; return; }
+    const g = ctx;
+    g.save();
+    g.globalAlpha = note.alpha * .92;
+    g.font = `italic 400 ${Math.floor(15 * dpr)}px "DM Serif Display", Georgia, serif`;
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    const gradient = g.createLinearGradient(0, note.y - 14 * dpr, 0, note.y + 14 * dpr);
+    gradient.addColorStop(0, 'rgba(255,217,160,0)');
+    gradient.addColorStop(0.5, 'rgba(20,16,12,.72)');
+    gradient.addColorStop(1, 'rgba(255,217,160,0)');
+    g.fillStyle = gradient;
+    g.fillRect(note.spanX - 260 * dpr, note.y - 14 * dpr, 520 * dpr, 28 * dpr);
+    g.fillStyle = `rgba(233,226,210,${.95 * note.alpha})`;
+    const words = note.text.split(' ');
+    const line1 = words.slice(0, Math.ceil(words.length / 2)).join(' ');
+    const line2 = words.slice(Math.ceil(words.length / 2)).join(' ');
+    g.fillText(line1, note.spanX, note.y - 8 * dpr);
+    if (line2) g.fillText(line2, note.spanX, note.y + 9 * dpr);
+    g.restore();
+  }
+  function renderNotesButton() {
+    const count = collectedNotes.size;
+    if (!count) return;
+    let btn = document.getElementById('brick-breaker-notes');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.id = 'brick-breaker-notes';
+      btn.type = 'button';
+      btn.className = 'bb-notes-btn';
+      btn.setAttribute('aria-expanded', 'false');
+      btn.addEventListener('click', toggleNotesPanel);
+      const uiRow = document.querySelector('#brick-breaker-overlay .bb-ui div');
+      uiRow?.appendChild(btn);
+    }
+    btn.textContent = `Field Notes · ${count}`;
+  }
+  function toggleNotesPanel() {
+    let panel = document.getElementById('brick-breaker-notes-panel');
+    const btn = document.getElementById('brick-breaker-notes');
+    if (!panel) {
+      panel = document.createElement('div');
+      panel.id = 'brick-breaker-notes-panel';
+      panel.className = 'bb-notes-panel';
+      const overlay = document.getElementById('brick-breaker-overlay');
+      overlay?.appendChild(panel);
+    }
+    const open = panel.classList.toggle('open');
+    btn?.setAttribute('aria-expanded', String(open));
+    if (open) {
+      panel.innerHTML = `<h4>Field notes — ${collectedNotes.size} of ${FIELD_NOTES.length}</h4>` +
+        [...collectedNotes].map((t) => `<p>${t}</p>`).join('') +
+        `<p class="bb-notes-hint">Found while playing. No rush — the rest are still out there.</p>`;
+    }
+  }
+
   function destroyBrick(brick, idx, multiplier) {
     const dpr = DPR();
     const baseScore = 100 * Math.max(1, multiplier);
@@ -729,6 +857,7 @@
     });
 
     state.bricks.splice(idx, 1);
+    maybeShowFieldNote(brick);
   }
 
   function spawnLaser() {
@@ -884,6 +1013,7 @@
       g.restore();
     }
 
+    drawFieldNote();
     // Level transition
     if (state.transition.active) {
       const t = state.transition;

@@ -3,18 +3,23 @@
    Rule: every element must reinforce the composed listening journey, never compete with it. */
 
 :root {
-  --ink: #17131a;
-  --ink-deep: #0e0b10;
-  --plum: #2d2130;
-  --plum-soft: #453247;
-  --paper: #e8dfcf;
-  --paper-dim: #bfb4a4;
+  --ink: #141426;
+  --ink-deep: #0b0b18;
+  --plum: #232345;
+  --plum-soft: #33325c;
+  --paper: #e9e2d2;
+  --paper-dim: #b3a898;
   --river: #739aa0;
   --river-deep: #254751;
-  --orchard: #68745a;
-  --honey: #c68a4f;
+  --orchard: #6d7a5c;
+  --honey: #c9944a;
   --honey-soft: #e2b47e;
-  --clay: #815a4d;
+  --clay: #8a5f4a;
+  --earth: #4f3b2e;
+  --earth-deep: #332618;
+  --dusk: #4a5578;
+  --dusk-deep: #2a3352;
+  --lamplight: #ffd9a0;
   --line: rgba(232, 223, 207, .17);
   --line-strong: rgba(232, 223, 207, .34);
 
@@ -68,12 +73,31 @@ body {
   min-width: 320px;
   overflow-x: clip;
   background:
-    linear-gradient(90deg, rgba(232,223,207,.025) 1px, transparent 1px) 0 0 / 44px 44px,
-    radial-gradient(circle at 78% -10%, rgba(111,146,153,.14), transparent 30rem),
+    linear-gradient(90deg, rgba(232,223,207,.02) 1px, transparent 1px) 0 0 / 44px 44px,
+    radial-gradient(120% 62% at 50% 118%, rgba(79,59,46,.55), rgba(51,38,24,.22) 45%, transparent 68%),
+    radial-gradient(circle at 78% -10%, rgba(74,85,120,.45), transparent 30rem),
+    linear-gradient(180deg, var(--dusk-deep) 0%, var(--ink) 46%),
     var(--ink);
   color: var(--paper);
   font: 400 16px/1.65 var(--font-body);
   text-rendering: optimizeLegibility;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: var(--layer-background);
+  pointer-events: none;
+  background:
+    radial-gradient(2px 2px at 12% 22%, rgba(233,226,210,.5), transparent 100%),
+    radial-gradient(1.5px 1.5px at 38% 8%, rgba(233,226,210,.38), transparent 100%),
+    radial-gradient(1.5px 1.5px at 64% 14%, rgba(233,226,210,.45), transparent 100%),
+    radial-gradient(2px 2px at 84% 6%, rgba(233,226,210,.55), transparent 100%),
+    radial-gradient(1.5px 1.5px at 92% 30%, rgba(233,226,210,.35), transparent 100%),
+    radial-gradient(2px 2px at 22% 48%, rgba(233,226,210,.3), transparent 100%),
+    radial-gradient(1.5px 1.5px at 55% 40%, rgba(233,226,210,.26), transparent 100%),
+    radial-gradient(1.5px 1.5px at 8% 64%, rgba(233,226,210,.22), transparent 100%),
+    radial-gradient(2px 2px at 74% 58%, rgba(233,226,210,.28), transparent 100%);
 }
 body::before {
   content: "";
@@ -443,6 +467,245 @@ section { position: relative; overflow: clip; padding: var(--space) var(--gutter
   letter-spacing: .08em;
   text-transform: uppercase;
 }
+/* ══════════ HUMAN MAPS ══════════ */
+.bb-notes-btn {
+  min-height: 2.4rem;
+  margin-left: auto;
+  padding: .4rem .8rem;
+  border: 1px solid rgba(198,148,74,.45);
+  background: rgba(64,48,30,.55);
+  color: var(--honey-soft);
+  cursor: pointer;
+  font-size: .72rem;
+  letter-spacing: .06em;
+}
+.bb-notes-btn:hover { background: rgba(198,148,74,.22); }
+.bb-notes-panel {
+  display: none;
+  max-width: 34rem;
+  max-height: 14rem;
+  overflow-y: auto;
+  margin-top: .6rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid rgba(198,148,74,.4);
+  background: rgba(24,18,13,.96);
+  color: var(--paper-dim);
+  font-size: .82rem;
+  line-height: 1.6;
+}
+.bb-notes-panel.open { display: block; }
+.bb-notes-panel h4 {
+  margin: 0 0 .6rem;
+  color: var(--honey-soft);
+  font: 400 1.1rem/1.2 var(--font-display);
+}
+.bb-notes-panel p { margin: 0 0 .55rem; }
+.bb-notes-panel .bb-notes-hint { margin-top: .8rem; color: rgba(233,226,210,.45); font-style: italic; }
+
+/* ══════════ HUMAN MAPS ══════════ */
+.human-maps .section-inner { max-width: 64rem; }
+.human-maps .sub { max-width: var(--reading); color: var(--text-secondary); }
+.maps-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-6) 0 0;
+  padding: var(--space-2);
+  border: 1px solid var(--line);
+  background: rgba(15,15,32,.6);
+}
+.maps-tab {
+  flex: 1 1 10rem;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: .82rem;
+  letter-spacing: .04em;
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.maps-tab:hover { color: var(--text-primary); }
+.maps-tab[aria-selected="true"] {
+  border-color: var(--line-strong);
+  background: rgba(198,148,74,.14);
+  color: var(--paper);
+}
+.maps-stage {
+  border: 1px solid var(--line);
+  border-top: 0;
+  background: rgba(20,20,38,.6);
+  box-shadow: 12px 14px 0 rgba(11,11,24,.4);
+}
+.maps-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-7);
+  padding: clamp(1.5rem, 4vw, 3rem);
+}
+.maps-panel--hidden { display: none; }
+.maps-panel-copy h3 {
+  margin: 0 0 var(--space-4);
+  color: var(--text-primary);
+  font: 400 clamp(1.5rem, 3vw, 2.2rem)/1.15 var(--font-display);
+  letter-spacing: -.02em;
+}
+.maps-panel-copy p {
+  max-width: 42rem;
+  margin: 0 0 var(--space-4);
+  color: var(--text-secondary);
+  line-height: 1.78;
+}
+.maps-figure {
+  position: relative;
+  min-height: 16rem;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(74,85,120,.28), transparent 70%),
+    rgba(11,11,24,.5);
+}
+.maps-node {
+  position: absolute;
+  padding: .35rem .7rem;
+  border: 1px solid var(--line-strong);
+  background: rgba(35,35,69,.9);
+  color: var(--paper);
+  font-size: .72rem;
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+.maps-node--a { left: 8%; top: 10%; }
+.maps-node--b { right: 8%; top: 26%; }
+.maps-node--c { left: 14%; top: 48%; }
+.maps-node--d { right: 12%; top: 68%; }
+.maps-node--e { left: 38%; top: 86%; border-color: rgba(198,148,74,.55); background: rgba(64,48,30,.9); }
+.maps-path {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(233,226,210,.34), transparent);
+  transform-origin: 0 50%;
+}
+.maps-path--1 { left: 20%; top: 20%; width: 56%; transform: rotate(14deg); }
+.maps-path--2 { left: 22%; top: 38%; width: 60%; transform: rotate(-12deg); }
+.maps-path--3 { left: 20%; top: 60%; width: 62%; transform: rotate(10deg); }
+.maps-path--4 { left: 26%; top: 78%; width: 40%; transform: rotate(-16deg); }
+.maps-footnote {
+  max-width: var(--reading);
+  margin: var(--space-5) 0 0;
+  color: rgba(233,226,210,.5);
+  font-size: .82rem;
+  line-height: 1.7;
+}
+@media (max-width: 760px) {
+  .maps-panel { grid-template-columns: 1fr; }
+  .maps-figure { min-height: 13rem; }
+  .maps-node { font-size: .64rem; padding: .3rem .55rem; }
+}
+
+/* ══════════ OPEN AIR — small groups of people under a large indigo sky ══════════ */
+.open-air {
+  position: relative;
+  isolation: isolate;
+  min-height: clamp(22rem, 46vw, 34rem);
+  display: grid;
+  align-content: end;
+  overflow: clip;
+  background:
+    radial-gradient(90% 60% at 50% 120%, rgba(255,217,160,.12), transparent 55%),
+    linear-gradient(180deg, #0b0f22 0%, #131a36 52%, #231d3c 76%, #33261c 100%);
+}
+.open-air-sky { position: absolute; inset: 0 0 38% 0; }
+.open-air-star {
+  position: absolute;
+  width: 2px; height: 2px; border-radius: 50%;
+  background: var(--paper);
+  opacity: .5;
+  animation: open-air-twinkle var(--dur-ritual) ease-in-out infinite alternate;
+}
+.open-air-star--a { left: 14%; top: 18%; }
+.open-air-star--b { left: 31%; top: 42%; opacity: .35; }
+.open-air-star--c { left: 58%; top: 12%; }
+.open-air-star--d { left: 76%; top: 34%; opacity: .4; }
+.open-air-star--e { left: 88%; top: 8%; opacity: .55; }
+@keyframes open-air-twinkle {
+  from { opacity: .18; }
+  to { opacity: .62; }
+}
+.open-air-ground {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 38%;
+  background:
+    radial-gradient(60% 90% at 20% 0%, rgba(255,217,160,.08), transparent 60%),
+    linear-gradient(180deg, #33261c, #20160f 100%);
+}
+.open-air-figures {
+  position: absolute;
+  left: 0; right: 0; bottom: 12%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 clamp(1rem, 8vw, 8rem);
+}
+.open-air-figure { position: relative; display: inline-block; }
+/* Each figure is a small warm-lit silhouette: a person, or two people sharing space. */
+.open-air-figure::before {
+  content: "";
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50% 50% 0 0 / 62% 62% 0 0;
+  background: #14100c;
+}
+.open-air-figure::after {
+  content: "";
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 78%, rgba(255,217,160,.34), transparent 62%);
+  filter: blur(1px);
+}
+.open-air-figure--skater { width: clamp(14px, 2.2vw, 22px); height: clamp(30px, 4.6vw, 48px); }
+.open-air-figure--skater::before { width: 100%; height: 100%; }
+.open-air-figure--pair { width: clamp(26px, 4vw, 44px); height: clamp(30px, 4.6vw, 48px); }
+.open-air-figure--pair::before { width: 100%; height: 100%; border-radius: 50% 42% 0 0 / 60% 48% 0 0; }
+.open-air-figure--still { width: clamp(13px, 2vw, 20px); height: clamp(28px, 4.3vw, 44px); }
+.open-air-figure--still::before { width: 100%; height: 100%; }
+.open-air-figure--walker { width: clamp(12px, 1.9vw, 19px); height: clamp(26px, 4vw, 42px); }
+.open-air-figure--walker::before { width: 100%; height: 100%; }
+.open-air-figure--far { opacity: .55; transform: scale(.8); transform-origin: bottom; }
+.open-air-figure--skater { animation: open-air-drift 16s linear infinite alternate; }
+.open-air-figure--walker { animation: open-air-drift 21s linear infinite alternate-reverse; }
+@keyframes open-air-drift {
+  from { translate: -1.6rem 0; }
+  to { translate: 1.6rem 0; }
+}
+.open-air-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 34rem;
+  margin: 0;
+  padding: 0 var(--gutter) clamp(1.6rem, 4vw, 3.2rem);
+  color: rgba(233,226,210,.85);
+  font: 400 clamp(1.05rem, 2.1vw, 1.3rem)/1.7 var(--font-display);
+  letter-spacing: -.01em;
+}
+.open-air-kicker {
+  display: block;
+  margin-bottom: var(--space-3);
+  color: var(--honey-soft);
+  font: 600 .66rem/1 var(--font-body);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+@media (prefers-reduced-motion: reduce) {
+  .open-air-star { animation: none; }
+  .open-air-figure--skater,
+  .open-air-figure--walker { animation: none; }
+}
 .hero-story-link {
   display: block;
   width: fit-content;
@@ -712,4 +975,25 @@ body.starmilk-surface-shift .hero-synapse-status::before { animation: surface-ha
 .radio-fallback a:focus-visible {
   outline: 2px solid #91c6cf;
   outline-offset: 3px;
+}
+
+/* ══════════ HUMAN MAPS + OPEN AIR — small-width compositions (320–430px) ══════════ */
+@media (max-width: 680px) {
+  .maps-tabs { padding: .4rem; gap: .35rem; }
+  .maps-tab { flex: 1 1 100%; min-height: 2.9rem; }
+  .maps-panel { padding: 1.25rem; gap: var(--space-5); }
+  .maps-figure { min-height: 11.5rem; }
+  .maps-node { font-size: .6rem; padding: .28rem .5rem; }
+  .maps-node--a { left: 6%; top: 8%; }
+  .maps-node--b { right: 6%; top: 30%; }
+  .maps-node--c { left: 8%; top: 52%; }
+  .maps-node--d { right: 8%; top: 70%; }
+  .maps-node--e { left: 30%; top: 88%; }
+  .maps-path--1 { left: 16%; width: 66%; }
+  .maps-path--3 { left: 14%; width: 70%; }
+  .maps-footnote { font-size: .76rem; }
+  .open-air { min-height: 20rem; }
+  .open-air-copy { font-size: 1rem; padding-bottom: 2rem; }
+  .open-air-figures { padding: 0 1.25rem; bottom: 9%; }
+  .bb-notes-btn { flex: 1 1 100%; text-align: center; }
 }
