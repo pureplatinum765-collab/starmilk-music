@@ -214,6 +214,7 @@ body::before {
    Falls back to visibility: visible for older browsers.
 */
 
+@media (prefers-reduced-motion: no-preference) {
 @supports (animation-timeline: view()) {
   .section-inner {
     animation: smDepthReveal linear both;
@@ -255,6 +256,8 @@ body::before {
     animation: none !important;
   }
 }
+}
+
 
 /* ─── 6. MASSIVE TYPOGRAPHY — display serif, heavy scale ────────── */
 /*
