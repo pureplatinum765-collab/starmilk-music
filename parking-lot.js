@@ -112,7 +112,7 @@
     window.setTimeout(() => line1?.classList.add('visible'), firstDelay);
     window.setTimeout(() => line2?.classList.add('visible'), secondDelay);
     // Returning listeners receive a shorter invitation, never an automatic dismissal.
-    if (state.returning && line2) line2.textContent = 'Welcome back.';
+    if (state.returning && line2) line2.textContent = 'Welcome back to the STARMILK mothership.';
   }
 
   function completeEntry() {
