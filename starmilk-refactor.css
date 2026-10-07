@@ -109,6 +109,16 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg width='180' height='180' viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
   mix-blend-mode: soft-light;
 }
+/* Coarse painterly pass: low-frequency turbulence reads as brush-blob washes. */
+.paint-grain {
+  position: fixed;
+  inset: 0;
+  z-index: var(--layer-background);
+  pointer-events: none;
+  opacity: .3;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg width='420' height='420' viewBox='0 0 420 420' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .017' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='.5'/%3E%3C/svg%3E");
+}
 body.parking-lot-active { height: 100svh; overflow: hidden; }
 button, input { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
@@ -616,6 +626,40 @@ section { position: relative; overflow: clip; padding: var(--space) var(--gutter
     linear-gradient(180deg, #0b0f22 0%, #131a36 52%, #231d3c 76%, #33261c 100%);
 }
 .open-air-sky { position: absolute; inset: 0 0 38% 0; }
+/* Painted sky: broad soft bands laid over the indigo, like loaded brushstrokes. */
+.open-air-sky::before {
+  content: "";
+  position: absolute;
+  inset: -8% -10%;
+  background:
+    radial-gradient(70% 26% at 24% 22%, rgba(74,85,120,.4), transparent 70%),
+    radial-gradient(52% 20% at 68% 38%, rgba(42,51,82,.5), transparent 72%),
+    radial-gradient(80% 18% at 46% 64%, rgba(255,217,160,.07), transparent 75%),
+    linear-gradient(94deg, transparent 30%, rgba(19,26,54,.35) 46%, transparent 62%);
+  filter: blur(14px);
+}
+/* Imperfect horizon: the ground edge wavers instead of reading as a cut line. */
+.open-air::after {
+  content: "";
+  position: absolute;
+  left: -4%; right: -4%; bottom: 36%;
+  height: 1.4rem;
+  background:
+    radial-gradient(60% 100% at 12% 100%, rgba(32,22,15,.5), transparent 70%),
+    radial-gradient(50% 100% at 46% 0%, rgba(32,22,15,.4), transparent 70%),
+    radial-gradient(55% 100% at 82% 100%, rgba(32,22,15,.5), transparent 70%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+/* Local paint wash so the scene reads as painted canvas, not a gradient poster. */
+.open-air .paint-wash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .22;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg width='420' height='420' viewBox='0 0 420 420' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .017' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='.5'/%3E%3C/svg%3E");
+}
 .open-air-star {
   position: absolute;
   width: 2px; height: 2px; border-radius: 50%;
