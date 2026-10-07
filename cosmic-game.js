@@ -55,10 +55,10 @@
   ];
 
   const FACTS = [
-    'STARMILK was born from quantum physics meeting childhood trauma.',
+    'STARMILK was born where quantum physics meets an old ache and decides to dance.',
     'The name comes from cosmic milk flowing between stars.',
-    'Each beat is written like a mythic map back to the body.',
-    'The project treats basslines as emotional archaeology.',
+    'Each beat is a small map back to the body.',
+    'The project treats basslines as archaeology.',
   ];
 
   const POWER_UPS = [
@@ -195,7 +195,7 @@
     minimapCtx = minimapCanvas.getContext('2d');
     playArea.appendChild(minimapCanvas);
 
-    exitButton = floatingBtn('✕ Exit Cosmos', 'right:1rem;top:1rem;');
+    exitButton = floatingBtn('✕ Exit', 'right:1rem;top:1rem;');
     exitButton.onclick = () => exitGame();
     playArea.appendChild(exitButton);
 
@@ -371,7 +371,7 @@
     const btn = document.createElement('button');
     btn.id = 'cq-launch-btn';
     btn.className = 'btn';
-    btn.innerHTML = '★ Enter the Cosmos ★';
+    btn.innerHTML = '★ Enter the living maze ★';
     btn.setAttribute('data-cosmic-launch', '');
     hero.appendChild(btn);
     attachLaunchTriggers();
