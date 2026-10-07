@@ -988,6 +988,25 @@ body:has(.radio-floating.open) .starmilk-chat-toggle, body:has(.radio-floating.o
 #hero::before { background: linear-gradient(90deg, #171219 0%, rgba(23, 18, 25, .97) 44%, rgba(23, 18, 25, .62) 62%, rgba(23, 18, 25, .10) 84%, rgba(23, 18, 25, .55) 100%), url("star-wizard.jpg") right 14% center / min(46vw, 660px) auto no-repeat; }
 #hero::after { width: min(45vw, 620px); right: 11%; top: 21%; }
 
+
+/* ═══ Blended painterly pass — images melt into the world (2026-10-07e) ═══ */
+/* Hero: gradient stays as the shade; the art becomes a feathered painting, no frame, no hard edges. */
+#hero::before { background: linear-gradient(90deg, #171219 0%, rgba(23, 18, 25, .97) 44%, rgba(23, 18, 25, .62) 62%, rgba(23, 18, 25, .10) 84%, rgba(23, 18, 25, .55) 100%); }
+#hero::after { display: none; }
+.hero-art { position: absolute; top: 50%; right: 3%; transform: translateY(-50%); z-index: -1; width: min(52vw, 720px); aspect-ratio: 1344 / 768; background: url("star-wizard.jpg") center / cover no-repeat; filter: saturate(.74) contrast(1.04); pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse 62% 58% at 50% 47%, #000 42%, rgba(0, 0, 0, .55) 64%, transparent 86%);
+          mask-image: radial-gradient(ellipse 62% 58% at 50% 47%, #000 42%, rgba(0, 0, 0, .55) 64%, transparent 86%); }
+@media (max-width: 900px) { .hero-art { right: -8%; width: min(80vw, 460px); } }
+/* Entry overlay: the portrait melts into the dark — no frame, no shadow, no tilt, full painterly color. */
+.parking-lot-aperture { border: 0; box-shadow: none; transform: translate(-50%, -50%); }
+.parking-lot-portrait { mix-blend-mode: normal;
+  -webkit-mask-image: radial-gradient(ellipse 58% 56% at 50% 46%, #000 44%, rgba(0, 0, 0, .5) 64%, transparent 84%);
+          mask-image: radial-gradient(ellipse 58% 56% at 50% 46%, #000 44%, rgba(0, 0, 0, .5) 64%, transparent 84%); }
+/* Poem scene: soft vignette, no rectangle border, no drop shadow. */
+.poem-scene { border: 0; box-shadow: none; transform: rotate(1.2deg); }
+.poem-scene img { -webkit-mask-image: radial-gradient(ellipse 74% 70% at 50% 50%, #000 52%, rgba(0, 0, 0, .55) 72%, transparent 90%);
+                      mask-image: radial-gradient(ellipse 74% 70% at 50% 50%, #000 52%, rgba(0, 0, 0, .55) 72%, transparent 90%); }
+
 /* Inked Relic Synapse: a restrained conduction score, not a separate UI era. */
 #hero { --synapse-energy: 0; --synapse-pulse: 0; --synapse-beat: 800ms; }
 .synapse-conductor { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; pointer-events: none; opacity: .94; mix-blend-mode: screen; }
