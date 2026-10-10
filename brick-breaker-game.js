@@ -738,6 +738,9 @@
     "Supportive relationships after trauma can help protect mental health.",
     "Effective treatments for PTSD exist, including several forms of therapy.",
     "Trauma-informed care aims to prevent re-traumatization.",
+    "Seeing someone suffer can challenge our belief that the world is fair.",
+    "In some studies, observers judged an innocent sufferer more harshly when they felt powerless.",
+    "Someone's pain is not evidence that they deserved it.",
   ];
   // A source label and link distinguishes educational facts from artistic reflections.
   // The full posts/images are not reproduced without permission.
@@ -750,6 +753,8 @@
     "Supportive relationships after trauma can help protect mental health.": { label: "World Health Organization", url: "https://www.who.int/news-room/fact-sheets/detail/post-traumatic-stress-disorder" },
     "Effective treatments for PTSD exist, including several forms of therapy.": { label: "VA National Center for PTSD", url: "https://www.ptsd.va.gov/understand/what/ptsd_basics.asp" },
     "Trauma-informed care aims to prevent re-traumatization.": { label: "SAMHSA", url: "https://www.samhsa.gov/mental-health/trauma-violence/trauma-informed-approaches-programs" },
+    "Seeing someone suffer can challenge our belief that the world is fair.": { label: "Lerner & Miller, 1978 review", url: "https://www.gsb.stanford.edu/faculty-research/publications/just-world-research-attribution-process-looking-back-ahead" },
+    "In some studies, observers judged an innocent sufferer more harshly when they felt powerless.": { label: "Lerner & Simmons, 1966", url: "https://pubmed.ncbi.nlm.nih.gov/5969146/" },
   });
   const FIELD_NOTE_COOLDOWN_MS = 17000;
   const FIELD_NOTE_MIN_BREAKS = 5;
