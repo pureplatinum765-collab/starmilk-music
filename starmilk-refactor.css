@@ -337,10 +337,10 @@ section { position: relative; overflow: clip; padding: var(--space) var(--gutter
 .card-arrow { margin-top: .5rem; color: var(--paper); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }
 
 /* The river retains its interactive canvas but gains a stable contained stage. */
-#river { min-height: 120svh; padding: 0; background: linear-gradient(180deg, #1e2535, #355864 62%, #9fc8c3); }
+#river { min-height: 120svh; padding: 0; background: linear-gradient(180deg, #1b2926 0%, #35594e 51%, #89afa6 100%); }
 .river-sticky { position: sticky; top: 0; min-height: 100svh; overflow: hidden; }
 #river-canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .72; }
-.river-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(16,19,30,.8), transparent 65%); }
+.river-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(16,30,27,.76), rgba(29,58,51,.2) 62%, transparent 88%); }
 .river-copy { position: absolute; left: var(--gutter); bottom: 13svh; width: min(34rem, calc(100% - 2 * var(--gutter))); z-index: 2; }
 .river-title { color: #f3ecdd; }
 .river-caption, .river-ocean-copy { color: rgba(243,236,221,.76); }
@@ -659,7 +659,7 @@ section { position: relative; overflow: clip; padding: var(--space) var(--gutter
   .maps-node { font-size: .64rem; padding: .3rem .55rem; }
 }
 
-/* ══════════ OPEN AIR — small groups of people under a large indigo sky ══════════ */
+/* ══════════ OPEN AIR — painted starlit gathering under a pine-and-honey sky ══════════ */
 .open-air {
   position: relative;
   isolation: isolate;
@@ -668,8 +668,9 @@ section { position: relative; overflow: clip; padding: var(--space) var(--gutter
   align-content: end;
   overflow: clip;
   background:
-    radial-gradient(90% 60% at 50% 120%, rgba(255,217,160,.12), transparent 55%),
-    linear-gradient(180deg, #0b0f22 0%, #131a36 52%, #231d3c 76%, #33261c 100%);
+    radial-gradient(95% 64% at 50% 116%, rgba(237,195,120,.18), transparent 57%),
+    radial-gradient(60% 70% at 48% 70%, rgba(99,120,71,.13), transparent 76%),
+    linear-gradient(180deg, #141d1b 0%, #26362e 48%, #3f4734 73%, #4c3827 100%);
 }
 .open-air-sky { position: absolute; inset: 0 0 38% 0; }
 /* Painted sky: broad soft bands laid over the indigo, like loaded brushstrokes. */
@@ -678,10 +679,10 @@ section { position: relative; overflow: clip; padding: var(--space) var(--gutter
   position: absolute;
   inset: -8% -10%;
   background:
-    radial-gradient(70% 26% at 24% 22%, rgba(74,85,120,.4), transparent 70%),
-    radial-gradient(52% 20% at 68% 38%, rgba(42,51,82,.5), transparent 72%),
-    radial-gradient(80% 18% at 46% 64%, rgba(255,217,160,.07), transparent 75%),
-    linear-gradient(94deg, transparent 30%, rgba(19,26,54,.35) 46%, transparent 62%);
+    radial-gradient(70% 26% at 24% 22%, rgba(77,106,88,.4), transparent 70%),
+    radial-gradient(52% 20% at 68% 38%, rgba(47,70,57,.46), transparent 72%),
+    radial-gradient(80% 18% at 46% 64%, rgba(237,195,120,.12), transparent 75%),
+    linear-gradient(94deg, transparent 30%, rgba(24,42,36,.27) 46%, transparent 62%);
   filter: blur(14px);
 }
 /* Imperfect horizon: the ground edge wavers instead of reading as a cut line. */
@@ -727,9 +728,9 @@ section { position: relative; overflow: clip; padding: var(--space) var(--gutter
   left: 0; right: 0; bottom: 0;
   height: 38%;
   background:
-    radial-gradient(60% 90% at 20% 0%, rgba(255,217,160,.08), transparent 60%),
-    linear-gradient(180deg, #33261c, #20160f 100%);
-  box-shadow: inset 0 14px 26px rgba(11,11,24,.45);
+    radial-gradient(72% 96% at 50% 0%, rgba(237,195,120,.18), transparent 66%),
+    linear-gradient(180deg, #4c3827, #2b261d 100%);
+  box-shadow: inset 0 14px 26px rgba(14,24,18,.27);
 }
 .open-air-figures {
   position: absolute;
@@ -856,14 +857,14 @@ section { position: relative; overflow: clip; padding: var(--space) var(--gutter
 .soc-btn { display: inline-flex; align-items: center; gap: .6rem; min-height: 3rem; padding: .7rem .9rem; border: 1px solid var(--line-strong); border-radius: 0; background: rgba(14,21,25,.25); color: var(--paper); text-decoration: none; font-size: .8rem; transition: background .2s var(--ease), transform .2s var(--ease); }
 .soc-btn:hover { transform: translateY(-2px); background: rgba(198,138,79,.22); }
 
-footer { padding: 5rem var(--gutter) 6rem; border-top: 1px solid var(--line); background: radial-gradient(80% 100% at 50% 120%, rgba(74,85,120,.22), transparent 70%), linear-gradient(180deg, #171d24, #131722 90%); text-align: center; }
+footer { padding: 5rem var(--gutter) 6rem; border-top: 1px solid var(--line); background: radial-gradient(80% 100% at 50% 120%, rgba(148,113,56,.17), transparent 70%), linear-gradient(180deg, #263c31, #17261f 90%); text-align: center; }
 .footer-name { text-shadow: 0 2px 4px rgba(11,11,24,.55), 0 18px 50px rgba(11,11,24,.3); }
 .footer-name { color: var(--paper); font: 400 clamp(3rem,8vw,7rem)/.86 var(--font-display); letter-spacing: -.06em; }
 .footer-sub, .footer-copy { color: rgba(232,223,207,.52); font-size: .76rem; letter-spacing: .1em; text-transform: uppercase; }
 .clearing-trigger { border: 0; border-bottom: 1px solid var(--honey); background: transparent; color: var(--honey-soft); cursor: pointer; padding: .25rem 0; font-size: inherit; letter-spacing: inherit; text-transform: inherit; }
 
 /* Managed utility/panel layers: chat and radio never share the same slot. */
-.radio-floating { position: fixed; right: 6.5rem; bottom: 1.1rem; z-index: var(--layer-utility); width: min(27rem, calc(100vw - 8rem)); border: 1px solid var(--line-strong); border-radius: 0; background: #1b1920; box-shadow: 8px 9px 0 rgba(0,0,0,.28), var(--shadow-lift); color: var(--paper); }
+.radio-floating { position: fixed; right: 6.5rem; bottom: 1.1rem; z-index: var(--layer-utility); width: min(27rem, calc(100vw - 8rem)); border: 1px solid var(--line-strong); border-radius: var(--radius-md); background: #202e25; box-shadow: 0 14px 36px rgba(6,17,11,.26); color: var(--paper); }
 .radio-floating.collapsed { width: auto; }
 .radio-badge { display: flex; align-items: center; gap: .55rem; min-height: 2.8rem; padding: .55rem .8rem; border: 0; background: transparent; color: var(--paper); cursor: pointer; font-size: .7rem; letter-spacing: .11em; }
 .radio-live-dot { width: .45rem; height: .45rem; background: var(--honey); border-radius: 50%; }
@@ -875,18 +876,18 @@ footer { padding: 5rem var(--gutter) 6rem; border-top: 1px solid var(--line); ba
 .radio-tab.active, .radio-ctrl-play { border-color: var(--honey); color: var(--honey-soft); }
 .radio-close-btn { margin-left: auto; width: 2rem; height: 2rem; }
 .radio-tab-pane { padding: .8rem; }
-.radio-now-row { display: grid; grid-template-columns: 2.8rem 1fr 2rem; gap: .7rem; align-items: center; padding: .75rem; border: 1px solid var(--line); background: #27232c; }
+.radio-now-row { display: grid; grid-template-columns: 2.8rem 1fr 2rem; gap: .7rem; align-items: center; padding: .75rem; border: 1px solid var(--line); background: #314034; }
 .radio-track-art { width: 2.8rem; height: 2.8rem; background: #503a3a; }
 .radio-track-title { margin: .1rem 0; font: 400 1.05rem/1.1 var(--font-display); }
 .radio-status { min-height: 1.25rem; padding: 0 .75rem; color: var(--paper-dim); font-size: .68rem; }
 .radio-search-row { position: relative; padding: .7rem; }
-.radio-search { width: 100%; padding: .65rem .7rem .65rem 2rem; border: 1px solid var(--line); border-radius: 0; background: #15131a; color: var(--paper); }
+.radio-search { width: 100%; padding: .65rem .7rem .65rem 2rem; border: 1px solid var(--line); border-radius: .5rem; background: #1c291f; color: var(--paper); }
 .radio-search-icon { position: absolute; left: 1.25rem; top: 1.35rem; width: 1rem; color: var(--paper-dim); }
 .radio-queue { max-height: 17rem; overflow: auto; }
 .radio-queue-item { width: 100%; display: flex; gap: .55rem; padding: .7rem; border: 0; border-bottom: 1px solid rgba(232,223,207,.08); background: transparent; color: var(--paper-dim); text-align: left; cursor: pointer; }
 .radio-queue-item:hover, .radio-queue-item.active { background: rgba(198,138,79,.12); color: var(--paper); }
 .starmilk-chat-toggle { position: fixed; right: 1.15rem; bottom: 1.1rem; z-index: var(--layer-utility); width: 3.2rem; height: 3.2rem; border: 1px solid var(--line-strong); border-radius: 50%; background: var(--river-deep); color: var(--paper); cursor: pointer; box-shadow: 4px 5px 0 rgba(0,0,0,.25); }
-.starmilk-chat-panel { position: fixed; right: 1.15rem; bottom: 5.2rem; z-index: var(--layer-panel); width: min(25rem, calc(100vw - 2.3rem)); max-height: min(35rem, calc(100svh - 7rem)); display: none; flex-direction: column; overflow: hidden; border: 1px solid var(--line-strong); border-radius: 0; background: #1c2730; color: var(--paper); box-shadow: 12px 14px 0 rgba(0,0,0,.28), var(--shadow-lift-strong); }
+.starmilk-chat-panel { position: fixed; right: 1.15rem; bottom: 5.2rem; z-index: var(--layer-panel); width: min(25rem, calc(100vw - 2.3rem)); max-height: min(35rem, calc(100svh - 7rem)); display: none; flex-direction: column; overflow: hidden; border: 1px solid var(--line-strong); border-radius: var(--radius-md); background: #253629; color: var(--paper); box-shadow: 0 18px 40px rgba(7,18,11,.30); }
 .starmilk-chat-panel.open { display: flex; }
 .starmilk-chat-head, .starmilk-chat-links, .starmilk-chat-input { display: flex; align-items: center; gap: .5rem; padding: .75rem; border-bottom: 1px solid var(--line); }
 .starmilk-chat-head h4 { margin: 0; color: var(--honey-soft); font-size: .74rem; letter-spacing: .14em; text-transform: uppercase; }
@@ -974,7 +975,7 @@ body:has(.radio-floating.open) .starmilk-chat-toggle, body:has(.radio-floating.o
 .open-air-figure--still::before { border-radius: 48% 52% 40% 40% / 62% 58% 42% 38%; transform: translateX(-50%) rotate(-2deg); }
 .open-air-figure--walker { opacity: .72; margin-left: 4.5%; }
 .open-air-figure--far { opacity: .5; transform: scale(.72); transform-origin: bottom; translate: 0 -2px; }
-.open-air-sky::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(34, 40, 66, .24) 0%, rgba(58, 56, 86, .16) 44%, rgba(146, 104, 66, .22) 76%, rgba(255, 217, 160, .30) 100%); pointer-events: none; }
+.open-air-sky::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(22, 44, 35, .23) 0%, rgba(59, 86, 63, .17) 44%, rgba(145, 110, 65, .24) 76%, rgba(237, 195, 120, .31) 100%); pointer-events: none; }
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .open-air-sky::after { animation: open-air-evening linear both; animation-timeline: view(); animation-range: entry 12% cover 46%; }
