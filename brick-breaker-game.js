@@ -694,6 +694,8 @@
   //  A brick breaks; sometimes a small human observation rises from it,
   //  readable for a moment, then dissolves. Play first. Discovery second.
   // ══════════════════════════════════════════════════════════════════════
+  // Short original reflections and sourced education, not quotations from social posts.
+  // Preserve the original note strings so existing visitor collections still work.
   const FIELD_NOTES = [
     "Your body can notice a moment before your thoughts have words for it.",
     "Feeling welcome and being welcome are related, but not always the same thing.",
@@ -713,9 +715,44 @@
     "Warmth kept at a distance is still warmth. Sometimes it is all someone has to give.",
     "Naming what happened is not the same as excusing it.",
     "The body often knows the room has changed before anyone says so.",
+    "Compassion is not a prize for explaining yourself perfectly.",
+    "You may not see the effort behind someone's ordinary afternoon.",
+    "Sometimes surviving looks ordinary from across the room.",
+    "A tree can take longer to bloom without being late.",
+    "Roots hold stories the flower never has to tell.",
+    "Belonging is not a test of how well you blend in.",
+    "Hope doesn't have to pretend the hard part isn't there.",
+    "Pain doesn't have to become wisdom on someone else's schedule.",
+    "Listening is not the same as agreeing. It leaves room to understand.",
+    "A soft place to land can change what the next step feels like.",
+    "Your dignity doesn't depend on making your suffering easy to understand.",
+    "Even a river that takes the long way is still moving.",
+    "Healing is not a performance for people watching from shore.",
+    "A quiet person may be carrying a very loud day.",
+    "The shore can be safe without demanding that every wave settle.",
+    "Trauma-informed care values safety, trust, choice, and collaboration.",
+    "Peer support is a recognized principle of trauma-informed care.",
+    "Trauma can affect sleep, attention, and everyday routines.",
+    "After trauma, some people stay alert for danger even in safe places.",
+    "People respond differently to trauma; there is no single recovery timetable.",
+    "Supportive relationships after trauma can help protect mental health.",
+    "Effective treatments for PTSD exist, including several forms of therapy.",
+    "Trauma-informed care aims to prevent re-traumatization.",
   ];
-  const FIELD_NOTE_COOLDOWN_MS = 26000;
-  const FIELD_NOTE_MIN_BREAKS = 9;
+  // A source label and link distinguishes educational facts from artistic reflections.
+  // The full posts/images are not reproduced without permission.
+  const FIELD_NOTE_SOURCES = Object.freeze({
+    "Trauma-informed care values safety, trust, choice, and collaboration.": { label: "SAMHSA", url: "https://www.samhsa.gov/mental-health/trauma-violence/trauma-informed-approaches-programs" },
+    "Peer support is a recognized principle of trauma-informed care.": { label: "SAMHSA", url: "https://www.samhsa.gov/mental-health/trauma-violence/trauma-informed-approaches-programs" },
+    "Trauma can affect sleep, attention, and everyday routines.": { label: "VA National Center for PTSD", url: "https://www.ptsd.va.gov/understand/what/ptsd_basics.asp" },
+    "After trauma, some people stay alert for danger even in safe places.": { label: "VA National Center for PTSD", url: "https://www.ptsd.va.gov/understand/what/ptsd_basics.asp" },
+    "People respond differently to trauma; there is no single recovery timetable.": { label: "SAMHSA", url: "https://www.samhsa.gov/mental-health/trauma-violence" },
+    "Supportive relationships after trauma can help protect mental health.": { label: "World Health Organization", url: "https://www.who.int/news-room/fact-sheets/detail/post-traumatic-stress-disorder" },
+    "Effective treatments for PTSD exist, including several forms of therapy.": { label: "VA National Center for PTSD", url: "https://www.ptsd.va.gov/understand/what/ptsd_basics.asp" },
+    "Trauma-informed care aims to prevent re-traumatization.": { label: "SAMHSA", url: "https://www.samhsa.gov/mental-health/trauma-violence/trauma-informed-approaches-programs" },
+  });
+  const FIELD_NOTE_COOLDOWN_MS = 17000;
+  const FIELD_NOTE_MIN_BREAKS = 5;
   let noteDeck = [];
   let breaksSinceNote = 0;
   let lastNoteAt = 0;
@@ -755,9 +792,9 @@
     const dpr = DPR();
     note.age += 1;
     if (note.age < 30) note.alpha = note.age / 30;
-    else if (note.age > 300) note.alpha = Math.max(0, 1 - (note.age - 300) / 45);
+    else if (note.age > 405) note.alpha = Math.max(0, 1 - (note.age - 405) / 45);
     else note.alpha = 1;
-    if (note.age > 345) { state.fieldNote = null; return; }
+    if (note.age > 450) { state.fieldNote = null; return; }
     const g = ctx;
     g.save();
     g.globalAlpha = note.alpha * .92;
@@ -774,8 +811,9 @@
     const words = note.text.split(' ');
     const line1 = words.slice(0, Math.ceil(words.length / 2)).join(' ');
     const line2 = words.slice(Math.ceil(words.length / 2)).join(' ');
-    g.fillText(line1, note.spanX, note.y - 8 * dpr);
-    if (line2) g.fillText(line2, note.spanX, note.y + 9 * dpr);
+    const maxTextWidth = Math.max(110 * dpr, canvas.width - 24 * dpr);
+    g.fillText(line1, note.spanX, note.y - 8 * dpr, maxTextWidth);
+    if (line2) g.fillText(line2, note.spanX, note.y + 9 * dpr, maxTextWidth);
     g.restore();
   }
   function renderNotesButton() {
@@ -807,9 +845,32 @@
     const open = panel.classList.toggle('open');
     btn?.setAttribute('aria-expanded', String(open));
     if (open) {
-      panel.innerHTML = `<h4>Field notes — ${collectedNotes.size} of ${FIELD_NOTES.length}</h4>` +
-        [...collectedNotes].map((t) => `<p>${t}</p>`).join('') +
-        `<p class="bb-notes-hint">Found while playing. No rush — the rest are still out there.</p>`;
+      // Treat locally stored note strings as untrusted, not as HTML.
+      panel.replaceChildren();
+      const title = document.createElement('h4');
+      title.textContent = `Field notes — ${collectedNotes.size} of ${FIELD_NOTES.length}`;
+      panel.appendChild(title);
+      [...collectedNotes].filter(t => FIELD_NOTES.includes(t)).forEach(t => {
+        const entry = document.createElement('p');
+        const kind = document.createElement('strong');
+        const source = FIELD_NOTE_SOURCES[t];
+        kind.textContent = source ? 'A little fact · ' : 'A little reflection · ';
+        entry.appendChild(kind);
+        entry.appendChild(document.createTextNode(t));
+        if (source) {
+          const a = document.createElement('a');
+          a.href = source.url;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.textContent = ` Learn more: ${source.label}`;
+          entry.appendChild(a);
+        }
+        panel.appendChild(entry);
+      });
+      const hint = document.createElement('p');
+      hint.className = 'bb-notes-hint';
+      hint.textContent = 'Found while playing. Reflections are poetry; facts link to their educational sources.';
+      panel.appendChild(hint);
     }
   }
 
