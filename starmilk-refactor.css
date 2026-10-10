@@ -619,6 +619,19 @@ section { position: relative; overflow: clip; padding: var(--space) var(--gutter
   font-size: .82rem;
   line-height: 1.7;
 }
+/* A quiet handoff from Human Maps to Open Air. No card, no added motion. */
+.maps-ocean-thought {
+  max-width: min(49rem, 100%);
+  margin: clamp(3rem, 6vw, 5.5rem) auto clamp(1rem, 2vw, 1.5rem);
+  padding: clamp(1.5rem, 3vw, 2.75rem) 0 0;
+  border-top: 1px solid var(--line-strong);
+  color: var(--paper);
+  font: 400 clamp(1.18rem, 2.5vw, 1.8rem)/1.6 var(--font-display);
+  letter-spacing: -.015em;
+  text-wrap: pretty;
+}
+.maps-ocean-thought p { margin: 0; }
+
 @media (max-width: 760px) {
   .maps-panel { grid-template-columns: 1fr; }
   .maps-figure { min-height: 13rem; }
