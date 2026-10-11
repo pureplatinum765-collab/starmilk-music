@@ -1,6 +1,7 @@
 # STARMILK Convergence Progress
 
 ## Phase 0: Inventory and Preserve (Completed)
+
 - **Current Phase:** Phase 0 — Baseline Audit & Environmental Verification.
 - **Observed Problem:** Need empirical verification of production baseline, draft PRs (#42, #43), live website health, and browser tooling before undertaking code edits.
 - **Source Files:** `BASELINE_AUDIT.md`, `index.html`, `starmilk-refactor.css`, `the-river.js`, `human-maps.js`, `scripts/verify-static.mjs`.
@@ -18,9 +19,10 @@
   - Live HTTP 200 probe to `https://starmilk.org/`: PASSED.
 - **Unverified Work:** Notion API access to 4 pages was 404 (pages not shared); proceeding under Master Evolution Prompt authority.
 - **Known Risks:** Canvas animation loops can cause long screenshot timeouts if uncoordinated; browser automation should prioritize discrete viewport captures.
-- **Next Action:** Phase 2 — River-to-Ocean Expansiveness.
+- **Next Action:** Phase 1 — Visual Unification.
 
 ## Phase 1: Visual Unification (Completed)
+
 - **Current Phase:** Phase 1 — Earth & Starlight Visual Unification.
 - **Observed Problem:** Production CSS used cold plum/purple tokens; game cards were sharp rectangles with leftover dark magenta styling; deprecated mobile meta tag logged in browser console.
 - **Source Files:** `starmilk-refactor.css`, `index.html`.
@@ -35,9 +37,10 @@
   - `node --check *.js`: PASSED.
 - **Unverified Work:** None for Phase 1.
 - **Known Risks:** None.
-- **Next Action:** Phase 3 — Human Maps & Scientific Sources.
+- **Next Action:** Phase 2 — River-to-Ocean Expansiveness.
 
 ## Phase 2: River-to-Ocean Expansiveness (Completed)
+
 - **Current Phase:** Phase 2 — River-to-Ocean Expansiveness & Boundless Flow.
 - **Observed Problem:** The canvas geometry capped at 92% width (`w * 0.92`), leaving a persistent 4% bank on both sides; color gradient sampled into jarring neon cyan (`[114, 245, 255]`); abrupt seam before `#the-poem`.
 - **Source Files:** `the-river.js`, `starmilk-refactor.css`.
@@ -53,4 +56,24 @@
   - `node scripts/verify-static.mjs`: PASSED.
 - **Unverified Work:** None for Phase 2.
 - **Known Risks:** None.
-- **Next Action:** Phase 3 — Human Maps & Scientific Sources (incorporating PR #43 source ledger, Herman/Van der Kolk/Porges/Doka/Boss research, and accessible ethical boundaries).
+- **Next Action:** Phase 3 — Human Maps & Scientific Sources.
+
+## Phase 3: Human Maps & Scientific Sources (Completed)
+
+- **Current Phase:** Phase 3 — Trauma-Informed Human Maps & Citation Ledger.
+- **Observed Problem:** Human Maps panels were shallow text nodes lacking relational nuance, scientific sources, or vital ethical boundaries (e.g. coercive control exceptions, non-linear grief variability).
+- **Source Files:** `starmilk-citations.json`, `index.html`, `starmilk-refactor.css`, `scripts/verify-static.mjs`.
+- **Proposed Change:** Author structured JSON citation ledger `starmilk-citations.json`; implement accessible `<details>` drawers for deeper understanding on all three maps; add Herman 3-stage recovery model, Lerner & Simmons attribution research, Van der Kolk somatic rhythm, and Polyvagal scientific caveats with direct source links.
+- **Changes Completed:**
+  - Created `starmilk-citations.json` with 8 peer-reviewed/authoritative clinical citations.
+  - Added `starmilk-citations.json` to automated static integrity check.
+  - Embedded deeper understanding disclosures with evidence tags, ethical boundary callouts, and external research links.
+  - Fixed ARIA role structure on `#radio-tabs` to resolve button child violation.
+  - Fixed cross-browser CSS properties (`text-wrap`, `-webkit-user-select`, `min-height: 0`).
+- **Tests Performed:**
+  - Browser interaction test: All 3 tabs switch seamlessly, `relDeeperIsOpen: true`, `returningHasDeeper: true`.
+  - `node scripts/verify-static.mjs`: PASSED.
+  - `node --check *.js`: PASSED.
+- **Unverified Work:** None for Phase 3.
+- **Known Risks:** None.
+- **Next Action:** Phase 4 — Healing Arts & Poetry Bridge & Phase 5 — Game Field Notes.

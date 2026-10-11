@@ -196,12 +196,12 @@ a { color: inherit; }
   will-change: transform, opacity;
 }
 .tapestry-plate::after { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, rgba(16,11,20,.38), transparent 42%, rgba(19,26,48,.22)); }
-.tapestry-plate--cosmic { opacity: .13; mix-blend-mode: screen; transform: translate3d(0, calc(var(--tapestry-progress) * -4vh), 0) scale(1.18) rotate(-2deg); filter: saturate(.74) contrast(1.06); }
-.tapestry-plate--twilight { opacity: .105; clip-path: polygon(0 0, 59% 0, 42% 48%, 69% 100%, 0 100%); mix-blend-mode: lighten; transform: translate3d(calc(var(--tapestry-progress) * 10vw), calc(var(--tapestry-progress) * -9vh), 0) scale(1.24) rotate(7deg); filter: saturate(.62) contrast(1.12); }
-.tapestry-plate--moonlit { opacity: .075; clip-path: polygon(45% 0, 100% 0, 100% 100%, 67% 100%, 53% 53%); mix-blend-mode: screen; transform: translate3d(calc(var(--tapestry-progress) * -8vw), calc(var(--tapestry-progress) * -6vh), 0) scale(1.16) rotate(-6deg); filter: saturate(.55) hue-rotate(-7deg); }
-.tapestry-plate--rose { opacity: .025; clip-path: polygon(15% 0, 100% 17%, 87% 85%, 36% 100%, 0 57%); mix-blend-mode: soft-light; transform: translate3d(calc(var(--tapestry-progress) * 7vw), calc(var(--tapestry-progress) * -12vh), 0) scale(1.2) rotate(5deg); filter: saturate(.82) hue-rotate(10deg); }
-.tapestry-plate--ochre { opacity: .035; clip-path: polygon(0 62%, 34% 28%, 74% 45%, 100% 100%, 0 100%); mix-blend-mode: color-dodge; transform: translate3d(calc(var(--tapestry-progress) * -6vw), calc(var(--tapestry-progress) * -3vh), 0) scale(1.2) rotate(-3deg); filter: saturate(.54) sepia(.16); }
-.tapestry-plate--constellation { opacity: .055; mix-blend-mode: overlay; transform: translate3d(0, calc(var(--tapestry-progress) * -14vh), 0) scale(1.12); filter: saturate(.7) contrast(1.08); }
+.tapestry-plate--cosmic { --tapestry-image: url('assets/tapestry/rink-cosmic.webp'); opacity: .13; mix-blend-mode: screen; transform: translate3d(0, calc(var(--tapestry-progress) * -4vh), 0) scale(1.18) rotate(-2deg); filter: saturate(.74) contrast(1.06); }
+.tapestry-plate--twilight { --tapestry-image: url('assets/tapestry/rink-twilight.webp'); opacity: .105; clip-path: polygon(0 0, 59% 0, 42% 48%, 69% 100%, 0 100%); mix-blend-mode: lighten; transform: translate3d(calc(var(--tapestry-progress) * 10vw), calc(var(--tapestry-progress) * -9vh), 0) scale(1.24) rotate(7deg); filter: saturate(.62) contrast(1.12); }
+.tapestry-plate--moonlit { --tapestry-image: url('assets/tapestry/rink-moonlit.webp'); opacity: .075; clip-path: polygon(45% 0, 100% 0, 100% 100%, 67% 100%, 53% 53%); mix-blend-mode: screen; transform: translate3d(calc(var(--tapestry-progress) * -8vw), calc(var(--tapestry-progress) * -6vh), 0) scale(1.16) rotate(-6deg); filter: saturate(.55) hue-rotate(-7deg); }
+.tapestry-plate--rose { --tapestry-image: url('assets/tapestry/rink-rose.webp'); opacity: .025; clip-path: polygon(15% 0, 100% 17%, 87% 85%, 36% 100%, 0 57%); mix-blend-mode: soft-light; transform: translate3d(calc(var(--tapestry-progress) * 7vw), calc(var(--tapestry-progress) * -12vh), 0) scale(1.2) rotate(5deg); filter: saturate(.82) hue-rotate(10deg); }
+.tapestry-plate--ochre { --tapestry-image: url('assets/tapestry/rink-ochre.webp'); opacity: .035; clip-path: polygon(0 62%, 34% 28%, 74% 45%, 100% 100%, 0 100%); mix-blend-mode: color-dodge; transform: translate3d(calc(var(--tapestry-progress) * -6vw), calc(var(--tapestry-progress) * -3vh), 0) scale(1.2) rotate(-3deg); filter: saturate(.54) sepia(.16); }
+.tapestry-plate--constellation { --tapestry-image: url('assets/tapestry/rink-constellation.webp'); opacity: .055; mix-blend-mode: overlay; transform: translate3d(0, calc(var(--tapestry-progress) * -14vh), 0) scale(1.12); filter: saturate(.7) contrast(1.08); }
 
 /* Visible section plates: a sequence of painted stills, refracted rather than presented as a gallery. */
 .tapestry-window {
@@ -299,11 +299,19 @@ section { position: relative; overflow: clip; padding: var(--space) var(--gutter
 .btn, .btn-patreon { display: inline-flex; align-items: center; justify-content: center; gap: .6rem; min-height: 2.8rem; padding: .7rem 1rem; border: 1px solid var(--honey); background: var(--honey); color: var(--ink); text-decoration: none; font-size: .74rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; transition: transform .18s var(--ease), background .18s var(--ease), color .18s var(--ease); }
 .btn:hover, .btn-patreon:hover { transform: translateY(-2px); background: var(--paper); color: var(--ink); }
 .scroll-cue, .nebula, .ring, .hero-gstars { display: none; }
+.hero-gstars .gstar:nth-child(1) { left: 8%; top: 22%; --sz: 1.5rem; --dur: 3.8s; --del: 0s; }
+.hero-gstars .gstar:nth-child(2) { left: 22%; top: 68%; --sz: 1.0rem; --dur: 4.5s; --del: 1.2s; }
+.hero-gstars .gstar:nth-child(3) { left: 38%; top: 15%; --sz: 1.2rem; --dur: 3.1s; --del: 2.3s; }
+.hero-gstars .gstar:nth-child(4) { left: 62%; top: 78%; --sz: 0.9rem; --dur: 5.0s; --del: 0.7s; }
+.hero-gstars .gstar:nth-child(5) { left: 75%; top: 20%; --sz: 1.6rem; --dur: 3.5s; --del: 1.8s; }
+.hero-gstars .gstar:nth-child(6) { left: 88%; top: 55%; --sz: 1.1rem; --dur: 4.2s; --del: 3.1s; }
+.hero-gstars .gstar:nth-child(7) { left: 50%; top: 85%; --sz: 1.3rem; --dur: 3.9s; --del: 0.5s; }
 
 /* Listening room / visual world / catalog */
 #radio { background: linear-gradient(120deg, #33281f, #202b24 66%, #294236); }
 #radio .section-inner { display: grid; grid-template-columns: minmax(0, 1fr) minmax(12rem, .7fr); column-gap: 4rem; align-items: end; }
 #radio .radio-section-copy { grid-column: 1; }
+.radio-section-footnote { margin-top: .8rem; font-size: .88rem; opacity: .7; }
 #radio::after { content: "302\Atracks / one river"; white-space: pre; position: absolute; right: 10vw; bottom: 3rem; color: rgba(232,223,207,.32); font: 400 clamp(2rem, 5vw, 5rem)/.86 var(--font-display); text-align: right; }
 #the-vision { background: #e1d3b8; color: var(--ink); }
 #the-vision::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 50%, rgba(23,19,26,.08) 50%) 0 0 / 18px 18px; opacity: .35; }
@@ -318,7 +326,7 @@ section { position: relative; overflow: clip; padding: var(--space) var(--gutter
 #inside-out { background: #273e32; }
 .video-showcase { max-width: 920px; margin: 2rem auto 0; border: 1px solid var(--line-strong); border-radius: 0; box-shadow: 12px 14px 0 rgba(12,9,12,.32); }
 .yt-facade-btn { position: relative; display: block; width: 100%; padding: 0; border: 0; background: var(--ink); cursor: pointer; }
-.yt-facade-btn img { display: block; width: 100%; filter: saturate(.62) contrast(1.05); }
+.yt-facade-btn img { display: block; width: 100%; height: auto; border-radius: var(--radius); filter: saturate(.62) contrast(1.05); }
 .yt-play-icon { position: absolute; left: 50%; top: 50%; width: 4rem; transform: translate(-50%,-50%); }
 
 #stream { background: #223026; }
@@ -346,6 +354,12 @@ section { position: relative; overflow: clip; padding: var(--space) var(--gutter
 .river-title { color: #f3ecdd; }
 .river-caption, .river-ocean-copy { color: rgba(243,236,221,.76); }
 .tributary, .river-leaf { border-radius: 0; border: 1px solid rgba(243,236,221,.35); background: rgba(23,32,43,.65); color: #f3ecdd; box-shadow: var(--shadow-lift); }
+.tributary:nth-of-type(1) { top: 22vh; }
+.tributary:nth-of-type(2) { top: 30vh; }
+.tributary:nth-of-type(3) { top: 43vh; }
+.tributary:nth-of-type(4) { top: 56vh; }
+.tributary:nth-of-type(5) { top: 68vh; }
+.tributary:nth-of-type(6) { top: 79vh; }
 .river-ocean-copy { position: absolute; right: var(--gutter); bottom: 3rem; max-width: 18rem; z-index: 2; }
 
 #lyrics { background: #443321; }
@@ -641,6 +655,93 @@ section { position: relative; overflow: clip; padding: var(--space) var(--gutter
   font-size: .82rem;
   line-height: 1.7;
 }
+
+/* Deeper Human Maps scientific understanding & citation layer */
+.maps-deeper {
+  margin-top: var(--space-4);
+  border: 1px solid rgba(242,231,208,.16);
+  border-radius: var(--radius-md);
+  background: rgba(22,32,24,.65);
+  overflow: hidden;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.maps-deeper[open] {
+  border-color: rgba(217,170,78,.35);
+}
+.maps-deeper-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .75rem 1.1rem;
+  color: var(--honey-soft);
+  font-size: .78rem;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  background: rgba(36,48,35,.55);
+  list-style: none;
+}
+.maps-deeper-toggle::-webkit-details-marker { display: none; }
+.maps-deeper-toggle:hover {
+  color: var(--lamplight);
+  background: rgba(45,60,43,.7);
+}
+.maps-deeper[open] .maps-deeper-toggle {
+  border-bottom: 1px solid var(--line);
+  color: var(--paper);
+}
+.maps-deeper-body {
+  padding: 1.2rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .9rem;
+  font-size: .87rem;
+  line-height: 1.72;
+  color: var(--paper-dim);
+}
+.maps-evidence-tag {
+  display: inline-block;
+  padding: .2rem .55rem;
+  font-size: .68rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(217,170,78,.35);
+  background: rgba(217,170,78,.12);
+  color: var(--honey-soft);
+  width: fit-content;
+}
+.maps-ethical-boundary {
+  padding: .75rem .95rem;
+  border-left: 3px solid #a36e4d;
+  background: rgba(75,48,32,.28);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--paper);
+  font-size: .83rem;
+  line-height: 1.65;
+}
+.maps-art-bridge {
+  padding: .75rem .95rem;
+  border-left: 3px solid var(--river);
+  background: rgba(53,92,82,.25);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--paper);
+  font-size: .83rem;
+  line-height: 1.65;
+}
+.maps-citation-ref {
+  font-size: .77rem;
+  color: rgba(242,231,208,.62);
+  border-top: 1px solid var(--line);
+  padding-top: .7rem;
+}
+.maps-citation-ref a {
+  color: var(--honey-soft);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 /* A quiet handoff from Human Maps to Open Air. No card, no added motion. */
 .maps-ocean-thought {
   max-width: min(49rem, 100%);
@@ -650,7 +751,6 @@ section { position: relative; overflow: clip; padding: var(--space) var(--gutter
   color: var(--paper);
   font: 400 clamp(1.18rem, 2.5vw, 1.8rem)/1.6 var(--font-display);
   letter-spacing: -.015em;
-  text-wrap: pretty;
 }
 .maps-ocean-thought p { margin: 0; }
 
@@ -872,6 +972,7 @@ footer { padding: 5rem var(--gutter) 6rem; border-top: 1px solid var(--line); ba
 .radio-panel { max-height: min(38rem, calc(100svh - 7rem)); overflow: auto; border-top: 1px solid var(--line); }
 .radio-floating.collapsed .radio-panel { display: none; }
 .radio-tabs, .radio-transport { display: flex; align-items: center; gap: .4rem; padding: .7rem; border-bottom: 1px solid var(--line); }
+.radio-tab-group { display: flex; align-items: center; gap: .4rem; }
 .radio-tab, .radio-close-btn, .radio-ctrl, .radio-like-btn { border: 1px solid var(--line); background: transparent; color: var(--paper-dim); cursor: pointer; }
 .radio-tab { padding: .45rem .65rem; font-size: .7rem; }
 .radio-tab.active, .radio-ctrl-play { border-color: var(--honey); color: var(--honey-soft); }
@@ -923,6 +1024,10 @@ body:has(.radio-floating.open) .starmilk-chat-toggle, body:has(.radio-floating.o
 .bb-canvas-wrap { overflow: auto; background: #0e0b10; }
 .bb-canvas-wrap canvas { display: block; max-width: 100%; height: auto; margin: auto; }
 .bb-ui { padding: .9rem 1rem; color: var(--paper-dim); font-size: .8rem; }
+.bb-stats-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem; }
+.tetris-canvas-wrap { display: flex; justify-content: center; align-items: center; min-height: min(75vh, 600px); background: #080b16; }
+.tetris-controls-note { font-size: .78rem; color: var(--muted); }
+.sc-catalog-note { color: rgba(140,133,120,.5); font-size: .85rem; font-style: italic; margin: 1rem 0; }
 
 @media (max-width: 760px) {
   :root { --page: min(100%, calc(100vw - 2rem)); --gutter: 1rem; --space: 4.5rem; }
@@ -1163,7 +1268,7 @@ body.starmilk-surface-shift .hero-synapse-status::before { animation: surface-ha
   .river-leaf { display: none; }
   .river-ocean-copy { bottom: 17svh; padding: 0 1.25rem; font-size: 1rem; line-height: 1.4; }
 
-  #lyrics { display: block; min-height: auto; overflow: visible; }
+  #lyrics { display: block; min-height: 0; overflow: visible; }
   .lyrics-shell { width: 100%; padding: 4rem 1rem 5.5rem; }
   .lyrics-head { text-align: left; margin-bottom: 1.5rem; }
   .lyrics-head .section-title { font-size: clamp(2.2rem, 12vw, 3.2rem); line-height: .96; }

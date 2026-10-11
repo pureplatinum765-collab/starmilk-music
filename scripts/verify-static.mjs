@@ -41,7 +41,7 @@ check(stylesheet.includes("--dur-fast:") && stylesheet.includes("--dur-ritual:")
 check(stylesheet.includes("--surface-base:") && stylesheet.includes("--text-primary:"), "canonical stylesheet is missing semantic surface/text tokens");
 check(!/z-index:\s*120\b/.test(stylesheet), "raw skip-link z-index escaped the named layer system");
 
-for (const filename of ["manifest.json", "starmilk-tracks.json"]) {
+for (const filename of ["manifest.json", "starmilk-tracks.json", "starmilk-citations.json"]) {
   try {
     JSON.parse(readFileSync(join(root, filename), "utf8"));
   } catch (error) {
