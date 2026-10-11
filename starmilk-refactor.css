@@ -1102,6 +1102,12 @@ body:has(.radio-floating.open) .starmilk-chat-toggle, body:has(.radio-floating.o
 .poem-quote { margin: 0; max-width: 46ch; color: var(--paper-dim); font: 400 clamp(1rem, 1.35vw, 1.12rem)/1.85 var(--font-display); }
 .poem-quote p { margin: 0 0 1.05em; }
 .poem-note { max-width: 48ch; margin: 2.4rem 0 0; padding-top: 1.6rem; border-top: 1px solid var(--line); color: var(--paper); font: 400 clamp(.98rem, 1.3vw, 1.08rem)/1.75 var(--font-body); }
+.poem-companions { margin-top: 2rem; padding-top: 1.6rem; border-top: 1px solid var(--line); }
+.poem-companions-kicker { display: block; font-size: .68rem; letter-spacing: .15em; text-transform: uppercase; color: var(--honey-soft); margin-bottom: .9rem; }
+.poem-companion-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1.2rem; }
+.poem-companion-card { margin: 0; padding: .85rem 1.1rem; border-left: 2px solid var(--honey); background: rgba(38,34,26,.55); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.poem-companion-card p { margin: 0 0 .4rem; color: var(--paper); font: italic 400 .92rem/1.55 var(--font-display); }
+.poem-companion-card cite { font-size: .75rem; color: var(--paper-dim); font-style: normal; }
 .poem-scene { margin: 0; transform: rotate(1.6deg); border: 1px solid var(--line); box-shadow: 0 14px 36px rgba(11,18,13,.28); background: #28251e; }
 .poem-scene img { display: block; width: 100%; height: auto; filter: saturate(.86) contrast(1.03); }
 .river-poem-link {

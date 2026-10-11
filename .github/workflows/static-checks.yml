@@ -1,6 +1,10 @@
 name: Static Site Checks
 
 on:
+  push:
+    branches: [main, 'evolution/**']
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
