@@ -997,13 +997,21 @@ body:has(.radio-floating.open) .starmilk-chat-toggle, body:has(.radio-floating.o
 .poem-quote { margin: 0; max-width: 46ch; color: var(--paper-dim); font: 400 clamp(1rem, 1.35vw, 1.12rem)/1.85 var(--font-display); }
 .poem-quote p { margin: 0 0 1.05em; }
 .poem-note { max-width: 48ch; margin: 2.4rem 0 0; padding-top: 1.6rem; border-top: 1px solid var(--line); color: var(--paper); font: 400 clamp(.98rem, 1.3vw, 1.08rem)/1.75 var(--font-body); }
-.poem-scene { margin: 0; transform: rotate(1.6deg); border: 1px solid var(--line); box-shadow: var(--shadow-lift); background: #1b1626; }
+.poem-scene { margin: 0; transform: rotate(1.6deg); border: 1px solid var(--line); box-shadow: 0 14px 36px rgba(11,18,13,.28); background: #28251e; }
 .poem-scene img { display: block; width: 100%; height: auto; filter: saturate(.86) contrast(1.03); }
-.river-poem-link { display: block; padding: 1.4rem var(--gutter) 0; text-align: center; font-size: .8rem; letter-spacing: .05em; }
+.river-poem-link {
+  display: block;
+  margin: 0;
+  padding: 2.2rem var(--gutter) 2.5rem;
+  text-align: center;
+  font-size: .84rem;
+  letter-spacing: .06em;
+  background: linear-gradient(180deg, #89afa6 0%, rgba(37,36,28,.65) 55%, #25241c 100%);
+}
 .river-poem-link a { color: var(--honey-soft); text-decoration: none; border-bottom: 1px solid rgba(226, 180, 126, .35); padding-bottom: .15rem; }
 .river-poem-link a:hover, .river-poem-link a:focus-visible { color: var(--lamplight); border-color: rgba(255, 217, 160, .6); }
-.plaza-strip { position: relative; height: clamp(5.5rem, 11vw, 8.5rem); margin-top: clamp(1rem, 2.5vw, 2rem); background: linear-gradient(180deg, rgba(23, 20, 38, 0), rgba(79, 59, 46, .38)); }
-.plaza-figure { position: absolute; bottom: 16%; width: clamp(9px, 1.1vw, 13px); height: clamp(20px, 2.6vw, 30px); background: #0e0b16; border-radius: 46% 54% 38% 42% / 58% 56% 44% 40%; }
+.plaza-strip { position: relative; height: clamp(5.5rem, 11vw, 8.5rem); margin-top: clamp(1rem, 2.5vw, 2rem); background: linear-gradient(180deg, rgba(37, 36, 28, 0), rgba(79, 59, 46, .38)); }
+.plaza-figure { position: absolute; bottom: 16%; width: clamp(9px, 1.1vw, 13px); height: clamp(20px, 2.6vw, 30px); background: #141712; border-radius: 46% 54% 38% 42% / 58% 56% 44% 40%; }
 .plaza-figure::after { content: ""; position: absolute; left: 50%; bottom: -30%; width: 320%; height: 90%; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 217, 160, .34), rgba(255, 217, 160, 0)); }
 .plaza-figure:nth-child(1) { left: 7%; opacity: .8; }
 .plaza-figure:nth-child(2) { left: 19%; height: clamp(24px, 3vw, 34px); opacity: .95; }

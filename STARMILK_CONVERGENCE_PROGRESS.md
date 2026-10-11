@@ -35,4 +35,22 @@
   - `node --check *.js`: PASSED.
 - **Unverified Work:** None for Phase 1.
 - **Known Risks:** None.
-- **Next Action:** Phase 2 — River-to-Ocean Expansiveness (redesign `the-river.js` so water flows beyond canvas bounds into horizon).
+- **Next Action:** Phase 3 — Human Maps & Scientific Sources.
+
+## Phase 2: River-to-Ocean Expansiveness (Completed)
+- **Current Phase:** Phase 2 — River-to-Ocean Expansiveness & Boundless Flow.
+- **Observed Problem:** The canvas geometry capped at 92% width (`w * 0.92`), leaving a persistent 4% bank on both sides; color gradient sampled into jarring neon cyan (`[114, 245, 255]`); abrupt seam before `#the-poem`.
+- **Source Files:** `the-river.js`, `starmilk-refactor.css`.
+- **Proposed Change:** Implement monotonic expansion where bottom banks push past canvas edges (`bottomExpansion = 0.22 + 1.16 * p^1.12`, exiting viewport at `p > 0.82`) and top perspective widens; replace cyan with mineral river teal (`#355f55`) and horizon teal (`#89afa6`); connect `.river-poem-link` with a dissolved atmospheric gradient into `#the-poem`.
+- **Changes Completed:**
+  - Updated `sampleColor(p)` in `the-river.js` to palette stops: deep pine (`#182621`), mineral stream (`#24443c`), estuarine teal (`#355f55`), and open horizon (`#89afa6`).
+  - Implemented boundless geometry where `left < 0` and `right > w` at full scroll.
+  - Dissolved wave shorelines into horizon swells and starlight spray.
+  - Linked `#river` to `#the-poem` via seamless gradient on `.river-poem-link`.
+- **Tests Performed:**
+  - Browser script test at `progress: 1`: `banksExitedViewport: true` (`left: -191.71px`, `right: 1200.71px` on 1009px viewport).
+  - `node --check the-river.js`: PASSED.
+  - `node scripts/verify-static.mjs`: PASSED.
+- **Unverified Work:** None for Phase 2.
+- **Known Risks:** None.
+- **Next Action:** Phase 3 — Human Maps & Scientific Sources (incorporating PR #43 source ledger, Herman/Van der Kolk/Porges/Doka/Boss research, and accessible ethical boundaries).
