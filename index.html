@@ -56,6 +56,9 @@
   }
   </script>
 
+  <script type="speculationrules">
+  {"prefetch": [{"source": "document", "where": {"href_matches": "/*"}, "eagerness": "conservative"}}]}
+  </script>
   <script src="parking-lot.js?v=mothership-20261006a" defer></script>
 
   <!-- ═══ SENTRY ERROR MONITORING ═══ -->
@@ -140,12 +143,12 @@
 
 <!-- Approved STARMILK rink tapestry: visual atmosphere only, never an interaction layer. -->
 <div class="starmilk-tapestry" aria-hidden="true">
-  <span class="tapestry-plate tapestry-plate--cosmic" style="--tapestry-image:url('assets/tapestry/rink-cosmic.webp')"></span>
-  <span class="tapestry-plate tapestry-plate--twilight" style="--tapestry-image:url('assets/tapestry/rink-twilight.webp')"></span>
-  <span class="tapestry-plate tapestry-plate--moonlit" style="--tapestry-image:url('assets/tapestry/rink-moonlit.webp')"></span>
-  <span class="tapestry-plate tapestry-plate--rose" style="--tapestry-image:url('assets/tapestry/rink-rose.webp')"></span>
-  <span class="tapestry-plate tapestry-plate--ochre" style="--tapestry-image:url('assets/tapestry/rink-ochre.webp')"></span>
-  <span class="tapestry-plate tapestry-plate--constellation" style="--tapestry-image:url('assets/tapestry/rink-constellation.webp')"></span>
+  <span class="tapestry-plate tapestry-plate--cosmic" style="--tapestry-image:url('assets/tapestry/rink-cosmic.avif')"></span>
+  <span class="tapestry-plate tapestry-plate--twilight" style="--tapestry-image:url('assets/tapestry/rink-twilight.avif')"></span>
+  <span class="tapestry-plate tapestry-plate--moonlit" style="--tapestry-image:url('assets/tapestry/rink-moonlit.avif')"></span>
+  <span class="tapestry-plate tapestry-plate--rose" style="--tapestry-image:url('assets/tapestry/rink-rose.avif')"></span>
+  <span class="tapestry-plate tapestry-plate--ochre" style="--tapestry-image:url('assets/tapestry/rink-ochre.avif')"></span>
+  <span class="tapestry-plate tapestry-plate--constellation" style="--tapestry-image:url('assets/tapestry/rink-constellation.avif')"></span>
 </div>
 
 <div class="wrap" role="main">
@@ -596,6 +599,7 @@
     </div>
     <figure class="poem-scene">
       <picture>
+        <source type="image/avif" srcset="evening-plaza-900.avif 900w, evening-plaza-1600.avif 1600w" sizes="(max-width: 820px) 92vw, 42vw" />
         <source type="image/webp" srcset="evening-plaza-900.webp 900w, evening-plaza-1600.webp 1600w" sizes="(max-width: 820px) 92vw, 42vw" />
         <img src="evening-plaza-1600.jpg" srcset="evening-plaza-900.jpg 900w, evening-plaza-1600.jpg 1600w" sizes="(max-width: 820px) 92vw, 42vw" width="1600" height="2263" alt="An evening plaza under a deep night sky. People skate and stand together, lamplight pooled on the ground, a small star rolling through the middle of everyone." loading="lazy" decoding="async" />
       </picture>
