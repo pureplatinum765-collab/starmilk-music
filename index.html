@@ -57,6 +57,9 @@
   }
   </script>
 
+  <script type="speculationrules">
+  {"prefetch": [{"source": "document", "where": {"href_matches": "/*"}, "eagerness": "conservative"}}]}
+  </script>
   <script src="parking-lot.js?v=mothership-20261006a" defer></script>
 
   <!-- ═══ SENTRY ERROR MONITORING ═══ -->
@@ -526,7 +529,7 @@
         </a>
 
         <!-- SoundCloud — teal accent -->
-        <a class="card card-teal reveal" href="https://soundcloud.com/starmilk" target="_blank" rel="noopener noreferrer">
+        <a class="card card-teal reveal" href="https://soundcloud.com/star-milk-645735333" target="_blank" rel="noopener noreferrer">
           <div class="card-icon">
             <svg width="28" height="20" viewBox="0 0 120 50" aria-hidden="true">
               <path d="M0 35c0 8.3 6.7 15 15 15s15-6.7 15-15V20C30 11.7 23.3 5 15 5 7.8 5 1.8 10 .3 17 .1 18 0 19 0 20v15z" fill="#FF5500"/>
@@ -670,6 +673,7 @@
     </div>
     <figure class="poem-scene">
       <picture>
+        <source type="image/avif" srcset="evening-plaza-900.avif 900w, evening-plaza-1600.avif 1600w" sizes="(max-width: 820px) 92vw, 42vw" />
         <source type="image/webp" srcset="evening-plaza-900.webp 900w, evening-plaza-1600.webp 1600w" sizes="(max-width: 820px) 92vw, 42vw" />
         <img src="evening-plaza-1600.jpg" srcset="evening-plaza-900.jpg 900w, evening-plaza-1600.jpg 1600w" sizes="(max-width: 820px) 92vw, 42vw" width="1600" height="2263" alt="An evening plaza under a deep night sky. People skate and stand together, lamplight pooled on the ground, a small star rolling through the middle of everyone." loading="lazy" decoding="async" />
       </picture>
