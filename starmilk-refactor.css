@@ -276,7 +276,8 @@ nav.scrolled { min-height: 4rem; background: rgba(20,27,21,.95); border-color: v
 .nav-links { display: flex; align-items: center; gap: clamp(.8rem, 2vw, 2rem); margin: 0; padding: 0; list-style: none; }
 .nav-links a, .mood-ring-trigger, #mood-ring-trigger { border: 0; background: transparent; color: rgba(232,223,207,.64); cursor: pointer; text-decoration: none; font-size: .72rem; letter-spacing: .11em; text-transform: uppercase; transition: color .2s var(--ease); }
 .nav-links a:hover, .nav-links a[data-active="true"], .mood-ring-trigger:hover, #mood-ring-trigger:hover { color: var(--honey-soft); }
-.nav-visualizer-link { padding: .45rem .6rem; border: 1px solid var(--line); color: var(--river) !important; }
+.nav-visualizer-link { display: inline-flex; align-items: center; gap: .35rem; padding: .45rem .6rem; border: 1px solid var(--line); color: var(--river) !important; }
+.nav-visualizer-link svg { width: .55rem !important; height: .55rem !important; display: inline-block !important; flex-shrink: 0; vertical-align: middle; }
 .mood-ring-trigger, #mood-ring-trigger { width: 1.25rem; height: 1.25rem; padding: 0; border-radius: 50%; background: conic-gradient(from 100deg, var(--honey), var(--river), var(--plum-soft), var(--honey)); }
 
 section { position: relative; overflow: clip; padding: var(--space) var(--gutter); border-top: 1px solid rgba(232,223,207,.08); }
@@ -990,8 +991,8 @@ footer { padding: 5rem var(--gutter) 6rem; border-top: 1px solid var(--line); ba
 .radio-queue-item:hover, .radio-queue-item.active { background: rgba(198,138,79,.12); color: var(--paper); }
 .starmilk-chat-toggle { position: fixed; right: 1.15rem; bottom: 1.1rem; z-index: var(--layer-utility); width: 3.2rem; height: 3.2rem; border: 1px solid var(--line-strong); border-radius: 50%; background: var(--river-deep); color: var(--paper); cursor: pointer; box-shadow: 4px 5px 0 rgba(0,0,0,.25); }
 .starmilk-chat-panel { position: fixed; right: 1.15rem; bottom: 5.2rem; z-index: var(--layer-panel); width: min(25rem, calc(100vw - 2.3rem)); max-height: min(35rem, calc(100svh - 7rem)); display: none; flex-direction: column; overflow: hidden; border: 1px solid var(--line-strong); border-radius: var(--radius-md); background: #253629; color: var(--paper); box-shadow: 0 18px 40px rgba(7,18,11,.30); }
-.starmilk-chat-panel.open { display: flex; }
-.starmilk-chat-head, .starmilk-chat-links, .starmilk-chat-input { display: flex; align-items: center; gap: .5rem; padding: .75rem; border-bottom: 1px solid var(--line); }
+.starmilk-chat-head, .starmilk-chat-input { display: flex; align-items: center; gap: .5rem; padding: .75rem; border-bottom: 1px solid var(--line); }
+.starmilk-chat-links { display: flex; align-items: center; flex-wrap: wrap; gap: .45rem; padding: .65rem .75rem; border-bottom: 1px solid var(--line); }
 .starmilk-chat-head h4 { margin: 0; color: var(--honey-soft); font-size: .74rem; letter-spacing: .14em; text-transform: uppercase; }
 .starmilk-chat-head button { margin-left: auto; border: 0; background: transparent; color: var(--paper); cursor: pointer; }
 .starmilk-chat-messages { display: flex; flex: 1; flex-direction: column; gap: .65rem; overflow: auto; padding: .8rem; }
@@ -1033,16 +1034,192 @@ body:has(.radio-floating.open) .starmilk-chat-toggle, body:has(.radio-floating.o
   :root { --page: min(100%, calc(100vw - 2rem)); --gutter: 1rem; --space: 4.5rem; }
   .parking-lot-aperture { width: 75vw; left: 57%; top: 35%; opacity: .5; }
   .parking-lot-content { padding-top: 48svh; }
-  nav { min-height: 4rem; }
+  nav { min-height: 4.25rem; }
   .nav-hamburger { display: block; }
-  .nav-links { position: fixed; inset: 4rem 0 auto 0; display: none; align-items: stretch; flex-direction: column; gap: 0; padding: .75rem 1rem 1rem; border-bottom: 1px solid var(--line); background: #17131a; }
+  .nav-links {
+    position: fixed;
+    top: 4.25rem;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(100svh - 4.25rem);
+    overflow-y: auto;
+    display: none;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0;
+    padding: .65rem 1.25rem 2.5rem;
+    border-bottom: 1px solid var(--line-strong);
+    background: rgba(20,27,21,.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 16px 36px rgba(0,0,0,.5);
+    z-index: var(--layer-nav);
+  }
   .nav-links.mobile-open { display: flex; }
-  .nav-links li, .nav-links a { width: 100%; }
-  .nav-links a { display: block; padding: .75rem 0; }
-  .hero-content { margin-left: 0; }
-  #hero { min-height: 43rem; }
-  #hero::before { background: linear-gradient(0deg, #171219 5%, rgba(23,18,25,.86) 48%, rgba(23,18,25,.1) 100%), url("star-wizard.jpg") 70% 10% / 130% auto no-repeat; }
-  #hero::after { width: 72vw; right: 10%; top: 12%; }
+  .nav-links li {
+    width: 100%;
+    border-bottom: 1px solid rgba(232,223,207,.08);
+  }
+  .nav-links li:last-child {
+    border-bottom: none;
+  }
+  .nav-links a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: .85rem 0;
+    font-size: .82rem;
+    letter-spacing: .14em;
+    color: rgba(232,223,207,.85);
+  }
+  .nav-links a:hover,
+  .nav-links a:focus-visible {
+    color: var(--honey-soft);
+  }
+  .nav-links .nav-visualizer-link {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: flex-start;
+    gap: .45rem;
+    padding: .45rem .75rem;
+    margin: .5rem 0;
+    border: 1px solid var(--line);
+    width: fit-content;
+  }
+  .nav-links .nav-visualizer-link svg {
+    width: .55rem !important;
+    height: .55rem !important;
+  }
+  .nav-links li:has(#mood-ring-trigger) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .8rem 0;
+  }
+  .nav-links li:has(#mood-ring-trigger)::before {
+    content: "MOOD RING";
+    font-size: .82rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: rgba(232,223,207,.85);
+  }
+  .nav-links #mood-ring-trigger,
+  .nav-links .mood-ring-trigger {
+    width: 1.6rem;
+    height: 1.6rem;
+    margin: 0;
+  }
+
+  #hero {
+    min-height: min(52rem, 100svh);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 4.8rem var(--gutter) 4.5rem;
+    position: relative;
+    overflow: hidden;
+    background: #1c2119;
+  }
+  #hero::before {
+    background: radial-gradient(circle at 50% 32%, rgba(28, 33, 25, 0.5) 0%, #1c2119 82%);
+  }
+  #hero::after { display: none; }
+  .hero-content {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 28rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-eyebrow {
+    margin: 0 0 .5rem;
+    font-size: .68rem;
+    letter-spacing: .24em;
+    text-align: center;
+  }
+  .hero-title {
+    margin: 0 0 .9rem;
+    font-size: clamp(3.2rem, 13.5vw, 4.8rem);
+    line-height: .86;
+    letter-spacing: -.06em;
+    text-align: center;
+  }
+  .hero-art {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    width: min(64vw, 205px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    margin: .4rem auto 1.35rem;
+    background: url("star-wizard.jpg") center / cover no-repeat;
+    filter: saturate(.82) contrast(1.06);
+    -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 58%, rgba(0,0,0,.6) 74%, transparent 96%);
+    mask-image: radial-gradient(circle at 50% 50%, #000 58%, rgba(0,0,0,.6) 74%, transparent 96%);
+    box-shadow: 0 0 32px rgba(226, 180, 126, 0.18), 0 0 0 1px rgba(226, 180, 126, 0.22);
+    z-index: 1;
+  }
+  .hero-tagline {
+    max-width: 23rem;
+    margin: 0 auto 1.4rem;
+    font-size: .95rem;
+    line-height: 1.6;
+    text-align: center;
+    color: var(--paper-dim);
+  }
+  .hero-content .btn,
+  .hero-content #cq-launch-btn {
+    width: min(100%, 18rem);
+    margin: 0 auto;
+    justify-content: center;
+    text-align: center;
+  }
+  .hero-content .btn[href="#stream"] {
+    order: 10;
+  }
+  .hero-content #cq-launch-btn {
+    order: 11;
+    margin-top: .6rem;
+  }
+  .hero-story-link {
+    order: 12;
+    margin: 1.15rem auto 0;
+    text-align: center;
+    display: inline-block;
+    font-size: .78rem;
+  }
+  .hero-synapse-status {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    margin: 0 auto 1rem;
+    text-align: center;
+    justify-content: center;
+    width: max-content;
+    max-width: calc(100vw - 2rem);
+    font-size: .56rem;
+  }
+  .hero-synapse-status::before {
+    left: -0.85rem;
+    top: .18rem;
+  }
+
+  section, footer {
+    padding-bottom: 6.5rem;
+  }
+
   #radio .section-inner, #the-vision .section-inner, .lyrics-layout { grid-template-columns: 1fr; }
   #radio::after { position: static; display: block; margin: 2rem auto 0; font-size: 3rem; }
   #the-vision .label, #the-vision .section-title, #the-vision .vision-quote, #the-vision .vision-art, .vision-video { grid-column: 1; grid-row: auto; }
@@ -1052,10 +1229,34 @@ body:has(.radio-floating.open) .starmilk-chat-toggle, body:has(.radio-floating.o
   .game-shell { min-height: 17rem; }
   .river-copy { bottom: 9svh; }
   .tributary { font-size: .68rem; }
-  .radio-floating { right: 4.9rem; bottom: .75rem; max-width: calc(100vw - 6rem); }
+
+  .radio-floating.collapsed { right: 3.8rem; bottom: .75rem; max-width: calc(100vw - 4.65rem); }
+  .radio-floating.collapsed .radio-badge { min-height: 2.5rem; padding: .4rem .65rem; gap: .5rem; font-size: .7rem; border-radius: 9999px; }
+  .radio-floating.collapsed .radio-badge svg { width: 1.1rem; height: 1.1rem; }
   .radio-floating.open { right: .65rem; bottom: .65rem; width: calc(100vw - 1.3rem); max-width: none; }
-  .starmilk-chat-toggle { right: .75rem; bottom: .75rem; }
-  .starmilk-chat-panel { right: .65rem; bottom: 4.8rem; width: calc(100vw - 1.3rem); }
+  .starmilk-chat-toggle { right: .75rem; bottom: .75rem; width: 2.5rem; height: 2.5rem; }
+  .starmilk-chat-panel { right: .65rem; bottom: 4.2rem; width: calc(100vw - 1.3rem); }
+  .starmilk-chat-links { flex-wrap: wrap; gap: .4rem; }
+  .starmilk-chat-links a { white-space: nowrap; }
+
+  body:has(.nav-links.mobile-open) .radio-floating,
+  body:has(.nav-links.mobile-open) .starmilk-chat-toggle,
+  body:has(.bb-overlay.open) .radio-floating,
+  body:has(.bb-overlay.open) .starmilk-chat-toggle,
+  body:has(.tetris-overlay.open) .radio-floating,
+  body:has(.tetris-overlay.open) .starmilk-chat-toggle,
+  body:has(.mood-ring-overlay.open) .radio-floating,
+  body:has(.mood-ring-overlay.open) .starmilk-chat-toggle,
+  body.cosmic-maze-open .radio-floating,
+  body.cosmic-maze-open .starmilk-chat-toggle,
+  body.starmilk-mobile-reading .radio-floating,
+  body.starmilk-mobile-reading .starmilk-chat-toggle {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(1.5rem) !important;
+    transition: opacity .2s ease, transform .2s ease;
+  }
+
   .mood-ring-options { grid-template-columns: 1fr; }
 }
 
@@ -1148,10 +1349,12 @@ body:has(.radio-floating.open) .starmilk-chat-toggle, body:has(.radio-floating.o
 /* Hero: gradient stays as the shade; the art becomes a feathered painting, no frame, no hard edges. */
 #hero::before { background: linear-gradient(90deg, #1c2119 0%, rgba(28, 33, 25, .97) 44%, rgba(28, 33, 25, .63) 62%, rgba(28, 33, 25, .10) 84%, rgba(28, 33, 25, .58) 100%); }
 #hero::after { display: none; }
-.hero-art { position: absolute; top: 50%; right: 3%; transform: translateY(-50%); z-index: -1; width: min(52vw, 720px); aspect-ratio: 1344 / 768; background: url("star-wizard.jpg") center / cover no-repeat; filter: saturate(.74) contrast(1.04); pointer-events: none;
-  -webkit-mask-image: radial-gradient(ellipse 62% 58% at 50% 47%, #000 42%, rgba(0, 0, 0, .55) 64%, transparent 86%);
-          mask-image: radial-gradient(ellipse 62% 58% at 50% 47%, #000 42%, rgba(0, 0, 0, .55) 64%, transparent 86%); }
-@media (max-width: 900px) { .hero-art { right: -8%; width: min(80vw, 460px); } }
+@media (min-width: 761px) {
+  .hero-art { position: absolute; top: 50%; right: 3%; transform: translateY(-50%); z-index: -1; width: min(52vw, 720px); aspect-ratio: 1344 / 768; background: url("star-wizard.jpg") center / cover no-repeat; filter: saturate(.74) contrast(1.04); pointer-events: none;
+    -webkit-mask-image: radial-gradient(ellipse 62% 58% at 50% 47%, #000 42%, rgba(0, 0, 0, .55) 64%, transparent 86%);
+            mask-image: radial-gradient(ellipse 62% 58% at 50% 47%, #000 42%, rgba(0, 0, 0, .55) 64%, transparent 86%); }
+}
+@media (min-width: 761px) and (max-width: 900px) { .hero-art { right: -8%; width: min(80vw, 460px); } }
 /* Entry overlay: the portrait melts into the dark — no frame, no shadow, no tilt, full painterly color. */
 .parking-lot-aperture { border: 0; box-shadow: none; transform: translate(-50%, -50%); }
 .parking-lot-portrait { mix-blend-mode: normal;
@@ -1254,14 +1457,14 @@ body.starmilk-surface-shift .hero-synapse-status::before { animation: surface-ha
     pointer-events: none;
   }
 
-  .bb-overlay.open { display: grid; place-items: center; padding: .5rem; overflow: hidden; }
+  .bb-overlay.open, .tetris-overlay.open { display: grid; place-items: center; padding: .5rem; overflow: hidden; }
   .bb-panel { width: 100%; max-height: calc(100dvh - 1rem); padding: .75rem; border-radius: 0; overflow-y: auto; }
-  #brick-breaker-overlay .bb-panel { display: flex; flex-direction: column; }
+  #brick-breaker-overlay .bb-panel, #tetris-overlay .bb-panel { display: flex; flex-direction: column; }
   .bb-head { align-items: flex-start; margin-bottom: .5rem; }
   .bb-head h3 { max-width: calc(100% - 5.5rem); font-size: clamp(1.25rem, 7vw, 1.7rem); line-height: 1.05; }
   .bb-close { min-height: 2.75rem; }
-  #brick-breaker-overlay .bb-canvas-wrap { flex: 0 0 min(46svh, 23rem); height: min(46svh, 23rem); max-height: none; aspect-ratio: auto; overflow: hidden; }
-  #brick-breaker-canvas { width: 100%; height: 100% !important; }
+  #brick-breaker-overlay .bb-canvas-wrap, #tetris-overlay .bb-canvas-wrap { flex: 0 0 min(46svh, 23rem); height: min(46svh, 23rem); max-height: none; aspect-ratio: auto; overflow: hidden; }
+  #brick-breaker-canvas, #tetris-canvas { width: 100%; height: 100% !important; }
   .bb-ui { margin-top: .55rem; gap: .45rem; }
   .bb-mobile { display: flex; }
 
@@ -1314,8 +1517,25 @@ body.starmilk-surface-shift .hero-synapse-status::before { animation: surface-ha
 
 /* ══════════ HUMAN MAPS + OPEN AIR — small-width compositions (320–430px) ══════════ */
 @media (max-width: 680px) {
-  .maps-tabs { padding: .4rem; gap: .35rem; }
-  .maps-tab { flex: 1 1 100%; min-height: 2.9rem; }
+  .maps-tabs {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: .4rem;
+    gap: .45rem;
+  }
+  .maps-tabs::-webkit-scrollbar { display: none; }
+  .maps-tab {
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 2.45rem;
+    padding: .5rem .9rem;
+    font-size: .72rem;
+    white-space: nowrap;
+  }
   .maps-panel { padding: 1.25rem; gap: var(--space-5); }
   .maps-figure { min-height: 11.5rem; }
   .maps-node { font-size: .6rem; padding: .28rem .5rem; }

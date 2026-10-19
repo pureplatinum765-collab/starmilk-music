@@ -485,6 +485,7 @@
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     generateRun();
     state.active = true;
+    document.body.classList.add('cosmic-maze-open');
     overlay.style.display = 'block';
     resize();
     setTrack(TRACKS[0], true);
@@ -501,6 +502,7 @@
 
   function exitGame({ restoreFocus = true } = {}) {
     state.active = false;
+    document.body.classList.remove('cosmic-maze-open');
     cancelAnimationFrame(state.raf);
     state.raf = null;
     state.accumulator = 0;

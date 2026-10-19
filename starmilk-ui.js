@@ -12,8 +12,13 @@
   const mood = document.getElementById('mood-ring-overlay');
   const clearing = document.getElementById('the-clearing');
 
-  const compactReadingSections = [document.getElementById('river'), document.getElementById('lyrics')].filter(Boolean);
-  const compactViewport = window.matchMedia('(max-width: 680px)');
+  const compactReadingSections = [
+    document.getElementById('river'),
+    document.getElementById('the-poem'),
+    document.getElementById('human-maps'),
+    document.getElementById('lyrics')
+  ].filter(Boolean);
+  const compactViewport = window.matchMedia('(max-width: 768px)');
   if (compactReadingSections.length && 'IntersectionObserver' in window) {
     const activeReadingSections = new Set();
     const syncReadingState = () => {
