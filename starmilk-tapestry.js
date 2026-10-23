@@ -10,7 +10,7 @@
   const root = document.documentElement;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const sceneForSection = {
-    hero: 'indigo', radio: 'indigo', 'the-vision': 'moon', 'inside-out': 'moon',
+    hero: 'indigo', radio: 'indigo', 'our-story': 'rose', 'human-maps': 'moon', 'open-air': 'indigo', 'the-vision': 'moon', 'inside-out': 'moon', 'the-poem': 'rose',
     stream: 'indigo', river: 'constellation', lyrics: 'rose', orchard: 'moon',
     games: 'constellation', support: 'ochre', vip: 'rose', connect: 'ochre'
   };
@@ -20,14 +20,14 @@
   let frame = 0;
 
   const windowConfig = {
-    radio: ['rink-cosmic.webp', ''],
-    stream: ['rink-twilight.webp', ''],
-    lyrics: ['rink-rose.webp', 'tapestry-window--rose'],
-    orchard: ['rink-moonlit.webp', 'tapestry-window--moon'],
-    games: ['rink-constellation.webp', 'tapestry-window--constellation'],
-    support: ['rink-ochre.webp', 'tapestry-window--ochre'],
-    vip: ['rink-rose.webp', 'tapestry-window--rose'],
-    connect: ['rink-twilight.webp', '']
+    radio: ['rink-cosmic.avif', ''],
+    stream: ['rink-twilight.avif', ''],
+    lyrics: ['rink-rose.avif', 'tapestry-window--rose'],
+    orchard: ['rink-moonlit.avif', 'tapestry-window--moon'],
+    games: ['rink-constellation.avif', 'tapestry-window--constellation'],
+    support: ['rink-ochre.avif', 'tapestry-window--ochre'],
+    vip: ['rink-rose.avif', 'tapestry-window--rose'],
+    connect: ['rink-twilight.avif', '']
   };
   Object.entries(windowConfig).forEach(([sectionId, [filename, modifier]]) => {
     const section = document.getElementById(sectionId);

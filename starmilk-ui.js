@@ -86,7 +86,7 @@
 
   const sections = [...document.querySelectorAll('section[id]')];
   const links = [...document.querySelectorAll('.nav-links a[href^="#"]')];
-  const map = new Map(links.map((link) => [link.getAttribute('href')?.slice(1), link]));
+  const directMap = new Map(links.map((link) => [link.getAttribute('href')?.slice(1), link])); const sectionAlias = { radio: 'stream', 'open-air': 'human-maps', 'inside-out': 'the-vision', orchard: 'the-vision', river: 'the-vision', 'the-poem': 'the-vision', lyrics: 'the-vision', vip: 'support' }; const map = { get: (id) => directMap.get(sectionAlias[id] || id) };
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {
       entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio).slice(0, 1).forEach((entry) => {

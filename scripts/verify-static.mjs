@@ -40,6 +40,7 @@ check(stylesheet.includes("--space-10:"), "canonical stylesheet is missing the s
 check(stylesheet.includes("--dur-fast:") && stylesheet.includes("--dur-ritual:"), "canonical stylesheet is missing the motion duration scale");
 check(stylesheet.includes("--surface-base:") && stylesheet.includes("--text-primary:"), "canonical stylesheet is missing semantic surface/text tokens");
 check(!/z-index:\s*120\b/.test(stylesheet), "raw skip-link z-index escaped the named layer system");
+for (const htmlFile of ["index.html", "visualizer.html"]) { const html = readFileSync(join(root, htmlFile), "utf8"); for (const match of html.matchAll(/<script\s+type="(?:application\/ld\+json|speculationrules)">([\s\S]*?)<\/script>/g)) { try { JSON.parse(match[1]); } catch (e) { failures.push(`${htmlFile} contains invalid inline JSON script: ${e.message}`); } } }
 
 for (const filename of ["manifest.json", "starmilk-tracks.json", "starmilk-citations.json"]) {
   try {

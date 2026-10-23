@@ -58,7 +58,7 @@
   </script>
 
   <script type="speculationrules">
-  {"prefetch": [{"source": "document", "where": {"href_matches": "/*"}, "eagerness": "conservative"}}]}
+  {"prefetch": [{"source": "document", "where": {"href_matches": "/*"}, "eagerness": "conservative"}]}
   </script>
   <script src="parking-lot.js?v=mothership-20261006a" defer></script>
 
@@ -101,7 +101,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="starmilk-refactor.css?v=earth-starlight-20261009a">
+  <link rel="stylesheet" href="starmilk-refactor.css?v=earth-starlight-20261023a">
 </head>
 <body>
 <div class="paint-grain" aria-hidden="true"></div>
@@ -124,7 +124,7 @@
     <span class="parking-lot-ring parking-lot-ring--three"></span>
     <span class="parking-lot-ring parking-lot-ring--four"></span>
     <div class="parking-lot-aperture">
-      <img id="parking-lot-portrait" class="parking-lot-portrait" src="star-wizard.webp" alt="" fetchpriority="high" decoding="async" />
+      <img id="parking-lot-portrait" class="parking-lot-portrait" src="star-wizard.webp" alt="" width="1344" height="768" fetchpriority="high" decoding="async" />
     </div>
   </div>
   <canvas id="parking-lot-rain" aria-hidden="true"></canvas>
@@ -439,7 +439,7 @@
       </div>
     </div>
     <p class="open-air-copy">
-      <span class="open-air-kicker">Open air</span>
+      <span class="open-air-kicker" id="open-air-h">Open air</span>
       Out here the sky is larger than any one story.
       People pass through it together — skating, talking, standing still —
       and the evening holds all of them the same way.
@@ -458,7 +458,7 @@
 
       <!-- Star wizard art -->
       <div class="vision-art reveal">
-        <img src="star-wizard.webp" alt="STARMILK Star Wizard — a celestial being draped in starry robes, dripping golden light" class="vision-wizard" loading="lazy" decoding="async" />
+        <img src="star-wizard.webp" alt="STARMILK Star Wizard — a celestial being draped in starry robes, dripping golden light" class="vision-wizard" width="1344" height="768" loading="lazy" decoding="async" />
       </div>
 
       <!-- STARMILK vision video -->
@@ -1111,8 +1111,8 @@ Stay as long as you like.</p>
 <script src="the-river.js" defer></script>
 <script src="honey-drip.js" defer></script>
 <script src="starmilk-radio.js" defer></script>
-<script src="starmilk-ui.js?v=tapestry-20260822" defer></script>
-<script src="starmilk-tapestry.js?v=tapestry-transition-20260822" defer></script>
+<script src="starmilk-ui.js?v=tapestry-20261023a" defer></script>
+<script src="starmilk-tapestry.js?v=tapestry-transition-20261023a" defer></script>
 <script src="starmilk-conductor.js" defer></script>
 
 <script>
@@ -1771,7 +1771,7 @@ if ('serviceWorker' in navigator) {
   const sectionMap = {
     'hero':       null,
     'stream':     '#stream',
-    'radio':      '#stream',
+    'radio':      '#stream', 'our-story': '#our-story', 'human-maps': '#human-maps', 'open-air': '#human-maps', 'the-poem': '#the-vision',
     'the-vision': '#the-vision',
     'inside-out': '#the-vision',
     'orchard':    '#the-vision',
