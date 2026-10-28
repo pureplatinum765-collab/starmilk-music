@@ -300,7 +300,8 @@
     filteredTracks = [...allTracks];
     buildQueue();
     updateCount();
-    if (allTracks.length) trackNameEl.textContent = allTracks[0].name;
+    if (allTracks.length) { trackNameEl.textContent = allTracks[0].name; updateTrackArt(); }
+    injectIcons();
     refreshFavCount();
     tryDiscover();
     if (hasOpened && allTracks.length && !currentIframeUrl) {
@@ -668,6 +669,7 @@
   if (shuffleBtn)  shuffleBtn.addEventListener('click', toggleShuffle);
   if (likeBtn)     likeBtn.addEventListener('click',    () => toggleFav(allTracks[currentIndex]));
   if (searchInput) searchInput.addEventListener('input', handleSearch);
+  document.getElementById('radio-section-open-btn')?.addEventListener('click', () => { userHasInteracted = true; if (!floating.classList.contains('open')) badge.click(); if (!isPlaying) togglePlay(); });
 
   /* ─── Share ──────────────────────────────────────────────────── */
   const slugify = (s) => s.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');

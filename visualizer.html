@@ -1,28 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!--
-   ______                            __
-  / ____/___  ____ ___  ____  __  __/ /____  _____
- / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
-/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
-\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
-                    /_/
-        Created with Perplexity Computer
-        https://www.perplexity.ai/computer
--->
-
-<!-- Perplexity Computer Attribution — SEO Meta Tags -->
-<meta name="generator" content="Perplexity Computer">
-<meta name="author" content="Perplexity Computer">
-<meta property="og:see_also" content="https://www.perplexity.ai/computer">
-<link rel="author" href="https://www.perplexity.ai/computer">
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
   <title>STARMILK | Visual Listening Room</title>
-  <meta name="description" content="Immersive visual listening experience — ambient visuals and audio-reactive art for the STARMILK music project." />
-  <meta name="theme-color" content="#0b0e1a" />
+  <meta name="description" content="Immersive full-screen visual listening experience — ambient visuals and audio-reactive art for the STARMILK music project." />
+  <meta name="theme-color" content="#080b14" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23c9944a'/%3E%3Cstop offset='50%25' stop-color='%236b5b8a'/%3E%3Cstop offset='100%25' stop-color='%234a5578'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpolygon points='50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35' fill='url(%23g)'/%3E%3C/svg%3E" />
 
   <script type="application/ld+json">
@@ -34,12 +20,7 @@
     "isPartOf": {
       "@type": "WebSite",
       "name": "STARMILK",
-      "url": "https://pureplatinum765-collab.github.io/starmilk-music/"
-    },
-    "creator": {
-      "@type": "SoftwareApplication",
-      "name": "Perplexity Computer",
-      "url": "https://www.perplexity.ai/computer"
+      "url": "https://starmilk.org/"
     }
   }
   </script>
@@ -48,21 +29,23 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0b0e1a;
-      --bg-deep: #080b16;
-      --card: #121827;
-      --purple: #6b5b8a;
-      --purple-light: #7b6998;
-      --gold: #c9944a;
-      --gold-light: #dbb87a;
-      --gold-dim: rgba(201,148,74,.12);
-      --text: #d5cfc2;
-      --muted: #8c8578;
-      --muted-dim: rgba(140,133,120,.18);
+      --bg: #080b14;
+      --bg-deep: #05070e;
+      --glass: rgba(12, 16, 28, 0.72);
+      --glass-border: rgba(242, 231, 208, 0.14);
+      --purple: #7c6b9e;
+      --gold: #d9aa4e;
+      --gold-light: #f0cb7e;
+      --gold-dim: rgba(217, 170, 78, 0.16);
+      --text: #f2e7d0;
+      --muted: rgba(242, 231, 208, 0.62);
+      --muted-dim: rgba(242, 231, 208, 0.16);
+      --font-display: "DM Serif Display", Georgia, serif;
+      --font-body: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
     }
 
     body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-family: var(--font-body);
       background: var(--bg-deep);
       color: var(--text);
       overflow: hidden;
@@ -71,45 +54,55 @@
       width: 100vw;
       position: relative;
       cursor: none;
+      -webkit-font-smoothing: antialiased;
     }
     body.controls-visible { cursor: default; }
 
-    /* ── SVG noise filter for canvas/paper texture ── */
+    /* ── SVG noise filter for subtle organic film grain ── */
     .grain-overlay {
       position: fixed;
       inset: 0;
       z-index: 3;
       pointer-events: none;
-      opacity: 0.04;
+      opacity: 0.035;
       mix-blend-mode: overlay;
     }
 
-    /* ── Visual layers ── */
+    /* ── Visual layers — Full-bleed edge-to-edge cover by default ── */
     .viz-layer {
       position: fixed;
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
+      object-position: center;
       opacity: 0;
-      transition: opacity 2.2s cubic-bezier(.4,0,.2,1);
+      transform: scale(1.03);
+      transition: opacity 2.2s cubic-bezier(.22, 1, .36, 1), transform 6s cubic-bezier(.22, 1, .36, 1);
       z-index: 0;
       pointer-events: none;
     }
-    .viz-layer.active { opacity: 1; }
-    video.viz-layer { filter: saturate(0.7) contrast(1.04) brightness(0.95); }
-    img.viz-layer { filter: saturate(0.75) contrast(1.04) brightness(0.92); }
-    .viz-layer.void-bg { background: var(--bg-deep); }
+    body.fit-contain .viz-layer {
+      object-fit: contain;
+      transform: scale(1);
+    }
+    .viz-layer.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+    video.viz-layer { filter: saturate(0.84) contrast(1.04) brightness(0.92); }
+    img.viz-layer { filter: saturate(0.86) contrast(1.04) brightness(0.9); }
+    .viz-layer.void-bg { background: radial-gradient(circle at 50% 50%, #111729 0%, #05070e 75%); }
 
-    /* ── Vignette ── */
+    /* ── Soft cinematic vignette ── */
     .vignette {
       position: fixed;
       inset: 0;
       z-index: 1;
       pointer-events: none;
       background:
-        radial-gradient(ellipse 75% 75% at 50% 50%, transparent 20%, rgba(8,11,22,.6) 100%),
-        linear-gradient(to bottom, rgba(8,11,22,.35) 0%, transparent 10%, transparent 90%, rgba(8,11,22,.55) 100%);
+        radial-gradient(ellipse 82% 82% at 50% 50%, transparent 38%, rgba(5, 7, 14, 0.68) 100%),
+        linear-gradient(to bottom, rgba(5, 7, 14, 0.42) 0%, transparent 16%, transparent 82%, rgba(5, 7, 14, 0.72) 100%);
     }
 
     /* ── Audio-reactive canvas ── */
@@ -118,7 +111,7 @@
       inset: 0;
       z-index: 2;
       pointer-events: none;
-      opacity: 0.65;
+      opacity: 0.72;
     }
 
     /* ── Ambient particles ── */
@@ -129,157 +122,199 @@
       pointer-events: none;
     }
 
-    /* ── Controls wrapper ── */
-    .viz-ui {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 10;
-      padding: 1.6rem 1.5rem 1.8rem;
-      background: linear-gradient(to top, rgba(8,11,22,.92) 0%, rgba(8,11,22,.6) 50%, transparent 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: .85rem;
-      opacity: 1;
-      transition: opacity .6s cubic-bezier(.4,0,.2,1);
-    }
-    .viz-ui.hidden { opacity: 0; pointer-events: none; }
-
-    /* ── Top bar (back + logo) ── */
+    /* ── Top bar (back + title + fullscreen/fit actions) ── */
     .viz-topbar {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       z-index: 10;
-      padding: 1rem 1.2rem;
+      padding: 1.25rem 1.6rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: linear-gradient(to bottom, rgba(8,11,22,.5) 0%, transparent 100%);
       opacity: 1;
-      transition: opacity .6s cubic-bezier(.4,0,.2,1);
+      transform: translateY(0);
+      transition: opacity .55s cubic-bezier(.22, 1, .36, 1), transform .55s cubic-bezier(.22, 1, .36, 1);
     }
-    .viz-topbar.hidden { opacity: 0; pointer-events: none; }
+    .viz-topbar.hidden {
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+    }
 
-    .viz-back {
-      color: var(--muted);
-      font-size: .6rem;
-      letter-spacing: .1em;
+    .viz-pill-btn {
+      color: var(--text);
+      background: var(--glass);
+      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(18px);
+      font-family: var(--font-body);
+      font-size: .68rem;
+      font-weight: 500;
+      letter-spacing: .12em;
       text-transform: uppercase;
       text-decoration: none;
-      padding: .4rem .7rem;
-      border: 1px solid var(--muted-dim);
+      padding: .5rem .95rem;
+      border: 1px solid var(--glass-border);
       border-radius: 999px;
-      transition: color .3s, border-color .3s;
-      min-height: 36px;
+      cursor: pointer;
+      transition: color .25s, border-color .25s, background .25s, transform .2s;
+      min-height: 38px;
       display: inline-flex;
       align-items: center;
-      gap: .35rem;
+      gap: .45rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
     }
-    .viz-back:hover { color: var(--gold-light); border-color: var(--gold); }
+    .viz-pill-btn:hover {
+      color: var(--gold-light);
+      border-color: rgba(217, 170, 78, 0.55);
+      background: rgba(20, 26, 42, 0.84);
+      transform: translateY(-1px);
+    }
+    .viz-pill-btn svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .viz-top-actions {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
 
     .viz-logo {
-      font-size: .6rem;
-      letter-spacing: .22em;
-      color: var(--muted);
-      opacity: .35;
+      font-family: var(--font-display);
+      font-size: .95rem;
+      letter-spacing: .16em;
+      color: var(--text);
+      opacity: .75;
       text-transform: uppercase;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
     }
 
-    /* ── Section label ── */
+    /* ── Floating Glass Control Dock ── */
+    .viz-ui {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(0);
+      z-index: 10;
+      width: min(520px, calc(100vw - 2rem));
+      padding: 1.15rem 1.5rem 1.25rem;
+      background: var(--glass);
+      -webkit-backdrop-filter: blur(24px) saturate(1.2);
+      backdrop-filter: blur(24px) saturate(1.2);
+      border: 1px solid var(--glass-border);
+      border-radius: 26px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .75rem;
+      opacity: 1;
+      transition: opacity .55s cubic-bezier(.22, 1, .36, 1), transform .55s cubic-bezier(.22, 1, .36, 1);
+    }
+    .viz-ui.hidden {
+      opacity: 0;
+      transform: translateX(-50%) translateY(16px);
+      pointer-events: none;
+    }
+
+    .viz-header-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .75rem;
+    }
+
     .viz-label {
-      font-size: .5rem;
+      font-size: .58rem;
+      font-weight: 600;
       letter-spacing: .2em;
       text-transform: uppercase;
       color: var(--gold);
-      opacity: .6;
+      opacity: .88;
+    }
+
+    .viz-scene-name {
+      font-size: .62rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
     }
 
     /* ── Scene selector ── */
     .viz-scenes {
       display: flex;
       justify-content: center;
-      gap: .65rem;
+      gap: .6rem;
       flex-wrap: wrap;
     }
 
     .viz-scene-dot {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
-      border: 1.5px solid transparent;
+      border: 1.5px solid rgba(242, 231, 208, 0.2);
       cursor: pointer;
-      transition: border-color .3s, transform .2s;
+      transition: border-color .25s, transform .2s, box-shadow .25s;
       position: relative;
-      overflow: hidden;
       touch-action: manipulation;
-      background: var(--card);
+      background: #121827;
     }
-    .viz-scene-dot::after {
-      content: attr(data-label);
-      position: absolute;
-      bottom: calc(100% + 6px);
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: .48rem;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--gold-light);
-      white-space: nowrap;
-      opacity: 0;
-      transition: opacity .25s;
-      pointer-events: none;
+    .viz-scene-dot:hover {
+      border-color: rgba(217, 170, 78, 0.65);
+      transform: scale(1.1);
     }
-    .viz-scene-dot:hover::after,
-    .viz-scene-dot:focus-visible::after { opacity: 1; }
-    .viz-scene-dot:hover { border-color: rgba(201,148,74,.4); }
     .viz-scene-dot.active {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 2px rgba(201,148,74,.15);
+      border-color: var(--gold-light);
+      box-shadow: 0 0 0 3px rgba(217, 170, 78, 0.22), 0 0 14px rgba(217, 170, 78, 0.4);
+      transform: scale(1.08);
     }
-    .viz-scene-dot:active { transform: scale(.92); }
 
     /* Scene dot colors */
-    .viz-scene-dot[data-visual="vision"]    { background: linear-gradient(135deg, #1a1530, #3a2860); }
-    .viz-scene-dot[data-visual="heart"]     { background: linear-gradient(135deg, #2a1020, #5a2040); }
-    .viz-scene-dot[data-visual="sun"]       { background: linear-gradient(135deg, #2a2010, #6a5020); }
-    .viz-scene-dot[data-visual="butterfly"] { background: linear-gradient(135deg, #102030, #204060); }
-    .viz-scene-dot[data-visual="wings"]     { background: linear-gradient(135deg, #1a1a28, #3a3a58); }
-    .viz-scene-dot[data-visual="wizard"]    { background: linear-gradient(135deg, #181828, #2a2a48); }
-    .viz-scene-dot[data-visual="void"]      { background: var(--bg-deep); }
+    .viz-scene-dot[data-visual="vision"]    { background: linear-gradient(135deg, #231b42, #52377d); }
+    .viz-scene-dot[data-visual="heart"]     { background: linear-gradient(135deg, #3b172e, #7d2b58); }
+    .viz-scene-dot[data-visual="sun"]       { background: linear-gradient(135deg, #3d2c14, #8c6928); }
+    .viz-scene-dot[data-visual="butterfly"] { background: linear-gradient(135deg, #152c42, #2b5c85); }
+    .viz-scene-dot[data-visual="wings"]     { background: linear-gradient(135deg, #222236, #4b4b75); }
+    .viz-scene-dot[data-visual="wizard"]    { background: linear-gradient(135deg, #1d293b, #3a4f6e); }
+    .viz-scene-dot[data-visual="void"]      { background: radial-gradient(circle, #1b2238, #060810); }
 
     /* ── Track name ── */
     .viz-track-name {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: 1.05rem;
+      font-family: var(--font-display);
+      font-size: 1.2rem;
       color: var(--text);
       text-align: center;
-      letter-spacing: .03em;
-      opacity: .85;
-      min-height: 1.5em;
-      font-style: italic;
-      font-weight: normal;
+      letter-spacing: .01em;
+      line-height: 1.2;
+      min-height: 1.4em;
+      font-weight: 400;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     /* ── Progress indicator ── */
     .viz-progress-wrap {
       width: 100%;
-      max-width: 320px;
-      height: 2px;
-      background: rgba(140,133,120,.1);
-      border-radius: 1px;
+      height: 5px;
+      background: rgba(242, 231, 208, 0.12);
+      border-radius: 999px;
       overflow: hidden;
       cursor: pointer;
+      transition: height .2s;
     }
+    .viz-progress-wrap:hover { height: 7px; }
     .viz-progress-bar {
       height: 100%;
       width: 0%;
-      background: var(--gold);
-      opacity: .5;
-      border-radius: 1px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      border-radius: 999px;
       transition: width .3s linear;
     }
 
@@ -288,38 +323,46 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: .5rem;
+      gap: .65rem;
     }
 
     .viz-transport-btn {
-      background: none;
-      border: none;
+      background: transparent;
+      border: 1px solid transparent;
       color: var(--muted);
       cursor: pointer;
       padding: .5rem;
       border-radius: 50%;
-      transition: color .25s, background .25s;
+      transition: color .22s, background .22s, border-color .22s, transform .18s;
       display: flex;
       align-items: center;
       justify-content: center;
       touch-action: manipulation;
-      min-width: 40px;
-      min-height: 40px;
+      width: 40px;
+      height: 40px;
     }
-    .viz-transport-btn:hover { color: var(--gold-light); background: rgba(201,148,74,.06); }
+    .viz-transport-btn:hover,
+    .viz-transport-btn.active {
+      color: var(--gold-light);
+      background: rgba(217, 170, 78, 0.12);
+      border-color: rgba(217, 170, 78, 0.28);
+    }
     .viz-transport-btn:active { transform: scale(.93); }
     .viz-transport-btn svg { width: 18px; height: 18px; }
-    .viz-transport-btn.play-btn svg { width: 22px; height: 22px; }
     .viz-transport-btn.play-btn {
-      color: var(--gold);
-      border: 1.5px solid var(--muted-dim);
+      color: #0b0e18;
+      background: var(--gold);
+      border: 1px solid var(--gold-light);
       width: 48px;
       height: 48px;
       border-radius: 50%;
+      box-shadow: 0 6px 20px rgba(217, 170, 78, 0.35);
     }
+    .viz-transport-btn.play-btn svg { width: 20px; height: 20px; }
     .viz-transport-btn.play-btn:hover {
-      border-color: var(--gold);
-      background: rgba(201,148,74,.08);
+      background: var(--gold-light);
+      color: #0b0e18;
+      transform: scale(1.04);
     }
 
     /* ── Hidden SC player ── */
@@ -350,36 +393,37 @@
       opacity: 0;
       transition: opacity .8s ease;
       pointer-events: none;
+      background: rgba(8, 11, 20, 0.65);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      padding: .55rem 1.1rem;
+      border-radius: 999px;
+      border: 1px solid var(--glass-border);
     }
     .viz-hint.show { opacity: 1; }
     .viz-hint p {
-      font-size: .55rem;
-      letter-spacing: .14em;
+      font-size: .62rem;
+      letter-spacing: .16em;
       text-transform: uppercase;
-      color: var(--muted);
+      color: var(--text);
     }
 
     /* ── Focus styles ── */
     :focus-visible {
-      outline: 1.5px solid var(--gold);
-      outline-offset: 2px;
+      outline: 2px solid var(--gold-light);
+      outline-offset: 3px;
     }
     button:focus:not(:focus-visible),
     a:focus:not(:focus-visible) { outline: none; }
 
     /* ── Mobile ── */
     @media (max-width: 640px) {
-      .viz-ui { padding: .8rem .8rem 1rem; gap: .6rem; }
-      .viz-track-name { font-size: .88rem; }
-      .viz-scene-dot { width: 24px; height: 24px; }
+      .viz-topbar { padding: .85rem 1rem; }
       .viz-logo { display: none; }
-      .viz-label { font-size: .45rem; }
-      .viz-back { font-size: .52rem; min-height: 32px; padding: .3rem .55rem; }
-      .viz-transport-btn { min-width: 36px; min-height: 36px; }
-      .viz-transport-btn svg { width: 16px; height: 16px; }
-      .viz-transport-btn.play-btn { width: 42px; height: 42px; }
-      .viz-transport-btn.play-btn svg { width: 20px; height: 20px; }
-      .viz-progress-wrap { max-width: 240px; }
+      .viz-ui { bottom: .85rem; padding: .95rem 1.1rem 1.05rem; gap: .6rem; border-radius: 22px; }
+      .viz-track-name { font-size: 1.02rem; }
+      .viz-scene-dot { width: 24px; height: 24px; }
+      .viz-pill-btn { font-size: .6rem; min-height: 34px; padding: .4rem .75rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -434,45 +478,59 @@
 
   <!-- ═══ Top Bar ═══ -->
   <div class="viz-topbar" id="viz-topbar">
-    <a href="index.html" class="viz-back" aria-label="Back to main site">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      Back
+    <a href="index.html" class="viz-pill-btn" aria-label="Back to main site">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Mothership
     </a>
     <span class="viz-logo" aria-hidden="true">STARMILK</span>
+    <div class="viz-top-actions">
+      <button type="button" class="viz-pill-btn" id="viz-fit-toggle" aria-label="Toggle video fit mode" title="Switch between Full-Bleed and Fit">
+        <span id="viz-fit-label">Full Bleed</span>
+      </button>
+      <button type="button" class="viz-pill-btn" id="viz-fullscreen-btn" aria-label="Enter fullscreen" title="Fullscreen (F)">
+        <svg id="viz-fs-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+        </svg>
+        <span id="viz-fs-label">Fullscreen</span>
+      </button>
+    </div>
   </div>
 
   <!-- ═══ Tap Hint ═══ -->
   <div class="viz-hint" id="viz-hint" aria-hidden="true">
-    <p>move to reveal controls</p>
+    <p>Move cursor or tap to reveal controls &bull; Press F for fullscreen</p>
   </div>
 
-  <!-- ═══ Controls UI ═══ -->
+  <!-- ═══ Floating Glass Controls UI ═══ -->
   <div class="viz-ui" id="viz-ui" role="region" aria-label="Visualizer controls">
 
-    <span class="viz-label">Visual Listening Room</span>
+    <div class="viz-header-row">
+      <span class="viz-label">Visual Listening Room</span>
+      <span class="viz-scene-name" id="viz-scene-name">Chalice Dance</span>
+    </div>
 
     <!-- Scene Selector -->
     <div class="viz-scenes" role="radiogroup" aria-label="Visual scene selection">
-      <button class="viz-scene-dot active" data-visual="vision" data-label="Chalice Dance" role="radio" aria-checked="true" aria-label="Chalice Dance"></button>
-      <button class="viz-scene-dot" data-visual="heart" data-label="Cosmic Heart" role="radio" aria-checked="false" aria-label="Cosmic Heart"></button>
-      <button class="viz-scene-dot" data-visual="sun" data-label="Dripping Sun" role="radio" aria-checked="false" aria-label="Dripping Sun"></button>
-      <button class="viz-scene-dot" data-visual="butterfly" data-label="Butterfly Infinity" role="radio" aria-checked="false" aria-label="Butterfly Infinity"></button>
-      <button class="viz-scene-dot" data-visual="wings" data-label="Winged Ascension" role="radio" aria-checked="false" aria-label="Winged Ascension"></button>
-      <button class="viz-scene-dot" data-visual="wizard" data-label="Star Wizard" role="radio" aria-checked="false" aria-label="Star Wizard"></button>
-      <button class="viz-scene-dot" data-visual="void" data-label="Deep Void" role="radio" aria-checked="false" aria-label="Deep Void"></button>
+      <button class="viz-scene-dot active" data-visual="vision" data-label="Chalice Dance" role="radio" aria-checked="true" aria-label="Chalice Dance" title="Chalice Dance"></button>
+      <button class="viz-scene-dot" data-visual="heart" data-label="Cosmic Heart" role="radio" aria-checked="false" aria-label="Cosmic Heart" title="Cosmic Heart"></button>
+      <button class="viz-scene-dot" data-visual="sun" data-label="Dripping Sun" role="radio" aria-checked="false" aria-label="Dripping Sun" title="Dripping Sun"></button>
+      <button class="viz-scene-dot" data-visual="butterfly" data-label="Butterfly Infinity" role="radio" aria-checked="false" aria-label="Butterfly Infinity" title="Butterfly Infinity"></button>
+      <button class="viz-scene-dot" data-visual="wings" data-label="Winged Ascension" role="radio" aria-checked="false" aria-label="Winged Ascension" title="Winged Ascension"></button>
+      <button class="viz-scene-dot" data-visual="wizard" data-label="Star Wizard" role="radio" aria-checked="false" aria-label="Star Wizard" title="Star Wizard"></button>
+      <button class="viz-scene-dot" data-visual="void" data-label="Deep Void" role="radio" aria-checked="false" aria-label="Deep Void" title="Deep Void"></button>
     </div>
 
     <!-- Track Name -->
-    <p class="viz-track-name" id="viz-track-name" aria-live="polite">Loading...</p>
+    <p class="viz-track-name" id="viz-track-name" aria-live="polite">Loading catalog…</p>
 
     <!-- Progress -->
-    <div class="viz-progress-wrap" id="viz-progress-wrap" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+    <div class="viz-progress-wrap" id="viz-progress-wrap" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Track progress">
       <div class="viz-progress-bar" id="viz-progress-bar"></div>
     </div>
 
     <!-- Transport -->
     <div class="viz-transport" role="toolbar" aria-label="Playback controls">
-      <button class="viz-transport-btn" id="viz-shuffle" aria-label="Shuffle tracks">
+      <button class="viz-transport-btn" id="viz-shuffle" aria-label="Shuffle tracks" title="Shuffle">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="16 3 21 3 21 8"/>
           <line x1="4" y1="20" x2="21" y2="3"/>
@@ -481,24 +539,24 @@
           <line x1="4" y1="4" x2="9" y2="9"/>
         </svg>
       </button>
-      <button class="viz-transport-btn" id="viz-prev" aria-label="Previous track">
+      <button class="viz-transport-btn" id="viz-prev" aria-label="Previous track" title="Previous">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="19 20 9 12 19 4 19 20" fill="currentColor" stroke="none" opacity=".7"/>
+          <polygon points="19 20 9 12 19 4 19 20" fill="currentColor" stroke="none" opacity=".85"/>
           <line x1="5" y1="19" x2="5" y2="5"/>
         </svg>
       </button>
-      <button class="viz-transport-btn play-btn" id="viz-play" aria-label="Play">
+      <button class="viz-transport-btn play-btn" id="viz-play" aria-label="Play" title="Play / Pause (Space)">
         <svg id="play-icon" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-          <polygon points="6 3 20 12 6 21 6 3"/>
+          <polygon points="7 4 20 12 7 20 7 4"/>
         </svg>
       </button>
-      <button class="viz-transport-btn" id="viz-next" aria-label="Next track">
+      <button class="viz-transport-btn" id="viz-next" aria-label="Next track" title="Next">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="5 4 15 12 5 20 5 4" fill="currentColor" stroke="none" opacity=".7"/>
+          <polygon points="5 4 15 12 5 20 5 4" fill="currentColor" stroke="none" opacity=".85"/>
           <line x1="19" y1="5" x2="19" y2="19"/>
         </svg>
       </button>
-      <button class="viz-transport-btn" id="viz-loop" aria-label="Loop track">
+      <button class="viz-transport-btn" id="viz-loop" aria-label="Loop track" aria-pressed="false" title="Loop current track">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="17 1 21 5 17 9"/>
           <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
@@ -518,9 +576,6 @@
   (function() {
     'use strict';
 
-    /* ══════════════════════════════════════════════════════════
-       CONSTANTS & STATE
-       ══════════════════════════════════════════════════════════ */
     const SC_API_URL = 'https://w.soundcloud.com/player/api.js';
     const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const TAU = Math.PI * 2;
@@ -530,20 +585,24 @@
     let tracks = [];
     let currentIndex = 0;
     let isPlaying = false;
+    let isLooping = false;
     let progressPoll = null;
 
-    /* ══════════════════════════════════════════════════════════
-       DOM REFS
-       ══════════════════════════════════════════════════════════ */
     const ui = document.getElementById('viz-ui');
     const topbar = document.getElementById('viz-topbar');
     const hint = document.getElementById('viz-hint');
     const trackNameEl = document.getElementById('viz-track-name');
+    const sceneNameEl = document.getElementById('viz-scene-name');
     const scEmbed = document.getElementById('viz-sc-embed');
     const playBtn = document.getElementById('viz-play');
     const playIcon = document.getElementById('play-icon');
+    const loopBtn = document.getElementById('viz-loop');
     const progressBar = document.getElementById('viz-progress-bar');
     const progressWrap = document.getElementById('viz-progress-wrap');
+    const fullscreenBtn = document.getElementById('viz-fullscreen-btn');
+    const fsLabel = document.getElementById('viz-fs-label');
+    const fitToggleBtn = document.getElementById('viz-fit-toggle');
+    const fitLabel = document.getElementById('viz-fit-label');
 
     const layers = {
       vision:    document.getElementById('viz-vision'),
@@ -557,12 +616,29 @@
     const videoKeys = ['vision', 'heart', 'sun', 'butterfly', 'wings'];
     let currentVisual = 'vision';
 
-    // Start first video
     layers.vision.play().catch(() => {});
 
-    /* ══════════════════════════════════════════════════════════
-       SC API LOADER
-       ══════════════════════════════════════════════════════════ */
+    /* ── Fullscreen & Fit Toggles ── */
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.().catch(() => {});
+      } else {
+        document.exitFullscreen?.().catch(() => {});
+      }
+    }
+    fullscreenBtn?.addEventListener('click', toggleFullscreen);
+    document.addEventListener('fullscreenchange', () => {
+      const isFs = Boolean(document.fullscreenElement);
+      if (fsLabel) fsLabel.textContent = isFs ? 'Exit Fullscreen' : 'Fullscreen';
+      fullscreenBtn?.setAttribute('aria-label', isFs ? 'Exit fullscreen' : 'Enter fullscreen');
+    });
+
+    fitToggleBtn?.addEventListener('click', () => {
+      const contain = document.body.classList.toggle('fit-contain');
+      if (fitLabel) fitLabel.textContent = contain ? 'Contained' : 'Full Bleed';
+    });
+
+    /* ── SC API Loader ── */
     const loadSCAPI = () => new Promise((resolve) => {
       if (scAPILoaded && typeof SC !== 'undefined' && SC.Widget) { resolve(true); return; }
       const s = document.createElement('script');
@@ -572,29 +648,25 @@
       document.head.appendChild(s);
     });
 
-    /* ══════════════════════════════════════════════════════════
-       VISUAL SCENE SWITCHING
-       ══════════════════════════════════════════════════════════ */
+    /* ── Visual Scene Switching ── */
     document.querySelectorAll('.viz-scene-dot').forEach(dot => {
       dot.addEventListener('click', () => {
         const target = dot.dataset.visual;
         if (target === currentVisual) return;
 
-        // Pause all videos, hide all layers
         videoKeys.forEach(k => { layers[k].pause(); layers[k].classList.remove('active'); });
         layers.wizard.classList.remove('active');
         layers.void.classList.remove('active');
 
-        // Update dots
         document.querySelectorAll('.viz-scene-dot').forEach(d => {
           d.classList.remove('active');
           d.setAttribute('aria-checked', 'false');
         });
 
-        // Activate
         layers[target].classList.add('active');
         dot.classList.add('active');
         dot.setAttribute('aria-checked', 'true');
+        if (sceneNameEl) sceneNameEl.textContent = dot.dataset.label || '';
         currentVisual = target;
 
         if (videoKeys.includes(target)) {
@@ -603,9 +675,7 @@
       });
     });
 
-    /* ══════════════════════════════════════════════════════════
-       UI SHOW/HIDE — 6 second timeout, mouse/touch reveal
-       ══════════════════════════════════════════════════════════ */
+    /* ── UI Show/Hide — 5s idle fade ── */
     let uiVisible = true;
     let hideTimer = null;
 
@@ -622,17 +692,15 @@
       topbar.classList.add('hidden');
       document.body.classList.remove('controls-visible');
       uiVisible = false;
-      // Brief hint
       hint.classList.add('show');
       setTimeout(() => hint.classList.remove('show'), 2000);
     }
 
     function scheduleHide() {
       clearTimeout(hideTimer);
-      hideTimer = setTimeout(hideUI, 6000);
+      hideTimer = setTimeout(hideUI, 5000);
     }
 
-    // Mouse movement reveals
     let lastMoveTime = 0;
     document.addEventListener('mousemove', () => {
       const now = Date.now();
@@ -642,43 +710,42 @@
       else scheduleHide();
     });
 
-    // Touch on empty area toggles
     document.addEventListener('touchstart', (e) => {
       if (e.target.closest('.viz-ui') || e.target.closest('.viz-topbar')) return;
       if (uiVisible) hideUI();
       else showUI();
     }, { passive: true });
 
-    // Click on empty area toggles (desktop)
     document.addEventListener('click', (e) => {
-      if (e.target.closest('.viz-ui') || e.target.closest('.viz-topbar') || e.target.closest('footer')) return;
+      if (e.target.closest('.viz-ui') || e.target.closest('.viz-topbar')) return;
       if (uiVisible) hideUI();
       else showUI();
     });
 
-    // Keyboard
     document.addEventListener('keydown', (e) => {
+      if (e.target.closest('input,textarea')) return;
       if (e.key === 'Escape') {
         if (uiVisible) hideUI(); else showUI();
-      }
-      if (e.key === ' ' && !e.target.closest('input,textarea')) {
+      } else if (e.key === ' ') {
         e.preventDefault();
         togglePlayPause();
+      } else if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFullscreen();
+      } else if (e.key === 'ArrowRight') {
+        loadTrack(currentIndex + 1);
+      } else if (e.key === 'ArrowLeft') {
+        loadTrack(currentIndex - 1);
       }
     });
 
     scheduleHide();
 
-    /* ══════════════════════════════════════════════════════════
-       MUSIC PLAYER
-       ══════════════════════════════════════════════════════════ */
-    const PLAY_PATH = 'M6 3L20 12L6 21Z';
-    const PAUSE_PATH = 'M6 4H10V20H6ZM14 4H18V20H14Z';
-
+    /* ── Music Player ── */
     function setPlayIcon(playing) {
       playIcon.innerHTML = playing
         ? '<path d="M6 4H10V20H6Z" /><path d="M14 4H18V20H14Z" />'
-        : '<polygon points="6 3 20 12 6 21 6 3"/>';
+        : '<polygon points="7 4 20 12 7 20 7 4"/>';
       playBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
     }
 
@@ -706,6 +773,7 @@
             if (dur > 0) {
               const pct = Math.min(100, (pos / dur) * 100);
               progressBar.style.width = pct + '%';
+              progressWrap.setAttribute('aria-valuenow', String(Math.round(pct)));
             }
           });
         });
@@ -716,7 +784,6 @@
       if (progressPoll) { clearInterval(progressPoll); progressPoll = null; }
     }
 
-    // Progress bar click-to-seek
     progressWrap.addEventListener('click', (e) => {
       if (!scWidget) return;
       const rect = progressWrap.getBoundingClientRect();
@@ -726,12 +793,10 @@
       });
     });
 
-    // Load tracks
     fetch('starmilk-tracks.json')
       .then(r => r.json())
       .then(data => {
         tracks = data;
-        // Shuffle on load
         for (let i = tracks.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [tracks[i], tracks[j]] = [tracks[j], tracks[i]];
@@ -756,7 +821,7 @@
       scEmbed.innerHTML = `<iframe
         scrolling="no" frameborder="no" allow="autoplay"
         title="Now playing: ${name.replace(/"/g, '&quot;')}"
-        src="https://w.soundcloud.com/player/?url=${encoded}&color=%23c9944a&auto_play=${autoPlay}&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
+        src="https://w.soundcloud.com/player/?url=${encoded}&color=%23d9aa4e&auto_play=${autoPlay}&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
       ></iframe>`;
 
       const iframe = scEmbed.querySelector('iframe');
@@ -788,6 +853,13 @@
 
         scWidget.bind(SC.Widget.Events.FINISH, () => {
           stopProgressPoll();
+          if (isLooping && scWidget) {
+            progressBar.style.width = '0%';
+            scWidget.seekTo(0);
+            scWidget.play();
+            startProgressPoll();
+            return;
+          }
           progressBar.style.width = '100%';
           setTimeout(() => loadTrack(currentIndex + 1), 600);
         });
@@ -798,7 +870,6 @@
       } catch (_) {}
     }
 
-    // Transport buttons
     playBtn.addEventListener('click', togglePlayPause);
     document.getElementById('viz-prev').addEventListener('click', () => loadTrack(currentIndex - 1));
     document.getElementById('viz-next').addEventListener('click', () => loadTrack(currentIndex + 1));
@@ -809,10 +880,13 @@
       }
       loadTrack(0);
     });
+    loopBtn?.addEventListener('click', () => {
+      isLooping = !isLooping;
+      loopBtn.classList.toggle('active', isLooping);
+      loopBtn.setAttribute('aria-pressed', String(isLooping));
+    });
 
-    /* ══════════════════════════════════════════════════════════
-       AMBIENT PARTICLES — slow, organic dust motes
-       ══════════════════════════════════════════════════════════ */
+    /* ── Ambient Particles ── */
     const pCanvas = document.getElementById('viz-particles');
     const pCtx = pCanvas.getContext('2d');
     let PW, PH, motes;
@@ -832,10 +906,10 @@
         dx: rnd(-0.08, 0.08),
         dy: rnd(-0.04, 0.04),
         color: Math.random() > 0.7
-          ? `201,148,74`   // gold mote
+          ? `217,170,78`
           : Math.random() > 0.5
-            ? `107,91,138`  // purple mote
-            : `213,207,194` // neutral mote
+            ? `124,107,158`
+            : `242,231,208`
       }));
     }
 
@@ -843,7 +917,6 @@
     window.addEventListener('resize', buildMotes);
 
     if (REDUCED) {
-      // Static render
       pCtx.clearRect(0, 0, PW, PH);
       motes.forEach(p => {
         pCtx.beginPath();
@@ -853,10 +926,7 @@
       });
     }
 
-    /* ══════════════════════════════════════════════════════════
-       AUDIO-REACTIVE VISUALIZATION
-       Van Gogh brushstroke-style organic visuals
-       ══════════════════════════════════════════════════════════ */
+    /* ── Audio-Reactive Visualization ── */
     const rCanvas = document.getElementById('viz-reactive');
     const rCtx = rCanvas.getContext('2d');
     let RW, RH;
@@ -868,27 +938,21 @@
     sizeReactiveCanvas();
     window.addEventListener('resize', sizeReactiveCanvas);
 
-    // Audio analysis — gentle dummy oscillation as fallback
-    // (SoundCloud cross-origin prevents real WebAudio connection to iframe)
     const NUM_BANDS = 64;
     let audioData = new Float32Array(NUM_BANDS);
 
-    // Gentle organic oscillation that simulates music reactivity
     function updateDummyAudio(time) {
       for (let i = 0; i < NUM_BANDS; i++) {
         const freq = i / NUM_BANDS;
-        // Multiple layered sine waves for organic feel
         const base = Math.sin(time * 0.0004 + i * 0.3) * 0.3;
         const mid = Math.sin(time * 0.0007 + i * 0.15) * 0.25;
         const slow = Math.sin(time * 0.00015 + i * 0.5) * 0.2;
-        const pulse = Math.sin(time * 0.0012) * 0.15; // beat-like pulse
-        // Emphasize bass and mid
+        const pulse = Math.sin(time * 0.0012) * 0.15;
         const emphasis = 1 - freq * 0.4;
         audioData[i] = Math.max(0, (base + mid + slow + pulse) * emphasis * (isPlaying ? 1.0 : 0.35));
       }
     }
 
-    // Reactive visual elements
     const ringCount = 5;
     const rings = Array.from({ length: ringCount }, (_, i) => ({
       radius: 80 + i * 55,
@@ -897,11 +961,10 @@
       amplitude: 12 + i * 8,
       phase: i * 1.2,
       color: i % 2 === 0
-        ? { r: 201, g: 148, b: 74 }   // gold
-        : { r: 107, g: 91, b: 138 }    // purple
+        ? { r: 217, g: 170, b: 78 }
+        : { r: 124, g: 107, b: 158 }
     }));
 
-    // Floating reactive particles
     const reactiveParticleCount = 35;
     const reactiveParticles = Array.from({ length: reactiveParticleCount }, () => ({
       angle: rnd(0, TAU),
@@ -912,21 +975,15 @@
       phase: rnd(0, TAU),
       trail: [],
       color: Math.random() > 0.5
-        ? { r: 201, g: 148, b: 74 }
-        : { r: 107, g: 91, b: 138 }
+        ? { r: 217, g: 170, b: 78 }
+        : { r: 124, g: 107, b: 158 }
     }));
 
-    /* ══════════════════════════════════════════════════════════
-       MAIN ANIMATION LOOP
-       ══════════════════════════════════════════════════════════ */
     if (!REDUCED) {
       (function animate(time) {
         requestAnimationFrame(animate);
-
-        // Update dummy audio
         updateDummyAudio(time);
 
-        // ── Draw ambient particles ──
         pCtx.clearRect(0, 0, PW, PH);
         motes.forEach(p => {
           p.x += p.dx;
@@ -942,71 +999,47 @@
           pCtx.fill();
         });
 
-        // ── Draw audio-reactive visuals ──
         rCtx.clearRect(0, 0, RW, RH);
-
         const cx = RW / 2;
         const cy = RH / 2;
 
-        // Organic waveform rings — aurora/ink-in-water style
         rings.forEach((ring, ri) => {
           const bandStart = Math.floor((ri / ringCount) * NUM_BANDS * 0.6);
           rCtx.beginPath();
-
           for (let i = 0; i <= ring.points; i++) {
             const t = i / ring.points;
             const angle = t * TAU;
-
-            // Sample audio for this point
             const bandIdx = Math.min(NUM_BANDS - 1, bandStart + Math.floor(t * (NUM_BANDS * 0.3)));
             const audioVal = audioData[bandIdx];
-
-            // Organic distortion — multiple noise layers
             const noise1 = Math.sin(angle * 3 + time * ring.speed + ring.phase) * ring.amplitude * 0.5;
             const noise2 = Math.sin(angle * 7 + time * ring.speed * 0.6) * ring.amplitude * 0.3;
             const noise3 = Math.sin(angle * 2 + time * ring.speed * 1.5 + ri) * ring.amplitude * 0.2;
-
             const audioDisplace = audioVal * ring.amplitude * 2.5;
             const r = ring.radius + noise1 + noise2 + noise3 + audioDisplace;
-
             const x = cx + Math.cos(angle) * r;
             const y = cy + Math.sin(angle) * r;
-
             if (i === 0) rCtx.moveTo(x, y);
             else rCtx.lineTo(x, y);
           }
-
           rCtx.closePath();
-
-          // Matte, painterly stroke
           const alpha = 0.06 + audioData[bandStart] * 0.08;
           rCtx.strokeStyle = `rgba(${ring.color.r},${ring.color.g},${ring.color.b},${alpha})`;
           rCtx.lineWidth = 1.5 + audioData[bandStart] * 3;
           rCtx.stroke();
-
-          // Very subtle fill
           const fillAlpha = 0.008 + audioData[bandStart] * 0.015;
           rCtx.fillStyle = `rgba(${ring.color.r},${ring.color.g},${ring.color.b},${fillAlpha})`;
           rCtx.fill();
         });
 
-        // Floating reactive particles — like embers or cosmic dust
         reactiveParticles.forEach(p => {
           const audioVal = audioData[p.band];
           p.angle += p.speed + audioVal * 0.002;
-
-          // Organic path — swirling, not circular
           const wobble = Math.sin(time * 0.0002 + p.phase) * 30;
           const distMod = p.dist + audioVal * 40 + wobble;
-
           const x = cx + Math.cos(p.angle) * distMod;
-          const y = cy + Math.sin(p.angle) * distMod * 0.75; // slight vertical compression for depth
-
-          // Trail
+          const y = cy + Math.sin(p.angle) * distMod * 0.75;
           p.trail.push({ x, y });
           if (p.trail.length > 8) p.trail.shift();
-
-          // Draw trail
           if (p.trail.length > 1) {
             rCtx.beginPath();
             rCtx.moveTo(p.trail[0].x, p.trail[0].y);
@@ -1018,8 +1051,6 @@
             rCtx.lineWidth = p.size * 0.5;
             rCtx.stroke();
           }
-
-          // Draw particle
           const particleAlpha = 0.1 + audioVal * 0.25;
           const particleSize = p.size + audioVal * 2;
           rCtx.beginPath();
@@ -1028,29 +1059,20 @@
           rCtx.fill();
         });
 
-        // Subtle central glow — breathing effect
         const breathe = 0.5 + 0.5 * Math.sin(time * 0.0003);
         const avgAudio = audioData.reduce((s, v) => s + v, 0) / NUM_BANDS;
         const glowRadius = 120 + breathe * 60 + avgAudio * 100;
         const glowAlpha = 0.015 + avgAudio * 0.02;
-
         const glow = rCtx.createRadialGradient(cx, cy, 0, cx, cy, glowRadius);
-        glow.addColorStop(0, `rgba(201,148,74,${glowAlpha})`);
-        glow.addColorStop(0.5, `rgba(107,91,138,${glowAlpha * 0.5})`);
-        glow.addColorStop(1, 'rgba(8,11,22,0)');
+        glow.addColorStop(0, `rgba(217,170,78,${glowAlpha})`);
+        glow.addColorStop(0.5, `rgba(124,107,158,${glowAlpha * 0.5})`);
+        glow.addColorStop(1, 'rgba(8,11,20,0)');
         rCtx.fillStyle = glow;
         rCtx.fillRect(cx - glowRadius, cy - glowRadius, glowRadius * 2, glowRadius * 2);
-
       })(0);
     }
 
   })();
   </script>
-
-  <footer style="position:fixed;bottom:4px;right:12px;z-index:5;font-size:.55rem;opacity:.3;color:var(--muted)">
-    <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none">
-      Created with Perplexity Computer
-    </a>
-  </footer>
 </body>
 </html>
