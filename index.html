@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>STARMILK | Cosmic Electronic Music</title>
   <meta name="description" content="Born from the trembling. Raised by rivers. Where quantum physics meets the old ache and decides to dance. STARMILK — electronic music direct to fans." />
@@ -101,7 +101,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="starmilk-refactor.css?v=earth-starlight-20261028a">
+  <link rel="stylesheet" href="starmilk-refactor.css?v=earth-starlight-20261028b">
 </head>
 <body>
 <div class="paint-grain" aria-hidden="true"></div>
@@ -1000,14 +1000,14 @@
       <div class="radio-now-row">
         <div class="radio-track-art" id="radio-track-art" aria-hidden="true"></div>
         <div class="radio-now-info">
-          <span class="radio-now-label">Now Playing</span>
+          <span class="radio-now-label">Now Playing <span class="radio-eq" id="radio-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span></span>
           <p id="radio-track-name" class="radio-track-title">Awaiting signal…</p>
         </div>
         <button type="button" id="radio-like" class="radio-like-btn" aria-label="Add to favorites" aria-pressed="false"></button>
       </div>
 
       <p id="radio-poem" class="radio-poem"></p>
-      <p id="radio-status" class="radio-status" data-state="idle" aria-live="polite">Select a track to begin.</p>
+      <p id="radio-status" class="radio-status" data-state="idle" aria-live="polite">Select a track to begin.</p><div class="radio-progress-wrap" id="radio-progress-wrap" role="progressbar" aria-label="Track progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="radio-progress-bar" id="radio-progress-bar"></div></div><div class="radio-time-row"><span id="radio-time-cur">0:00</span><span id="radio-time-dur">--:--</span></div>
       <p id="radio-fallback" class="radio-fallback" hidden aria-live="polite">
         SoundCloud playback is unavailable in this browser. <a id="radio-fallback-link" href="https://soundcloud.com/star-milk-645735333" target="_blank" rel="noopener noreferrer">Listen on SoundCloud</a>
       </p>
@@ -1111,7 +1111,7 @@ Stay as long as you like.</p>
 <script src="orchard.js" defer></script>
 <script src="the-river.js" defer></script>
 <script src="honey-drip.js" defer></script>
-<script src="starmilk-radio.js?v=radio-polish-20261028a" defer></script>
+<script src="starmilk-radio.js?v=radio-polish-20261028b" defer></script>
 <script src="starmilk-ui.js?v=tapestry-20261023a" defer></script>
 <script src="starmilk-tapestry.js?v=tapestry-transition-20261023a" defer></script>
 <script src="starmilk-conductor.js" defer></script>
@@ -1120,7 +1120,7 @@ Stay as long as you like.</p>
 (function () {
   'use strict';
 
-  if (document.documentElement.dataset.starmilkRebuild === 'true') return;
+  /* WebGL Starfield & Dripping Gold Stars active */
 
   const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const isMobile = window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent);
@@ -1539,7 +1539,7 @@ void main(){
      ═══════════════════════════════════════════════════════════════ */
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => {
-    nav.style.background = window.scrollY > 55
+    if (false) nav.style.background = window.scrollY > 55
       ? 'rgba(8,11,22,.95)'
       : 'rgba(8,11,22,.82)';
   }, { passive: true });

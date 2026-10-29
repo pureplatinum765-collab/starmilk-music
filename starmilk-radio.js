@@ -267,7 +267,7 @@
       });
       widget.bind(SC.Widget.Events.PLAY_PROGRESS, (progress) => {
         if (!isCurrent() || !isPlaying) return;
-        emitAudioState('progress', progress || {});
+        emitAudioState('progress', progress || {}); const pBar = document.getElementById('radio-progress-bar'), pWrap = document.getElementById('radio-progress-wrap'), tCur = document.getElementById('radio-time-cur'), tDur = document.getElementById('radio-time-dur'); const fmt = ms => { const s = Math.max(0, Math.floor((ms || 0) / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }; const rel = Math.max(0, Math.min(1, Number(progress?.relativePosition || 0))); if (pBar) pBar.style.width = (rel * 100).toFixed(2) + '%'; if (pWrap) pWrap.setAttribute('aria-valuenow', String(Math.round(rel * 100))); if (tCur && progress?.currentPosition != null) tCur.textContent = fmt(progress.currentPosition); if (tDur && progress?.currentPosition && rel > 0.01) tDur.textContent = fmt(progress.currentPosition / rel);
       });
       widget.bind(SC.Widget.Events.PAUSE, () => {
         if (!isCurrent()) return;
@@ -539,7 +539,7 @@
     playBtn.innerHTML = isPlaying ? SVG.pause : SVG.play;
     playBtn.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
     playBtn.setAttribute('aria-pressed', String(isPlaying));
-    playBtn.classList.toggle('active', isPlaying);
+    playBtn.classList.toggle('active', isPlaying); floating.classList.toggle('is-playing', isPlaying);
   };
 
   // FIX 3: force iframe build on first tap when scWidget is null
@@ -731,6 +731,6 @@
   };
 
   /* ─── Init ───────────────────────────────────────────────────── */
-  loadTracks().then(handleDeepLink).catch(handleDeepLink);
+  document.getElementById('radio-progress-wrap')?.addEventListener('click', (e) => { if (!scWidget || !widgetReady) return; const rect = e.currentTarget.getBoundingClientRect(); const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / (rect.width || 1))); scWidget.getDuration?.((d) => { if (d) scWidget.seekTo(d * pct); }); }); loadTracks().then(handleDeepLink).catch(handleDeepLink);
 
 })();
