@@ -184,7 +184,7 @@
     }
 
     .viz-logo {
-      font-family: var(--font-display);
+      font-family: "Cinzel", var(--font-display); font-weight: 600; background: linear-gradient(180deg, #fffdf9 0%, #f0cb7e 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
       font-size: .95rem;
       letter-spacing: .16em;
       color: var(--text);
@@ -285,8 +285,8 @@
 
     /* ── Track name ── */
     .viz-track-name {
-      font-family: var(--font-display);
-      font-size: 1.2rem;
+      font-family: "Cinzel", var(--font-display); font-weight: 600; background: linear-gradient(180deg, #fffdf9 0%, #f0cb7e 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+      font-family: var(--font-display) !important; background: none !important; -webkit-background-clip: border-box !important; background-clip: border-box !important; color: var(--text) !important; font-size: 1.42rem; font-style: italic; text-shadow: 0 2px 18px rgba(217, 170, 78, 0.22);
       color: var(--text);
       text-align: center;
       letter-spacing: .01em;
@@ -315,7 +315,7 @@
       width: 0%;
       background: linear-gradient(90deg, var(--gold), var(--gold-light));
       border-radius: 999px;
-      transition: width .3s linear;
+      transition: width .3s linear; } .viz-time-row { width: 100%; display: flex; justify-content: space-between; font-size: .66rem; font-variant-numeric: tabular-nums; letter-spacing: .06em; color: var(--muted); margin-top: -.35rem;
     }
 
     /* ── Transport controls ── */
@@ -525,8 +525,7 @@
 
     <!-- Progress -->
     <div class="viz-progress-wrap" id="viz-progress-wrap" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Track progress">
-      <div class="viz-progress-bar" id="viz-progress-bar"></div>
-    </div>
+      <div class="viz-progress-bar" id="viz-progress-bar"></div></div><div class="viz-time-row"><span id="viz-time-cur">0:00</span><span id="viz-time-dur">--:--</span></div>
 
     <!-- Transport -->
     <div class="viz-transport" role="toolbar" aria-label="Playback controls">
@@ -773,7 +772,7 @@
             if (dur > 0) {
               const pct = Math.min(100, (pos / dur) * 100);
               progressBar.style.width = pct + '%';
-              progressWrap.setAttribute('aria-valuenow', String(Math.round(pct)));
+              progressWrap.setAttribute('aria-valuenow', String(Math.round(pct))); const fmt = ms => { const s = Math.max(0, Math.floor((ms || 0) / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }; const tC = document.getElementById('viz-time-cur'), tD = document.getElementById('viz-time-dur'); if (tC) tC.textContent = fmt(pos); if (tD) tD.textContent = fmt(dur);
             }
           });
         });
