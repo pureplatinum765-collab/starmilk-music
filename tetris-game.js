@@ -204,23 +204,23 @@
     } catch (_) { /* silent */ }
   }
 
-  function sfxPlace()     { beep(200, 0.08, 'triangle', 0.05); }
-  function sfxRotate()    { beep(440, 0.05, 'sine', 0.03); }
-  function sfxMove()      { beep(330, 0.03, 'sine', 0.02); }
-  function sfxHardDrop()  { beep(150, 0.12, 'square', 0.04); }
+  const PENTA = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25]; let pentaIdx = 0; const ZEN_NOTES = ['Visuospatial flow quiets intrusive noise', 'No rush — let each shape find its resting place', 'Every line cleared is a long exhale', 'The river makes room for what comes next', 'Pattern and harmony return the mind to the present']; function sfxPlace() { const f = PENTA[pentaIdx++ % PENTA.length]; beep(f, 0.22, 'triangle', 0.045); beep(f * 0.5, 0.28, 'sine', 0.025); }
+  function sfxRotate()    { beep(PENTA[(pentaIdx + 2) % PENTA.length], 0.14, 'sine', 0.03); }
+  function sfxMove()      { beep(PENTA[pentaIdx % PENTA.length] * 0.5, 0.06, 'sine', 0.016); }
+  function sfxHardDrop()  { const f = PENTA[pentaIdx++ % PENTA.length]; beep(f * 0.5, 0.26, 'sine', 0.045); beep(f, 0.18, 'triangle', 0.03); }
   function sfxHold()      { beep(520, 0.06, 'triangle', 0.03); }
 
   function sfxLineClear(count) {
-    const base = 440 + count * 110;
+    const base = PENTA[(lines + count) % PENTA.length]; beep(base, 0.35, 'sine', 0.055); setTimeout(() => beep(base * 1.25, 0.32, 'triangle', 0.045), 75); setTimeout(() => beep(base * 1.5, 0.4, 'sine', 0.04), 150);
     beep(base, 0.15, 'triangle', 0.06);
     setTimeout(() => beep(base * 1.5, 0.1, 'sine', 0.04), 60);
     if (count >= 4) setTimeout(() => beep(base * 2, 0.2, 'triangle', 0.05), 120);
   }
 
   function sfxGameOver() {
-    beep(200, 0.3, 'sawtooth', 0.05);
-    setTimeout(() => beep(150, 0.3, 'sawtooth', 0.04), 150);
-    setTimeout(() => beep(100, 0.5, 'sawtooth', 0.03), 300);
+    beep(261.63, 0.45, 'sine', 0.045); setTimeout(() => beep(329.63, 0.45, 'triangle', 0.04), 110); setTimeout(() => beep(392.00, 0.55, 'sine', 0.04), 220);
+    setTimeout(() => beep(523.25, 0.5, 'sine', 0.03), 330);
+    setTimeout(() => beep(659.25, 0.6, 'triangle', 0.025), 440);
   }
 
   function sfxLevelUp() {
@@ -465,13 +465,13 @@
       sfxLevelUp();
     }
 
-    updateStats();
+    updateStats(ZEN_NOTES[lines % ZEN_NOTES.length]);
   }
 
   // ─── Drop speed (frames at 60fps equivalent) ────────────────
   function getDropInterval() {
     // Classic NES-style: faster each level
-    const speeds = [800, 720, 630, 550, 470, 380, 300, 220, 150, 100, 80, 70, 60, 50, 40];
+    const speeds = [820, 760, 700, 650, 600, 560, 520, 480, 450, 420, 400, 380, 360, 350, 340];
     const idx = Math.min(level - 1, speeds.length - 1);
     return speeds[idx];
   }
@@ -530,7 +530,7 @@
   }
 
   // ─── Game over ──────────────────────────────────────────────
-  function triggerGameOver() {
+  function triggerGameOver() { persistHighScore(); sfxGameOver(); const washRows = 8; for (let r = ROWS - washRows; r < ROWS; r++) { for (let c = 0; c < COLS; c++) { particles.push({ x: gridOffX + c * cellSize + cellSize / 2, y: gridOffY + r * cellSize + cellSize / 2, vx: (Math.random() - 0.5) * 3, vy: -1.5 - Math.random() * 2, life: 42, color: r % 2 === 0 ? GOLD_LT : '#7eb8b3', size: 3 }); } } grid.splice(ROWS - washRows, washRows); for (let i = 0; i < washRows; i++) grid.unshift(new Array(COLS).fill(null)); updateStats('River Wash — the current cleared space to keep flowing'); return;
     gameOver = true;
     running = false;
     persistHighScore();
@@ -575,7 +575,7 @@
     current = null;
 
     spawnPiece();
-    updateStats();
+    updateStats(ZEN_NOTES[lines % ZEN_NOTES.length]);
     lastTime = performance.now();
     if (animFrameId) cancelAnimationFrame(animFrameId);
     animFrameId = requestAnimationFrame(loop);

@@ -33,12 +33,12 @@
 
   // ─── Level definitions (6 levels) ─────────────────────────────
   const LEVELS = [
-    { rows: 5, cols: 10, speed: 4.4, hp: 1, pattern: 'full', label: 'STARFIELD' },
-    { rows: 6, cols: 11, speed: 5.0, hp: 2, pattern: 'checkerboard', label: 'NEBULA GRID' },
-    { rows: 6, cols: 12, speed: 5.4, hp: 2, pattern: 'diamond', label: 'DIAMOND CLUSTER' },
-    { rows: 7, cols: 12, speed: 5.8, hp: 2, pattern: 'vshape', label: 'CONSTELLATION V' },
-    { rows: 7, cols: 13, speed: 6.2, hp: 3, pattern: 'border', label: 'COSMIC RING' },
-    { rows: 8, cols: 14, speed: 6.6, hp: 3, pattern: 'zigzag', label: 'FINAL FRONTIER' },
+    { rows: 5, cols: 10, speed: 4.2, hp: 1, pattern: 'full', label: 'THE TREMBLING' },
+    { rows: 6, cols: 11, speed: 4.6, hp: 2, pattern: 'checkerboard', label: 'RIVER CURRENT' },
+    { rows: 6, cols: 12, speed: 5.0, hp: 2, pattern: 'diamond', label: 'OPEN AIR' },
+    { rows: 7, cols: 12, speed: 5.3, hp: 2, pattern: 'vshape', label: 'HONEY IN THE WOUND' },
+    { rows: 7, cols: 13, speed: 5.6, hp: 3, pattern: 'border', label: 'ART OF RETURNING' },
+    { rows: 8, cols: 14, speed: 5.9, hp: 3, pattern: 'zigzag', label: 'BECOMING THE OCEAN' },
   ];
 
   // ─── Power-up drop system ─────────────────────────────────────
@@ -129,7 +129,7 @@
   }
 
   function beepCombo(combo) {
-    const freq = 440 + combo * 80;
+    const PENTA_BB = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25]; const freq = PENTA_BB[combo % PENTA_BB.length]; beep(freq * 0.5, 0.24, 'sine', 0.03);
     beep(freq, 0.12, 'triangle', Math.min(0.08, 0.04 + combo * 0.01));
   }
 
@@ -641,7 +641,7 @@
     if (!state.balls.length) {
       state.lives -= 1;
       state.combo = 0;
-      beep(120, 0.22, 'sawtooth', 0.06);
+      beep(196, 0.28, 'sine', 0.035); if (state.lives <= 0) { state.lives = 3; persistHighScore(); updateStats('The river catches you — keep unbinding at your own pace', true); }
       state.screenShake.intensity = 8;
       if (state.lives <= 0) {
         state.running = false;
@@ -756,8 +756,8 @@
     "Seeing someone suffer can challenge our belief that the world is fair.": { label: "Lerner & Miller, 1978 review", url: "https://www.gsb.stanford.edu/faculty-research/publications/just-world-research-attribution-process-looking-back-ahead" },
     "In some studies, observers judged an innocent sufferer more harshly when they felt powerless.": { label: "Lerner & Simmons, 1966", url: "https://pubmed.ncbi.nlm.nih.gov/5969146/" },
   });
-  const FIELD_NOTE_COOLDOWN_MS = 17000;
-  const FIELD_NOTE_MIN_BREAKS = 5;
+  const FIELD_NOTE_COOLDOWN_MS = 6500;
+  const FIELD_NOTE_MIN_BREAKS = 2;
   let noteDeck = [];
   let breaksSinceNote = 0;
   let lastNoteAt = 0;
@@ -1197,7 +1197,7 @@
     initAudio();
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     resizeCanvas();
-    startGame();
+    if (collectedNotes.size === 0) { FIELD_NOTES.slice(0, 3).forEach(n => collectedNotes.add(n)); persistNotes(); } renderNotesButton(); startGame();
     requestAnimationFrame(() => {
       resizeCanvas();
       closeBtn?.focus();
@@ -1239,7 +1239,7 @@
     if (e.code === 'ArrowRight' || e.code === 'KeyD') state.right = true;
     if (e.code === 'Space') {
       if (state.gameOver || state.gameWon) {
-        startGame();
+        if (collectedNotes.size === 0) { FIELD_NOTES.slice(0, 3).forEach(n => collectedNotes.add(n)); persistNotes(); } renderNotesButton(); startGame();
       } else {
         state.balls.filter((b) => b.attached).forEach(launchBall);
       }
@@ -1268,7 +1268,7 @@
       const y = (e.clientY - rect.top) * DPR();
       const btn = state._restartBtn;
       if (x >= btn.x && x <= btn.x + btn.w && y >= btn.y && y <= btn.y + btn.h) {
-        startGame();
+        if (collectedNotes.size === 0) { FIELD_NOTES.slice(0, 3).forEach(n => collectedNotes.add(n)); persistNotes(); } renderNotesButton(); startGame();
         return;
       }
     }

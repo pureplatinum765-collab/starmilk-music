@@ -58,7 +58,7 @@
     'STARMILK was born where quantum physics meets an old ache and decides to dance.',
     'The name comes from cosmic milk flowing between stars.',
     'Each beat is a small map back to the body.',
-    'The project treats basslines as archaeology.',
+    'The project treats basslines as archaeology.', 'Rhythm can steady a racing heart before language catches up.', 'Every hidden song in this labyrinth was written for someone learning to come home to themselves.', 'Slowing your exhale tells the nervous system that the emergency has passed.', 'Grief and devotion are two banks of the same river.', 'In the dark, even a single warm note is enough to orient by.', 'Healing is rarely a straight line — it spirals like a constellation.', 'You do not have to earn rest here; wander at your own pace.', 'Harmony is what happens when different frequencies stop fighting the room.', 'What was frozen for survival can thaw gently when met with warmth.', 'Sound travels through water four times faster than air — and we are mostly water.', 'The river does not apologize for its bends on the way to the ocean.',
   ];
 
   const POWER_UPS = [
@@ -132,9 +132,9 @@
     } catch (_) { /* silent */ }
   }
 
-  function sfxWallBump() { sfx(120, 0.15, 'sawtooth', 0.06, 60); }
+  function sfxWallBump() { sfx(196, 0.14, 'sine', 0.025, 164); }
   function sfxCollectFragment() { sfx(660, 0.2, 'triangle', 0.07, 880); }
-  function sfxOpenBox() { sfx(440, 0.25, 'square', 0.05, 220); sfx(550, 0.2, 'sine', 0.04); }
+  function sfxOpenBox() { sfx(440, 0.25, 'triangle', 0.04, 528); sfx(660, 0.22, 'sine', 0.035); }
   function sfxDiscoverSong() { sfx(523, 0.35, 'sine', 0.08, 1046); setTimeout(() => sfx(659, 0.3, 'sine', 0.07), 120); }
   function sfxPowerUp() { sfx(880, 0.3, 'triangle', 0.06, 440); }
   function sfxAmbientHum() {
@@ -1168,7 +1168,7 @@
     powerPrompt.style.display = 'block';
     powerPrompt.querySelector('#cq-power-free').onclick = activateNow;
     powerPrompt.querySelector('#cq-power-donate').onclick = () => {
-      window.open('https://www.buymeacoffee.com/starmilk', '_blank', 'noopener');
+      window.open('https://buymeacoffee.com/pureplatinb', '_blank', 'noopener');
       activateNow();
     };
   }
