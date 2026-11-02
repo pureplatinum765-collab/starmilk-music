@@ -7,6 +7,7 @@
   const EMBED_COLOR = '%23f59e0b';
   const SC_API_URL  = 'https://w.soundcloud.com/player/api.js';
   const FAVS_KEY    = 'sm_radio_favorites_v2';
+  const VOL_KEY     = 'sm_radio_volume_v1';
 
   const POEMS = [
     'The river knows your name',
@@ -42,27 +43,54 @@
   const tabs         = document.querySelectorAll('[data-radio-tab]');
   const tabPanels    = document.querySelectorAll('[data-radio-panel]');
 
+  const pBar         = document.getElementById('radio-progress-bar');
+  const pWrap        = document.getElementById('radio-progress-wrap');
+  const tCur         = document.getElementById('radio-time-cur');
+  const tDur         = document.getElementById('radio-time-dur');
+  const volBtn       = document.getElementById('radio-vol');
+  const volSlider    = document.getElementById('radio-volume');
+  const volPopover   = document.getElementById('radio-vol-popover');
+
   if (!floating || !badge || !trackNameEl || !shell) return;
 
   /* ─── State ─────────────────────────────────────────────────── */
-  let allTracks          = [];
-  let filteredTracks     = [];
-  let currentIndex       = 0;
-  let hasOpened          = false;
-  let poemCooldown       = false;
-  let scWidget           = null;
-  let scAPILoaded        = false;
-  let userHasInteracted  = false;
-  let deepLinkedTrack    = null;
-  let activeTab          = 'radio';
-  let isShuffleActive    = false;
-  let isPlaying          = false;
-  let widgetReady        = false;
-  let widgetToken        = 0;
-  let widgetTimeout      = 0;
-  let userRequestedPlay  = false;
-  let currentTrackTempo  = 0;
-  let radioCloseTimer    = 0;
+  let allTracks            = [];
+  let filteredTracks       = [];
+  let currentIndex         = 0;
+  let hasOpened            = false;
+  let poemCooldown         = false;
+  let scWidget             = null;
+  let scAPILoaded          = false;
+  let userHasInteracted    = false;
+  let deepLinkedTrack      = null;
+  let activeTab            = 'radio';
+  let isShuffleActive      = false;
+  let isPlaying            = false;
+  let widgetReady          = false;
+  let widgetToken          = 0;
+  let widgetTimeout        = 0;
+  let userRequestedPlay    = false;
+  let currentTrackTempo    = 0;
+  let currentTrackDuration = 0;
+  let isScrubbing          = false;
+  let radioCloseTimer      = 0;
+  let mediaSessionBound    = false;
+
+  /* Volume State */
+  let currentVolume = (() => {
+    try {
+      const v = localStorage.getItem(VOL_KEY);
+      return v !== null ? Math.max(0, Math.min(100, Number(v))) : 85;
+    } catch (_) { return 85; }
+  })();
+  let isMuted = false;
+  let preMuteVolume = currentVolume > 0 ? currentVolume : 85;
+
+  /* Format milliseconds to m:ss */
+  const fmt = (ms) => {
+    const s = Math.max(0, Math.floor((ms || 0) / 1000));
+    return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  };
 
   /* Inked Relic Synapse contract: semantic playback is honest for an embedded
      cross-origin player and leaves room for later same-origin audio analysis. */
@@ -83,11 +111,8 @@
     }));
   };
 
-  // FIX 1: track canonical URL so swapTrack skips rebuild when same track already loaded
-  let currentIframeUrl   = '';
-
-  // FIX 2: guard so tryDiscover never runs more than once
-  let discoverDone       = false;
+  let currentIframeUrl = '';
+  let discoverDone     = false;
 
   const setPlayerStatus = (state, message) => {
     if (!statusEl) return;
@@ -120,6 +145,177 @@
     return widgetToken;
   };
 
+  /* ─── Media Session API ─────────────────────────────────────── */
+  const updateMediaSession = (track) => {
+    if (!('mediaSession' in navigator) || !track) return;
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: track.name,
+        artist: 'STARMILK',
+        album: 'STARMILK Radio',
+        artwork: [
+          { src: 'star-milk-logo.avif', sizes: '512x512', type: 'image/avif' },
+          { src: 'starmilk-og.png', sizes: '1200x630', type: 'image/png' },
+        ],
+      });
+      navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+    } catch (_) {}
+  };
+
+  const initMediaSession = () => {
+    if (mediaSessionBound || !('mediaSession' in navigator)) return;
+    mediaSessionBound = true;
+    try {
+      navigator.mediaSession.setActionHandler('play', () => {
+        if (!isPlaying) togglePlay();
+      });
+      navigator.mediaSession.setActionHandler('pause', () => {
+        if (isPlaying) togglePlay();
+      });
+      navigator.mediaSession.setActionHandler('previoustrack', () => {
+        prevTrack();
+      });
+      navigator.mediaSession.setActionHandler('nexttrack', () => {
+        userHasInteracted = true;
+        userRequestedPlay = true;
+        nextTrack(true);
+      });
+      navigator.mediaSession.setActionHandler('seekto', (details) => {
+        if (scWidget && widgetReady && details.seekTime != null) {
+          scWidget.seekTo(details.seekTime * 1000);
+        }
+      });
+    } catch (_) {}
+  };
+
+  /* ─── Volume Controls ───────────────────────────────────────── */
+  const applyStoredVolume = () => {
+    if (!scWidget || !widgetReady) return;
+    try {
+      scWidget.setVolume(isMuted ? 0 : currentVolume);
+    } catch (_) {}
+  };
+
+  const updateVolumeUI = () => {
+    const effectiveVol = isMuted ? 0 : currentVolume;
+    if (volSlider) volSlider.value = String(effectiveVol);
+    if (!volBtn) return;
+    volBtn.classList.toggle('muted', effectiveVol === 0);
+    volBtn.setAttribute('aria-pressed', String(effectiveVol === 0));
+    volBtn.setAttribute('title', effectiveVol === 0 ? 'Unmute' : `Volume ${effectiveVol}% (click to mute)`);
+    if (effectiveVol === 0) {
+      volBtn.innerHTML = SVG.volMute;
+    } else if (effectiveVol < 45) {
+      volBtn.innerHTML = SVG.volLow;
+    } else {
+      volBtn.innerHTML = SVG.volHigh;
+    }
+  };
+
+  const setVolume = (val, persist = true) => {
+    const v = Math.max(0, Math.min(100, Math.round(Number(val) || 0)));
+    currentVolume = v;
+    if (v > 0) isMuted = false;
+    applyStoredVolume();
+    if (persist) {
+      try { localStorage.setItem(VOL_KEY, String(v)); } catch (_) {}
+    }
+    updateVolumeUI();
+  };
+
+  const toggleMute = () => {
+    if (isMuted || currentVolume === 0) {
+      isMuted = false;
+      setVolume(preMuteVolume || 85);
+      showToast(`Volume ${preMuteVolume || 85}%`);
+    } else {
+      preMuteVolume = currentVolume > 0 ? currentVolume : 85;
+      isMuted = true;
+      setVolume(0);
+      showToast('Muted');
+    }
+  };
+
+  if (volBtn) {
+    volBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMute();
+    });
+  }
+  if (volSlider) {
+    volSlider.addEventListener('input', (e) => {
+      setVolume(Number(e.target.value));
+    });
+  }
+
+  /* ─── Smooth Scrubber & Seeking ─────────────────────────────── */
+  const seekToRatio = (ratio, commit = false) => {
+    const r = Math.max(0, Math.min(1, ratio));
+    if (pBar) pBar.style.width = (r * 100).toFixed(2) + '%';
+    if (pWrap) pWrap.setAttribute('aria-valuenow', String(Math.round(r * 100)));
+    if (currentTrackDuration && tCur) {
+      tCur.textContent = fmt(currentTrackDuration * r);
+    }
+    if (commit && scWidget && widgetReady) {
+      if (currentTrackDuration) {
+        scWidget.seekTo(currentTrackDuration * r);
+      } else {
+        scWidget.getDuration?.((dur) => {
+          if (dur) {
+            currentTrackDuration = dur;
+            scWidget.seekTo(dur * r);
+          }
+        });
+      }
+    }
+  };
+
+  const seekRelative = (seconds) => {
+    if (!scWidget || !widgetReady) return;
+    scWidget.getPosition?.((pos) => {
+      const dur = currentTrackDuration || 0;
+      const target = Math.max(0, Math.min(dur || 3600000, (pos || 0) + seconds * 1000));
+      scWidget.seekTo(target);
+      if (dur > 0) seekToRatio(target / dur, false);
+    });
+  };
+
+  if (pWrap) {
+    const handlePointerMove = (e) => {
+      if (!isScrubbing) return;
+      const rect = pWrap.getBoundingClientRect();
+      const ratio = (e.clientX - rect.left) / (rect.width || 1);
+      seekToRatio(ratio, false);
+    };
+
+    const handlePointerUp = (e) => {
+      if (!isScrubbing) return;
+      isScrubbing = false;
+      pWrap.classList.remove('is-scrubbing');
+      const rect = pWrap.getBoundingClientRect();
+      const ratio = (e.clientX - rect.left) / (rect.width || 1);
+      seekToRatio(ratio, true);
+      try { pWrap.releasePointerCapture(e.pointerId); } catch (_) {}
+    };
+
+    pWrap.addEventListener('pointerdown', (e) => {
+      if (!scWidget || !widgetReady) return;
+      isScrubbing = true;
+      pWrap.classList.add('is-scrubbing');
+      try { pWrap.setPointerCapture(e.pointerId); } catch (_) {}
+      const rect = pWrap.getBoundingClientRect();
+      const ratio = (e.clientX - rect.left) / (rect.width || 1);
+      seekToRatio(ratio, false);
+    });
+
+    pWrap.addEventListener('pointermove', handlePointerMove);
+    pWrap.addEventListener('pointerup', handlePointerUp);
+    pWrap.addEventListener('pointercancel', () => {
+      isScrubbing = false;
+      pWrap.classList.remove('is-scrubbing');
+    });
+  }
+
   /* ─── Favorites ─────────────────────────────────────────────── */
   let favorites = (() => {
     try { return JSON.parse(localStorage.getItem(FAVS_KEY)) || []; }
@@ -136,8 +332,10 @@
     if (!track) return;
     if (isFaved(track)) {
       favorites = favorites.filter(f => f.url !== track.url);
+      showToast('Removed from favorites');
     } else {
       favorites.unshift({ name: track.name, url: track.url });
+      showToast('Saved to favorites');
     }
     saveFavs();
     refreshLikeBtn();
@@ -235,21 +433,34 @@
         clearTimeout(widgetTimeout);
         widgetTimeout = 0;
         setPlayerStatus('ready', userRequestedPlay && autoplay ? 'Ready. Starting the signal…' : 'Ready when you are.');
+        applyStoredVolume();
+        initMediaSession();
+
+        widget.getDuration?.((dur) => {
+          if (!isCurrent() || !dur) return;
+          currentTrackDuration = dur;
+          if (tDur) tDur.textContent = fmt(dur);
+        });
+
         widget.getCurrentSound?.((sound) => {
           if (!isCurrent()) return;
           const bpm = Number(sound?.bpm || 0);
           currentTrackTempo = bpm >= 48 && bpm <= 220 ? bpm : 0;
           emitAudioState('loading', { tempo: currentTrackTempo });
         });
+
         if (autoplay && userRequestedPlay) widget.play();
       });
+
       widget.bind(SC.Widget.Events.FINISH, () => {
         if (!isCurrent()) return;
         isPlaying = false;
         refreshPlayBtn();
         emitAudioState('paused');
+        if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
         nextTrack(true);
       });
+
       widget.bind(SC.Widget.Events.ERROR, () => {
         if (!isCurrent()) return;
         isPlaying = false;
@@ -258,23 +469,59 @@
         showFallback();
         emitAudioState('error');
       });
+
       widget.bind(SC.Widget.Events.PLAY, () => {
         if (!isCurrent()) return;
         isPlaying = true;
         refreshPlayBtn();
         setPlayerStatus('playing', 'Playing from STARMILK Radio.');
         emitAudioState('playing');
+        if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
+
+        widget.getDuration?.((dur) => {
+          if (dur) {
+            currentTrackDuration = dur;
+            if (tDur) tDur.textContent = fmt(dur);
+          }
+        });
       });
+
       widget.bind(SC.Widget.Events.PLAY_PROGRESS, (progress) => {
-        if (!isCurrent() || !isPlaying) return;
-        emitAudioState('progress', progress || {}); const pBar = document.getElementById('radio-progress-bar'), pWrap = document.getElementById('radio-progress-wrap'), tCur = document.getElementById('radio-time-cur'), tDur = document.getElementById('radio-time-dur'); const fmt = ms => { const s = Math.max(0, Math.floor((ms || 0) / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }; const rel = Math.max(0, Math.min(1, Number(progress?.relativePosition || 0))); if (pBar) pBar.style.width = (rel * 100).toFixed(2) + '%'; if (pWrap) pWrap.setAttribute('aria-valuenow', String(Math.round(rel * 100))); if (tCur && progress?.currentPosition != null) tCur.textContent = fmt(progress.currentPosition); if (tDur && progress?.currentPosition && rel > 0.01) tDur.textContent = fmt(progress.currentPosition / rel);
+        if (!isCurrent() || !isPlaying || isScrubbing) return;
+        emitAudioState('progress', progress || {});
+
+        const pos = Number(progress?.currentPosition || 0);
+        let rel = Number(progress?.relativePosition || 0);
+        if (currentTrackDuration > 0) {
+          rel = Math.max(0, Math.min(1, pos / currentTrackDuration));
+        } else if (rel > 0.01 && pos > 0) {
+          currentTrackDuration = pos / rel;
+          if (tDur) tDur.textContent = fmt(currentTrackDuration);
+        }
+
+        if (pBar) pBar.style.width = (rel * 100).toFixed(2) + '%';
+        if (pWrap) pWrap.setAttribute('aria-valuenow', String(Math.round(rel * 100)));
+        if (tCur && pos != null) tCur.textContent = fmt(pos);
+        if (tDur && currentTrackDuration > 0) tDur.textContent = fmt(currentTrackDuration);
+
+        if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession && currentTrackDuration > 0) {
+          try {
+            navigator.mediaSession.setPositionState({
+              duration: Math.max(0, currentTrackDuration / 1000),
+              playbackRate: 1,
+              position: Math.max(0, Math.min(currentTrackDuration / 1000, pos / 1000)),
+            });
+          } catch (_) {}
+        }
       });
+
       widget.bind(SC.Widget.Events.PAUSE, () => {
         if (!isCurrent()) return;
         isPlaying = false;
         refreshPlayBtn();
         setPlayerStatus('ready', 'Paused.');
         emitAudioState('paused');
+        if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
       });
     } catch (_) {
       if (token === widgetToken) {
@@ -310,7 +557,6 @@
   };
 
   const tryDiscover = async () => {
-    // FIX 2: run exactly once
     if (discoverDone) return;
     discoverDone = true;
     try {
@@ -322,7 +568,6 @@
       tmp.style.cssText = 'position:absolute;width:0;height:0;opacity:0;pointer-events:none;';
       document.body.appendChild(tmp);
 
-      // FIX 5: 15s hard cleanup — iframe never leaks if READY never fires
       const cleanup = setTimeout(() => { try { tmp.remove(); } catch (_) {} }, 15000);
 
       const w = SC.Widget(tmp);
@@ -339,7 +584,6 @@
 
           if (!newTracks.length) return;
 
-          // FIX 2 cont: restore by URL not name
           const playingUrl = allTracks[currentIndex]?.url || null;
           allTracks = [...newTracks, ...allTracks];
 
@@ -415,8 +659,12 @@
       nameEl.className = 'radio-queue-name';
       nameEl.textContent = track.name;
       nameEl.setAttribute('aria-label', `Play ${track.name}`);
-      // FIX 4: index captured at build time — no DOM name-lookup at click time
-      nameEl.addEventListener('click', () => { userHasInteracted = true; userRequestedPlay = true; currentIndex = globalIdx; swapTrack(true); });
+      nameEl.addEventListener('click', () => {
+        userHasInteracted = true;
+        userRequestedPlay = true;
+        currentIndex = globalIdx;
+        swapTrack(true);
+      });
 
       const heartBtn = document.createElement('button');
       heartBtn.type = 'button';
@@ -452,7 +700,12 @@
       nameEl.textContent = track.name;
       nameEl.setAttribute('aria-label', `Play ${track.name}`);
       nameEl.addEventListener('click', () => {
-        if (globalIdx !== -1) { currentIndex = globalIdx; swapTrack(true); }
+        if (globalIdx !== -1) {
+          userHasInteracted = true;
+          userRequestedPlay = true;
+          currentIndex = globalIdx;
+          swapTrack(true);
+        }
       });
 
       const heartBtn = document.createElement('button');
@@ -470,12 +723,13 @@
     favQueueEl.appendChild(frag);
   };
 
-  // FIX 4: rebuild from live state — no DOM name-match walk
   const updateQueueActive = () => {
     buildQueue();
     buildFavQueue();
     const activeEl = queueEl?.querySelector('.radio-queue-item.active');
-    if (activeEl) activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    if (activeEl) {
+      activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
   };
 
   /* ─── Playback ───────────────────────────────────────────────── */
@@ -488,9 +742,53 @@
     updateQueueActive();
     refreshLikeBtn();
     maybePoem();
+    updateMediaSession(track);
+
+    currentTrackTempo = 0;
+    currentTrackDuration = 0;
+
+    if (pBar) pBar.style.width = '0%';
+    if (tCur) tCur.textContent = '0:00';
+    if (tDur) tDur.textContent = '--:--';
+
+    // If widget is already active and ready, seamlessly load track in-place!
+    if (scWidget && widgetReady) {
+      setPlayerStatus('loading', `Tuning ${track.name}…`);
+      emitAudioState('loading');
+      const shouldPlay = (autoplay && userHasInteracted) || userRequestedPlay;
+      const targetToken = ++widgetToken;
+
+      try {
+        scWidget.load(track.url, {
+          auto_play: shouldPlay,
+          show_artwork: false,
+          callback: () => {
+            if (targetToken !== widgetToken) return;
+            setPlayerStatus('ready', shouldPlay ? 'Starting playback…' : 'Ready when you are.');
+            applyStoredVolume();
+            scWidget.getDuration?.((dur) => {
+              if (targetToken !== widgetToken || !dur) return;
+              currentTrackDuration = dur;
+              if (tDur) tDur.textContent = fmt(dur);
+            });
+            scWidget.getCurrentSound?.((sound) => {
+              if (targetToken !== widgetToken) return;
+              const bpm = Number(sound?.bpm || 0);
+              currentTrackTempo = bpm >= 48 && bpm <= 220 ? bpm : 0;
+              emitAudioState('loading', { tempo: currentTrackTempo });
+            });
+            if (shouldPlay) {
+              scWidget.play();
+            }
+          }
+        });
+        return;
+      } catch (_) {
+        // Fall back to full iframe embed if load fails
+      }
+    }
 
     const canonical = embedUrl(track, false);
-    currentTrackTempo = 0;
     currentIframeUrl = canonical;
     const token = invalidateWidget();
     isPlaying = false;
@@ -539,23 +837,29 @@
     playBtn.innerHTML = isPlaying ? SVG.pause : SVG.play;
     playBtn.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
     playBtn.setAttribute('aria-pressed', String(isPlaying));
-    playBtn.classList.toggle('active', isPlaying); floating.classList.toggle('is-playing', isPlaying);
+    playBtn.classList.toggle('active', isPlaying);
+    floating.classList.toggle('is-playing', isPlaying);
   };
 
-  // FIX 3: force iframe build on first tap when scWidget is null
   const togglePlay = () => {
     userHasInteracted = true;
     userRequestedPlay = true;
     if (!scWidget || !widgetReady) {
-      userHasInteracted = true;
       if (allTracks.length) {
         swapTrack(true);
       }
       return;
     }
     scWidget.isPaused((paused) => {
-      if (paused) { scWidget.play(); isPlaying = true; setPlayerStatus('loading', 'Resuming…'); }
-      else        { scWidget.pause(); isPlaying = false; setPlayerStatus('ready', 'Paused.'); }
+      if (paused) {
+        scWidget.play();
+        isPlaying = true;
+        setPlayerStatus('loading', 'Resuming…');
+      } else {
+        scWidget.pause();
+        isPlaying = false;
+        setPlayerStatus('ready', 'Paused.');
+      }
       refreshPlayBtn();
     });
   };
@@ -590,6 +894,9 @@
     next:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="4" x2="19" y2="20"/></svg>`,
     shuffle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>`,
     share:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
+    volHigh: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`,
+    volLow:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`,
+    volMute: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>`,
   };
 
   /* ─── Open / close ───────────────────────────────────────────── */
@@ -600,12 +907,13 @@
 
   const injectIcons = () => {
     if (prevBtn)    prevBtn.innerHTML    = SVG.prev;
-    if (playBtn)    playBtn.innerHTML    = SVG.play;
+    if (playBtn)    playBtn.innerHTML    = isPlaying ? SVG.pause : SVG.play;
     if (nextBtn)    nextBtn.innerHTML    = SVG.next;
     if (shuffleBtn) shuffleBtn.innerHTML = SVG.shuffle;
     if (likeBtn)    likeBtn.innerHTML    = SVG.heart;
     const sb = document.getElementById('radio-share');
     if (sb) sb.innerHTML = SVG.share;
+    updateVolumeUI();
   };
 
   const closeRadio = ({ restoreFocus = false } = {}) => {
@@ -669,7 +977,11 @@
   if (shuffleBtn)  shuffleBtn.addEventListener('click', toggleShuffle);
   if (likeBtn)     likeBtn.addEventListener('click',    () => toggleFav(allTracks[currentIndex]));
   if (searchInput) searchInput.addEventListener('input', handleSearch);
-  document.getElementById('radio-section-open-btn')?.addEventListener('click', () => { userHasInteracted = true; if (!floating.classList.contains('open')) badge.click(); if (!isPlaying) togglePlay(); });
+  document.getElementById('radio-section-open-btn')?.addEventListener('click', () => {
+    userHasInteracted = true;
+    if (!floating.classList.contains('open')) badge.click();
+    if (!isPlaying) togglePlay();
+  });
 
   /* ─── Share ──────────────────────────────────────────────────── */
   const slugify = (s) => s.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -703,6 +1015,46 @@
     });
   }
 
+  /* ─── Keyboard Shortcuts ─────────────────────────────────────── */
+  document.addEventListener('keydown', (e) => {
+    const tag = (e.target?.tagName || '').toLowerCase();
+    const isInput = tag === 'input' || tag === 'textarea' || e.target?.isContentEditable;
+    if (isInput) return;
+
+    if (e.key === ' ' || e.code === 'Space') {
+      if (hasOpened || isPlaying) {
+        e.preventDefault();
+        togglePlay();
+      }
+    } else if (e.key === 'm' || e.key === 'M') {
+      if (hasOpened || isPlaying) {
+        toggleMute();
+      }
+    } else if (e.key === 'l' || e.key === 'L') {
+      if (allTracks[currentIndex]) {
+        toggleFav(allTracks[currentIndex]);
+      }
+    } else if (e.key === 'n' || e.key === 'N') {
+      if (hasOpened || isPlaying) {
+        userHasInteracted = true;
+        userRequestedPlay = true;
+        nextTrack(true);
+      }
+    } else if ((e.key === 'p' || e.key === 'P') && e.shiftKey) {
+      if (hasOpened || isPlaying) {
+        prevTrack();
+      }
+    } else if (floating.classList.contains('open')) {
+      if (e.key === 'ArrowRight' && !e.shiftKey) {
+        e.preventDefault();
+        seekRelative(10);
+      } else if (e.key === 'ArrowLeft' && !e.shiftKey) {
+        e.preventDefault();
+        seekRelative(-10);
+      }
+    }
+  });
+
   /* ─── Deep link ──────────────────────────────────────────────── */
   const handleDeepLink = () => {
     try {
@@ -731,6 +1083,6 @@
   };
 
   /* ─── Init ───────────────────────────────────────────────────── */
-  document.getElementById('radio-progress-wrap')?.addEventListener('click', (e) => { if (!scWidget || !widgetReady) return; const rect = e.currentTarget.getBoundingClientRect(); const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / (rect.width || 1))); scWidget.getDuration?.((d) => { if (d) scWidget.seekTo(d * pct); }); }); loadTracks().then(handleDeepLink).catch(handleDeepLink);
+  loadTracks().then(handleDeepLink).catch(handleDeepLink);
 
 })();
