@@ -1,0 +1,8 @@
+{
+  "name": "@hermes/starmilk-music",
+  "private": true,
+  "scripts": {
+    "build": "echo \"Building starmilk-music\"",
+    "dev": "echo \"Dev server for starmilk-music\""
+  }
+}

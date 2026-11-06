@@ -730,6 +730,11 @@
     if (activeEl) {
       activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
+    const currentName = (allTracks[currentIndex]?.name || '').toLowerCase();
+    document.querySelectorAll('.canon-card').forEach(card => {
+      const cue = (card.dataset.trackCue || '').toLowerCase().trim();
+      card.classList.toggle('active', Boolean(cue && currentName.includes(cue)));
+    });
   };
 
   /* ─── Playback ───────────────────────────────────────────────── */
@@ -981,6 +986,28 @@
     userHasInteracted = true;
     if (!floating.classList.contains('open')) badge.click();
     if (!isPlaying) togglePlay();
+  });
+
+  document.addEventListener('click', (e) => {
+    const cueTarget = e.target.closest('[data-track-cue]');
+    if (!cueTarget) return;
+    const isInteractive = e.target.closest('a, button, input, textarea');
+    if (isInteractive && isInteractive !== cueTarget && !cueTarget.contains(isInteractive)) return;
+    e.preventDefault();
+    const query = (cueTarget.dataset.trackCue || '').toLowerCase().trim();
+    if (!query) return;
+    const targetIdx = allTracks.findIndex(t => (t.name || '').toLowerCase().includes(query) || (cueTarget.dataset.trackUrl && t.url === cueTarget.dataset.trackUrl));
+    if (targetIdx !== -1) {
+      userHasInteracted = true;
+      userRequestedPlay = true;
+      currentIndex = targetIdx;
+      if (!floating.classList.contains('open')) badge.click();
+      swapTrack(true);
+      showToast(`Playing: ${allTracks[targetIdx].name}`);
+    } else {
+      if (!floating.classList.contains('open')) badge.click();
+      if (!isPlaying) togglePlay();
+    }
   });
 
   /* ─── Share ──────────────────────────────────────────────────── */
