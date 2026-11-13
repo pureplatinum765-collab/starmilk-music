@@ -723,6 +723,28 @@
     favQueueEl.appendChild(frag);
   };
 
+  const syncCanonCards = () => {
+    const currentName = (allTracks[currentIndex]?.name || '').toLowerCase();
+    document.querySelectorAll('.canon-card').forEach(card => {
+      const cue = (card.dataset.trackCue || '').toLowerCase().trim();
+      const isActive = Boolean(cue && currentName.includes(cue));
+      card.classList.toggle('active', isActive);
+      const btn = card.querySelector('.canon-play-btn');
+      if (btn) {
+        if (isActive && isPlaying) {
+          btn.innerHTML = '<span class="canon-play-icon" aria-hidden="true">❚❚</span> Pause';
+          btn.setAttribute('aria-label', `Pause ${card.querySelector('.canon-title')?.textContent || 'track'}`);
+        } else if (isActive && !isPlaying) {
+          btn.innerHTML = '<span class="canon-play-icon" aria-hidden="true">▶</span> Resume';
+          btn.setAttribute('aria-label', `Resume ${card.querySelector('.canon-title')?.textContent || 'track'}`);
+        } else {
+          btn.innerHTML = '<span class="canon-play-icon" aria-hidden="true">▶</span> Play in Radio';
+          btn.setAttribute('aria-label', `Play ${card.querySelector('.canon-title')?.textContent || 'track'} in Radio`);
+        }
+      }
+    });
+  };
+
   const updateQueueActive = () => {
     buildQueue();
     buildFavQueue();
@@ -730,11 +752,7 @@
     if (activeEl) {
       activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
-    const currentName = (allTracks[currentIndex]?.name || '').toLowerCase();
-    document.querySelectorAll('.canon-card').forEach(card => {
-      const cue = (card.dataset.trackCue || '').toLowerCase().trim();
-      card.classList.toggle('active', Boolean(cue && currentName.includes(cue)));
-    });
+    syncCanonCards();
   };
 
   /* ─── Playback ───────────────────────────────────────────────── */
@@ -844,6 +862,7 @@
     playBtn.setAttribute('aria-pressed', String(isPlaying));
     playBtn.classList.toggle('active', isPlaying);
     floating.classList.toggle('is-playing', isPlaying);
+    syncCanonCards();
   };
 
   const togglePlay = () => {
@@ -996,6 +1015,12 @@
     e.preventDefault();
     const query = (cueTarget.dataset.trackCue || '').toLowerCase().trim();
     if (!query) return;
+    const currentName = (allTracks[currentIndex]?.name || '').toLowerCase();
+    if (query && currentName.includes(query)) {
+      userHasInteracted = true;
+      togglePlay();
+      return;
+    }
     const targetIdx = allTracks.findIndex(t => (t.name || '').toLowerCase().includes(query) || (cueTarget.dataset.trackUrl && t.url === cueTarget.dataset.trackUrl));
     if (targetIdx !== -1) {
       userHasInteracted = true;

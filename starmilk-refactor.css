@@ -3773,3 +3773,179 @@ body.starmilk-playing .radio-eq i:nth-child(4) { animation: eq-bounce 1.05s infi
     animation: none !important;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   2B2 SUPREME SANCTUARY REFINEMENTS: VINYL, POETRY & MOTHERSHIP HARMONY
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Realistic Concentric Vinyl Grooves & Celestial Pulsar in Radio Track Art */
+.radio-track-art {
+  width: 3.35rem;
+  height: 3.35rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at center,
+    #141916 0%,
+    #141916 16%,
+    #25332a 17%,
+    #16201b 18%,
+    #25332a 19%,
+    #131a16 35%,
+    #2c3b31 36%,
+    #131a16 37%,
+    #253229 55%,
+    #111613 56%,
+    #25332a 72%,
+    #121614 100%
+  ) !important;
+  border: 1.5px solid rgba(240, 203, 126, 0.4) !important;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(0, 0, 0, 0.8) !important;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.radio-track-art::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.15rem;
+  height: 1.15rem;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, #f0cb7e 0%, #b8860b 60%, #151e18 100%);
+  box-shadow: 0 0 8px rgba(240, 203, 126, 0.55);
+  z-index: 2;
+}
+
+.radio-track-art::after {
+  content: "✦";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #121714;
+  font-size: 0.65rem;
+  z-index: 3;
+}
+
+body.starmilk-playing .radio-track-art {
+  animation: vinyl-spin 9s linear infinite;
+  border-color: rgba(240, 203, 126, 0.75) !important;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.65), 0 0 20px rgba(240, 203, 126, 0.35) !important;
+}
+
+@keyframes vinyl-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Pulsing starlight heart on collapsed radio badge when playing */
+body.starmilk-playing .radio-badge {
+  color: #f0cb7e !important;
+  border-color: rgba(240, 203, 126, 0.75) !important;
+  box-shadow: 0 0 20px rgba(240, 203, 126, 0.35) !important;
+}
+
+body.starmilk-playing .radio-live-dot {
+  background: #f0cb7e !important;
+  box-shadow: 0 0 10px #f0cb7e !important;
+  animation: live-dot-pulse 1.4s infinite ease-in-out;
+}
+
+@keyframes live-dot-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.7; }
+}
+
+/* Sacred Geometry breathing & audio-reactive acceleration in Hero */
+.ring {
+  border: 1px solid rgba(240, 203, 126, 0.22);
+  filter: drop-shadow(0 0 8px rgba(240, 203, 126, 0.15));
+  transition: border-color 0.8s ease, filter 0.8s ease;
+}
+
+body.starmilk-playing .ring {
+  border-color: rgba(240, 203, 126, 0.48);
+  filter: drop-shadow(0 0 16px rgba(240, 203, 126, 0.38));
+}
+
+/* Illuminated Manuscript Elevation for Khalil Gibran's Fear */
+#the-poem {
+  background: radial-gradient(ellipse at 25% 40%, rgba(217, 170, 78, 0.08) 0%, rgba(20, 26, 22, 0.95) 75%), #141b17 !important;
+  border-top: 1px solid rgba(240, 203, 126, 0.16) !important;
+  border-bottom: 1px solid rgba(240, 203, 126, 0.16) !important;
+}
+
+.poem-shell {
+  border-radius: 24px;
+}
+
+.poem-quote {
+  position: relative;
+  padding-left: 2rem !important;
+  border-left: 2px solid rgba(240, 203, 126, 0.35) !important;
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-style: italic;
+  font-size: clamp(1.15rem, 1.8vw, 1.35rem) !important;
+  line-height: 1.85 !important;
+  color: rgba(245, 238, 226, 0.92) !important;
+}
+
+.poem-quote p:first-of-type::first-letter {
+  font-family: 'Cinzel', Georgia, serif;
+  font-style: normal;
+  font-size: 3.6rem;
+  line-height: 0.85;
+  float: left;
+  margin: 0.15rem 0.65rem 0 0;
+  color: #f0cb7e;
+  text-shadow: 0 0 18px rgba(240, 203, 126, 0.65);
+}
+
+.poem-credit {
+  font-family: 'Cinzel', serif !important;
+  font-size: 0.85rem !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+  color: #f0cb7e !important;
+}
+
+.poem-note {
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-style: italic;
+  font-size: 1.05rem !important;
+  color: rgba(240, 203, 126, 0.8) !important;
+  border-top: 1px solid rgba(240, 203, 126, 0.18) !important;
+}
+
+/* De-box and illuminate Mothership Commons */
+.mission-panel {
+  border-radius: 20px !important;
+  background: linear-gradient(145deg, rgba(28, 40, 33, 0.78) 0%, rgba(18, 26, 22, 0.9) 100%) !important;
+  border: 1px solid rgba(240, 203, 126, 0.16) !important;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 14px 34px rgba(6, 14, 10, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease, box-shadow 0.28s ease !important;
+}
+
+.mission-panel:hover {
+  transform: translateY(-3px) !important;
+  border-color: rgba(240, 203, 126, 0.4) !important;
+  box-shadow: 0 20px 45px rgba(6, 14, 10, 0.48), 0 0 25px rgba(240, 203, 126, 0.14) !important;
+}
+
+.mission-kicker {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #f0cb7e !important;
+}
+
+.mission-panel h3 {
+  font-family: 'Cinzel', 'Cormorant Garamond', Georgia, serif !important;
+  color: #f7efe2 !important;
+}
