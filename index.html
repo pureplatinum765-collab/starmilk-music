@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-starmilk-rebuild="true">
+<html lang="en" class="js" data-starmilk-rebuild="true">
 <head>
   <meta charset="UTF-8" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -101,7 +101,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="starmilk-refactor.css?v=earth-starlight-20261105b">
+  <link rel="stylesheet" href="starmilk-refactor.css?v=sanctuary-motion-20261113a">
 </head>
 <body>
 <div class="paint-grain" aria-hidden="true"></div>
@@ -234,14 +234,174 @@
     </div>
   </div>
 
-  <!-- ═══ RADIO ═════════════════════════════════════════════════ -->
-  <section id="radio" data-mood-section="going-round" aria-labelledby="radio-h">
+  <!-- ═══ STREAM & MASTERPIECE CANON ════════════════════════════ -->
+  <section id="stream" data-mood-section="going-round" aria-labelledby="stream-h">
+    <p class="quiet-teaching quiet-teaching--offset" aria-hidden="true">The song ends. The humming doesn&rsquo;t have to.</p>
     <div class="section-inner">
-      <span class="label reveal">Continuous Transmission</span>
-      <h2 class="section-title reveal" id="radio-h">STARMILK Radio</h2>
-      <p class="radio-section-copy reveal">Tune into a single infinite stream: songs, ambient textures, and spoken-word messages from the river between frequencies.</p>
-      <p class="radio-section-copy radio-section-footnote reveal">Open STARMILK Radio in the corner to begin listening. Full catalog. Infinite shuffle. No ads.</p>
-      <div class="radio-section-actions reveal"><button type="button" class="btn" id="radio-section-open-btn">Open STARMILK Radio</button><a href="visualizer.html" class="btn btn-secondary">Fullscreen Visualizer &#8599;</a></div>
+      <span class="label reveal">The Living Catalog · 2B2 Masterpiece Canon</span>
+      <h2 class="section-title reveal" id="stream-h">The Masterpiece Canon &amp; Streaming Doors</h2>
+      <p class="sub reveal">Five monumental compositions from the 2B2 devotional archive — synthesized from Gibran&rsquo;s river to the open cathedral. Tap any movement to listen in STARMILK Radio.</p>
+      
+      <div class="radio-section-actions reveal canon-actions">
+        <button type="button" class="btn" id="radio-section-open-btn">Open 323-Track Radio</button>
+        <a href="visualizer.html" class="btn btn-secondary">Fullscreen Visualizer &#8599;</a>
+      </div>
+
+      <div class="masterpiece-canon reveal" role="region" aria-label="Five Monumental Compositions">
+        <div class="canon-card reveal" data-track-cue="The Orchard Remembers">
+          <div class="canon-head">
+            <span class="canon-num" aria-hidden="true">I</span>
+            <div class="canon-meta">
+              <span class="canon-tag">Felt Piano · 74 BPM</span>
+              <h3 class="canon-title">The Orchard at 6 AM</h3>
+            </div>
+            <button type="button" class="canon-play-btn" data-track-cue="The Orchard Remembers" aria-label="Play The Orchard at 6 AM in Radio"><span class="canon-play-icon" aria-hidden="true">▶</span> Play in Radio</button>
+          </div>
+          <p class="canon-desc">The primordial inner child under the apple tree, collecting morning light before knowing pain had a name.</p>
+          <div class="kintsugi-seam" aria-hidden="true"></div>
+        </div>
+
+        <div class="canon-card reveal" data-track-cue="The Trembling Becomes the Truth">
+          <div class="canon-head">
+            <span class="canon-num" aria-hidden="true">II</span>
+            <div class="canon-meta">
+              <span class="canon-tag">Acoustic &amp; Cello · 84 BPM</span>
+              <h3 class="canon-title">The Tremble at the Canyon</h3>
+            </div>
+            <button type="button" class="canon-play-btn" data-track-cue="The Trembling Becomes the Truth" aria-label="Play The Tremble at the Canyon in Radio"><span class="canon-play-icon" aria-hidden="true">▶</span> Play in Radio</button>
+          </div>
+          <p class="canon-desc">The river meeting the terrifying ocean: &ldquo;How could a small river not fear disappearing? But it is not disappearing — it is becoming the ocean.&rdquo;</p>
+          <div class="kintsugi-seam" aria-hidden="true"></div>
+        </div>
+
+        <div class="canon-card reveal" data-track-cue="HONEY IN THE WOUND">
+          <div class="canon-head">
+            <span class="canon-num" aria-hidden="true">III</span>
+            <div class="canon-meta">
+              <span class="canon-tag">Funk Soul &amp; Rap · 96 BPM</span>
+              <h3 class="canon-title">Telepathic Honey in the Labs</h3>
+            </div>
+            <button type="button" class="canon-play-btn" data-track-cue="HONEY IN THE WOUND" aria-label="Play Telepathic Honey in the Labs in Radio"><span class="canon-play-icon" aria-hidden="true">▶</span> Play in Radio</button>
+          </div>
+          <p class="canon-desc">High-velocity quantum groove and wildfire flow: &ldquo;The glitch is the groove, the wound is the door. Something in the breaking knows what breaking&rsquo;s for.&rdquo;</p>
+          <div class="kintsugi-seam" aria-hidden="true"></div>
+        </div>
+
+        <div class="canon-card reveal" data-track-cue="Elijah's water line">
+          <div class="canon-head">
+            <span class="canon-num" aria-hidden="true">IV</span>
+            <div class="canon-meta">
+              <span class="canon-tag">Nocturnal Folk · 72 BPM</span>
+              <h3 class="canon-title">Star on the Waterline</h3>
+            </div>
+            <button type="button" class="canon-play-btn" data-track-cue="Elijah's water line" aria-label="Play Star on the Waterline in Radio"><span class="canon-play-icon" aria-hidden="true">▶</span> Play in Radio</button>
+          </div>
+          <p class="canon-desc">The Elijah memorial: celestial starlight on dark water. &ldquo;You were the star so the water could remember where the light went.&rdquo;</p>
+          <div class="kintsugi-seam" aria-hidden="true"></div>
+        </div>
+
+        <div class="canon-card reveal" data-track-cue="STARMILK DNA">
+          <div class="canon-head">
+            <span class="canon-num" aria-hidden="true">V</span>
+            <div class="canon-meta">
+              <span class="canon-tag">Warm Upright Soul · 76 BPM</span>
+              <h3 class="canon-title">The Cathedral is Open</h3>
+            </div>
+            <button type="button" class="canon-play-btn" data-track-cue="STARMILK DNA" aria-label="Play The Cathedral is Open in Radio"><span class="canon-play-icon" aria-hidden="true">▶</span> Play in Radio</button>
+          </div>
+          <p class="canon-desc">Tearing down the protective fence around the romantic self: &ldquo;The cathedral was always intact. I just forgot I was allowed inside.&rdquo;</p>
+          <div class="kintsugi-seam" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="stream-portals-label reveal">
+        <span class="label">Universal Streaming Doors</span>
+        <p class="stream-portals-sub">Also available across global digital distributors — pick a door and step in.</p>
+      </div>
+
+      <div class="grid">
+        <!-- YouTube — gold accent -->
+        <a class="card card-gold reveal" href="https://www.youtube.com/@STARMILK-s5u" target="_blank" rel="noopener noreferrer">
+          <div class="card-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M22.54 6.42A2.78 2.78 0 0 0 20.59 4.5C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.5C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" fill="#FF0000"/>
+              <polygon points="9.75,15.02 15.5,12 9.75,8.98" fill="#fff"/>
+            </svg>
+          </div>
+          <span class="card-plat">YouTube</span>
+          <h3>Visual Scriptures</h3>
+          <p>Visual journey through the quantum scripture. Every track is a doorway.</p>
+          <span class="card-arrow">Watch now &#8594;</span>
+        </a>
+
+        <!-- SoundCloud — teal accent -->
+        <a class="card card-teal reveal" href="https://soundcloud.com/star-milk-645735333" target="_blank" rel="noopener noreferrer">
+          <div class="card-icon">
+            <svg width="28" height="20" viewBox="0 0 120 50" aria-hidden="true">
+              <path d="M0 35c0 8.3 6.7 15 15 15s15-6.7 15-15V20C30 11.7 23.3 5 15 5 7.8 5 1.8 10 .3 17 .1 18 0 19 0 20v15z" fill="#FF5500"/>
+              <rect x="34" y="15" width="8" height="35" rx="4" fill="#FF5500"/>
+              <rect x="46" y="8" width="8" height="42" rx="4" fill="#FF5500"/>
+              <rect x="58" y="18" width="8" height="32" rx="4" fill="#FF5500"/>
+              <rect x="70" y="10" width="8" height="40" rx="4" fill="#FF5500"/>
+              <rect x="82" y="20" width="8" height="30" rx="4" fill="#FF5500"/>
+              <path d="M94 15c0-8.3 6.7-15 15-15s11 6.7 11 15v20c0 8.3-2.7 15-11 15s-15-6.7-15-15V15z" fill="#FF5500"/>
+            </svg>
+          </div>
+          <span class="card-plat">SoundCloud</span>
+          <h3>Full Catalog</h3>
+          <p>Full catalog of tracks, early releases, and community feedback.</p>
+          <span class="card-arrow">Listen free &#8594;</span>
+        </a>
+
+        <!-- Spotify -->
+        <a class="card reveal" href="https://open.spotify.com/artist/6ZJBd6IllHctGDa3GhbQnK?si=hmxemmVfSZaoB15C4Gd4Uw" target="_blank" rel="noopener noreferrer">
+          <div class="card-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="12" fill="#1DB954"/>
+              <path d="M17.25 16.5a.75.75 0 0 1-.41-.12C14.77 15 12 14.45 8.74 15.06a.75.75 0 1 1-.28-1.47c3.63-.69 6.7-.07 9.2 1.56a.75.75 0 0 1-.41 1.35zm1.17-2.75a.94.94 0 0 1-.52-.16c-2.71-1.7-6.84-2.19-10.05-1.2a.938.938 0 0 1-.54-1.8c3.66-1.1 8.21-.56 11.33 1.38a.937.937 0 0 1-.22 1.78zm.1-2.87c-3.25-1.93-8.61-2.11-11.71-1.17a1.125 1.125 0 0 1-.65-2.15c3.56-1.08 9.47-.87 13.21 1.35a1.125 1.125 0 0 1-1.12 1.97z" fill="#fff"/>
+            </svg>
+          </div>
+          <span class="card-plat">Spotify</span>
+          <h3>Official Releases</h3>
+          <p>Official releases distributed through DistroKid.</p>
+          <span class="card-arrow">Open Spotify &#8594;</span>
+        </a>
+
+        <!-- Apple Music -->
+        <a class="card reveal" href="https://music.apple.com/us/artist/starmilk/1849551724" target="_blank" rel="noopener noreferrer">
+          <div class="card-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
+              <defs>
+                <linearGradient id="amlg" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#b08a8a"/>
+                  <stop offset="100%" stop-color="#6b5b8a"/>
+                </linearGradient>
+              </defs>
+              <circle cx="12" cy="12" r="12" fill="url(#amlg)"/>
+              <path d="M16.5 7.5h-5a1 1 0 0 0-1 1v5.56A2.5 2.5 0 1 0 12 16.5V11h4v-1.5a2 2 0 0 0-2-2z" fill="#fff" opacity=".9"/>
+              <circle cx="10" cy="16" r="1.5" fill="#fff"/>
+            </svg>
+          </div>
+          <span class="card-plat">Apple Music</span>
+          <h3>High Fidelity</h3>
+          <p>High-quality audio streaming.</p>
+          <span class="card-arrow">Open Apple Music &#8594;</span>
+        </a>
+
+        <!-- Other Platforms — teal accent -->
+        <a class="card card-teal reveal" href="https://distrokid.com/" target="_blank" rel="noopener noreferrer">
+          <div class="card-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" stroke="#0d9488" stroke-width="1.5"/>
+              <path d="M12 2a10 10 0 0 1 0 20M2 12h20M3.5 7h17M3.5 17h17" stroke="#0d9488" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="card-plat">All Platforms</span>
+          <h3>Everywhere Else</h3>
+          <p>Amazon Music, Tidal, and more via DistroKid.</p>
+          <span class="card-arrow">Discover more &#8594;</span>
+        </a>
+      </div>
     </div>
   </section>
 
@@ -494,109 +654,6 @@
           <img src="https://i.ytimg.com/vi/Xu6kcAi5-9o/hqdefault.jpg" alt="STARMILK — Inside Out video thumbnail" loading="lazy" decoding="async" width="800" height="450" />
           <svg class="yt-play-icon" viewBox="0 0 68 48" aria-hidden="true"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55C3.97 2.33 2.26 4.81 1.48 7.74.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24 27 14v20" fill="#fff"/></svg>
         </button>
-      </div>
-    </div>
-  </section>
-
-  <div class="depth-marker" aria-hidden="true">
-    <span class="depth-marker-num">✦</span>
-    <div class="depth-marker-inner">
-      <span class="depth-marker-text">THE LIVING CATALOG</span>
-    </div>
-  </div>
-
-  <!-- ═══ STREAM ═════════════════════════════════════════════════ -->
-  <section id="stream" data-mood-section="alive" aria-labelledby="stream-h">
-    <p class="quiet-teaching quiet-teaching--offset" aria-hidden="true">The song ends. The humming doesn&rsquo;t have to.</p>
-    <div class="section-inner">
-      <span class="label reveal">The Living Catalog · 2B2 Masterpiece Canon</span>
-      <h2 class="section-title reveal" id="stream-h">The Masterpiece Canon &amp; Streaming Doors</h2>
-      <p class="sub reveal">Five monumental compositions from the 2B2 devotional archive — synthesized from Gibran&rsquo;s river to the open cathedral. Tap any movement to listen in STARMILK Radio.</p><div class="masterpiece-canon reveal" role="region" aria-label="Five Monumental Compositions"><div class="canon-card" data-track-cue="The Orchard Remembers"><div class="canon-head"><span class="canon-num" aria-hidden="true">I</span><div class="canon-meta"><span class="canon-tag">Felt Piano · 74 BPM</span><h3 class="canon-title">The Orchard at 6 AM</h3></div><button type="button" class="canon-play-btn" data-track-cue="The Orchard Remembers" aria-label="Play The Orchard at 6 AM in Radio"><span class="canon-play-icon" aria-hidden="true">▶</span> Play in Radio</button></div><p class="canon-desc">The primordial inner child under the apple tree, collecting morning light before knowing pain had a name.</p><div class="kintsugi-seam" aria-hidden="true"></div></div><div class="canon-card" data-track-cue="The Trembling Becomes the Truth"><div class="canon-head"><span class="canon-num" aria-hidden="true">II</span><div class="canon-meta"><span class="canon-tag">Acoustic &amp; Cello · 84 BPM</span><h3 class="canon-title">The Tremble at the Canyon</h3></div><button type="button" class="canon-play-btn" data-track-cue="The Trembling Becomes the Truth" aria-label="Play The Tremble at the Canyon in Radio"><span class="canon-play-icon" aria-hidden="true">▶</span> Play in Radio</button></div><p class="canon-desc">The river meeting the terrifying ocean: &ldquo;How could a small river not fear disappearing? But it is not disappearing — it is becoming the ocean.&rdquo;</p><div class="kintsugi-seam" aria-hidden="true"></div></div><div class="canon-card" data-track-cue="HONEY IN THE WOUND"><div class="canon-head"><span class="canon-num" aria-hidden="true">III</span><div class="canon-meta"><span class="canon-tag">Funk Soul &amp; Rap · 96 BPM</span><h3 class="canon-title">Telepathic Honey in the Labs</h3></div><button type="button" class="canon-play-btn" data-track-cue="HONEY IN THE WOUND" aria-label="Play Telepathic Honey in the Labs in Radio"><span class="canon-play-icon" aria-hidden="true">▶</span> Play in Radio</button></div><p class="canon-desc">High-velocity quantum groove and wildfire flow: &ldquo;The glitch is the groove, the wound is the door. Something in the breaking knows what breaking&rsquo;s for.&rdquo;</p><div class="kintsugi-seam" aria-hidden="true"></div></div><div class="canon-card" data-track-cue="Elijah's water line"><div class="canon-head"><span class="canon-num" aria-hidden="true">IV</span><div class="canon-meta"><span class="canon-tag">Nocturnal Folk · 72 BPM</span><h3 class="canon-title">Star on the Waterline</h3></div><button type="button" class="canon-play-btn" data-track-cue="Elijah's water line" aria-label="Play Star on the Waterline in Radio"><span class="canon-play-icon" aria-hidden="true">▶</span> Play in Radio</button></div><p class="canon-desc">The Elijah memorial: celestial starlight on dark water. &ldquo;You were the star so the water could remember where the light went.&rdquo;</p><div class="kintsugi-seam" aria-hidden="true"></div></div><div class="canon-card" data-track-cue="STARMILK DNA"><div class="canon-head"><span class="canon-num" aria-hidden="true">V</span><div class="canon-meta"><span class="canon-tag">Warm Upright Soul · 76 BPM</span><h3 class="canon-title">The Cathedral is Open</h3></div><button type="button" class="canon-play-btn" data-track-cue="STARMILK DNA" aria-label="Play The Cathedral is Open in Radio"><span class="canon-play-icon" aria-hidden="true">▶</span> Play in Radio</button></div><p class="canon-desc">Tearing down the protective fence around the romantic self: &ldquo;The cathedral was always intact. I just forgot I was allowed inside.&rdquo;</p><div class="kintsugi-seam" aria-hidden="true"></div></div></div><div class="stream-portals-label reveal"><span class="label">Universal Streaming Doors</span><p class="stream-portals-sub">Also available across global digital distributors — pick a door and step in.</p></div>
-
-      <div class="grid">
-
-        <!-- YouTube — gold accent -->
-        <a class="card card-gold reveal" href="https://www.youtube.com/@STARMILK-s5u" target="_blank" rel="noopener noreferrer">
-          <div class="card-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M22.54 6.42A2.78 2.78 0 0 0 20.59 4.5C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.5C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" fill="#FF0000"/>
-              <polygon points="9.75,15.02 15.5,12 9.75,8.98" fill="#fff"/>
-            </svg>
-          </div>
-          <span class="card-plat">YouTube</span>
-          <h3>Visual Scriptures</h3>
-          <p>Visual journey through the quantum scripture. Every track is a doorway.</p>
-          <span class="card-arrow">Watch now &#8594;</span>
-        </a>
-
-        <!-- SoundCloud — teal accent -->
-        <a class="card card-teal reveal" href="https://soundcloud.com/star-milk-645735333" target="_blank" rel="noopener noreferrer">
-          <div class="card-icon">
-            <svg width="28" height="20" viewBox="0 0 120 50" aria-hidden="true">
-              <path d="M0 35c0 8.3 6.7 15 15 15s15-6.7 15-15V20C30 11.7 23.3 5 15 5 7.8 5 1.8 10 .3 17 .1 18 0 19 0 20v15z" fill="#FF5500"/>
-              <rect x="34" y="15" width="8" height="35" rx="4" fill="#FF5500"/>
-              <rect x="46" y="8" width="8" height="42" rx="4" fill="#FF5500"/>
-              <rect x="58" y="18" width="8" height="32" rx="4" fill="#FF5500"/>
-              <rect x="70" y="10" width="8" height="40" rx="4" fill="#FF5500"/>
-              <rect x="82" y="20" width="8" height="30" rx="4" fill="#FF5500"/>
-              <path d="M94 15c0-8.3 6.7-15 15-15s11 6.7 11 15v20c0 8.3-2.7 15-11 15s-15-6.7-15-15V15z" fill="#FF5500"/>
-            </svg>
-          </div>
-          <span class="card-plat">SoundCloud</span>
-          <h3>Full Catalog</h3>
-          <p>Full catalog of tracks, early releases, and community feedback.</p>
-          <span class="card-arrow">Listen free &#8594;</span>
-        </a>
-
-        <!-- Spotify -->
-        <a class="card reveal" href="https://open.spotify.com/artist/6ZJBd6IllHctGDa3GhbQnK?si=hmxemmVfSZaoB15C4Gd4Uw" target="_blank" rel="noopener noreferrer">
-          <div class="card-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="12" cy="12" r="12" fill="#1DB954"/>
-              <path d="M17.25 16.5a.75.75 0 0 1-.41-.12C14.77 15 12 14.45 8.74 15.06a.75.75 0 1 1-.28-1.47c3.63-.69 6.7-.07 9.2 1.56a.75.75 0 0 1-.41 1.35zm1.17-2.75a.94.94 0 0 1-.52-.16c-2.71-1.7-6.84-2.19-10.05-1.2a.938.938 0 0 1-.54-1.8c3.66-1.1 8.21-.56 11.33 1.38a.937.937 0 0 1-.22 1.78zm.1-2.87c-3.25-1.93-8.61-2.11-11.71-1.17a1.125 1.125 0 0 1-.65-2.15c3.56-1.08 9.47-.87 13.21 1.35a1.125 1.125 0 0 1-1.12 1.97z" fill="#fff"/>
-            </svg>
-          </div>
-          <span class="card-plat">Spotify</span>
-          <h3>Official Releases</h3>
-          <p>Official releases distributed through DistroKid.</p>
-          <span class="card-arrow">Open Spotify &#8594;</span>
-        </a>
-
-        <!-- Apple Music -->
-        <a class="card reveal" href="https://music.apple.com/us/artist/starmilk/1849551724" target="_blank" rel="noopener noreferrer">
-          <div class="card-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
-              <defs>
-                <linearGradient id="amlg" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#b08a8a"/>
-                  <stop offset="100%" stop-color="#6b5b8a"/>
-                </linearGradient>
-              </defs>
-              <circle cx="12" cy="12" r="12" fill="url(#amlg)"/>
-              <path d="M16.5 7.5h-5a1 1 0 0 0-1 1v5.56A2.5 2.5 0 1 0 12 16.5V11h4v-1.5a2 2 0 0 0-2-2z" fill="#fff" opacity=".9"/>
-              <circle cx="10" cy="16" r="1.5" fill="#fff"/>
-            </svg>
-          </div>
-          <span class="card-plat">Apple Music</span>
-          <h3>High Fidelity</h3>
-          <p>High-quality audio streaming.</p>
-          <span class="card-arrow">Open Apple Music &#8594;</span>
-        </a>
-
-        <!-- Other Platforms — teal accent -->
-        <a class="card card-teal reveal" href="https://distrokid.com/" target="_blank" rel="noopener noreferrer">
-          <div class="card-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" stroke="#0d9488" stroke-width="1.5"/>
-              <path d="M12 2a10 10 0 0 1 0 20M2 12h20M3.5 7h17M3.5 17h17" stroke="#0d9488" stroke-width="1.2" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <span class="card-plat">All Platforms</span>
-          <h3>Everywhere Else</h3>
-          <p>Amazon Music, Tidal, and more via DistroKid.</p>
-          <span class="card-arrow">Discover more &#8594;</span>
-        </a>
-
       </div>
     </div>
   </section>
@@ -985,11 +1042,21 @@
           <span class="radio-fav-badge" id="fav-count" hidden></span>
         </button>
       </div>
-      <button type="button" id="radio-close" class="radio-close-btn" aria-label="Close radio">
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
-          <path d="M5 5l10 10M15 5L5 15"/>
-        </svg>
-      </button>
+      <div class="radio-header-actions">
+        <a href="visualizer.html" class="radio-visualizer-btn" id="radio-visualizer-link" title="Open Fullscreen Visualizer" aria-label="Open Fullscreen Visualizer">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <rect x="2.5" y="3.5" width="15" height="13" rx="2.5"/>
+            <circle cx="10" cy="10" r="3.2"/>
+            <path d="M7 7l6 6M13 7l-6 6" opacity="0.6"/>
+          </svg>
+          <span>Visualizer</span>
+        </a>
+        <button type="button" id="radio-close" class="radio-close-btn" aria-label="Close radio">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            <path d="M5 5l10 10M15 5L5 15"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <!-- ── Radio panel ── -->
@@ -1111,8 +1178,8 @@ Stay as long as you like.</p>
 <script src="orchard.js" defer></script>
 <script src="the-river.js" defer></script>
 <script src="honey-drip.js" defer></script>
-<script src="starmilk-radio.js?v=radio-smooth-20261105b" defer></script>
-<script src="starmilk-ui.js?v=tapestry-20261023a" defer></script>
+<script src="starmilk-radio.js?v=radio-smooth-20261113a" defer></script>
+<script src="starmilk-ui.js?v=choreography-20261113a" defer></script>
 <script src="starmilk-tapestry.js?v=tapestry-transition-20261023a" defer></script>
 <script src="starmilk-conductor.js" defer></script>
 

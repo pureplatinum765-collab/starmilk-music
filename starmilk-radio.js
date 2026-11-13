@@ -1042,7 +1042,15 @@
     });
   }
 
-  /* ─── Keyboard Shortcuts ─────────────────────────────────────── */
+  const visLink = document.getElementById('radio-visualizer-link');
+  if (visLink) {
+    visLink.addEventListener('click', () => {
+      const track = allTracks[currentIndex];
+      if (track) {
+        visLink.href = `visualizer.html?track=${slugify(track.name)}`;
+      }
+    });
+  }
   document.addEventListener('keydown', (e) => {
     const tag = (e.target?.tagName || '').toLowerCase();
     const isInput = tag === 'input' || tag === 'textarea' || e.target?.isContentEditable;
