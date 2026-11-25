@@ -45,7 +45,7 @@
   const POWERUP_TYPES = [
     { id: 'wider', icon: 'W', color: '#f59e0b', glowColor: 'rgba(245,158,11,.7)', label: 'WIDER PADDLE' },
     { id: 'multiball', icon: 'M', color: '#67e8f9', glowColor: 'rgba(103,232,249,.7)', label: 'MULTI-BALL' },
-    { id: 'laser', icon: 'L', color: '#a78bfa', glowColor: 'rgba(167,139,250,.7)', label: 'LASER' },
+    { id: 'laser', icon: 'L', color: '#edc77d', glowColor: 'rgba(237,199,125,.7)', label: 'LASER' },
     { id: 'slow', icon: 'S', color: '#2dd4bf', glowColor: 'rgba(45,212,191,.7)', label: 'SLOW-MO' },
   ];
   const DROP_CHANCE = 0.14;
@@ -370,7 +370,7 @@
     }
     if (state.effects.laserUntil > now) {
       const sec = Math.ceil((state.effects.laserUntil - now) / 1000);
-      items.push(`<span style="color:#a78bfa">◆ LASER ${sec}s</span>`);
+      items.push(`<span style="color:#edc77d">◆ LASER ${sec}s</span>`);
     }
     const markup = items.length
       ? items.join('  ')
@@ -948,8 +948,8 @@
 
     // Background gradient
     const grad = g.createLinearGradient(0, 0, 0, canvas.height);
-    grad.addColorStop(0, '#080b16');
-    grad.addColorStop(1, '#0e1325');
+    grad.addColorStop(0, '#0a0f0b');
+    grad.addColorStop(1, '#101812');
     g.fillStyle = grad;
     g.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -1086,7 +1086,7 @@
       g.fillStyle = `rgba(4,1,10,${t.alpha * 0.85})`;
       g.fillRect(0, 0, canvas.width, canvas.height);
 
-      g.strokeStyle = `rgba(147,51,234,${t.alpha * 0.6})`;
+      g.strokeStyle = `rgba(217,170,78,${t.alpha * 0.6})`;
       g.lineWidth = 3 * dpr;
       g.beginPath();
       g.arc(canvas.width / 2, canvas.height / 2, t.ringRadius, 0, Math.PI * 2);
@@ -1113,7 +1113,7 @@
 
     // Game over / victory overlay
     if ((state.gameOver || state.gameWon) && !state.running) {
-      g.fillStyle = 'rgba(4,1,10,.82)';
+      g.fillStyle = 'rgba(8,12,8,.85)';
       g.fillRect(0, 0, canvas.width, canvas.height);
 
       g.textAlign = 'center';
@@ -1127,14 +1127,14 @@
 
       g.shadowBlur = 0;
       g.font = `700 ${Math.floor(18 * dpr)}px Segoe UI, system-ui, sans-serif`;
-      g.fillStyle = '#d8c8ff';
+      g.fillStyle = '#f2e7d0';
       g.fillText(`Score: ${state.score}  ·  High Score: ${state.highScore}  ·  Max Combo: ${state.maxCombo}x`, canvas.width / 2, canvas.height * 0.48);
 
       const btnW = 200 * dpr;
       const btnH = 48 * dpr;
       const btnX = canvas.width / 2 - btnW / 2;
       const btnY = canvas.height * 0.6;
-      g.fillStyle = 'rgba(124,58,237,.65)';
+      g.fillStyle = 'rgba(217,170,78,.65)';
       g.strokeStyle = 'rgba(245,158,11,.6)';
       g.lineWidth = 2 * dpr;
       g.beginPath();

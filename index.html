@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" class="js" data-starmilk-rebuild="true">
+<html lang="en" data-starmilk-rebuild="true">
 <head>
   <meta charset="UTF-8" />
+  <script>document.documentElement.classList.add('js');</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
@@ -9,10 +10,9 @@
   <title>STARMILK | Cosmic Electronic Music</title>
   <meta name="description" content="Born from the trembling. Raised by rivers. Where quantum physics meets the old ache and decides to dance. STARMILK — electronic music direct to fans." />
   <link rel="canonical" href="https://starmilk.org/" />
-  <meta name="theme-color" content="#0b0e1a" />
+  <meta name="theme-color" content="#0e1511" />
   <meta name="starmilk-release" content="mothership-20261006a" />
   <link rel="manifest" href="manifest.json" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="STARMILK" />
@@ -1601,15 +1601,6 @@ void main(){
     })(0);
   }
 
-  /* ═══════════════════════════════════════════════════════════════
-     NAV — opacity on scroll
-     ═══════════════════════════════════════════════════════════════ */
-  const nav = document.getElementById('nav');
-  window.addEventListener('scroll', () => {
-    if (false) nav.style.background = window.scrollY > 55
-      ? 'rgba(8,11,22,.95)'
-      : 'rgba(8,11,22,.82)';
-  }, { passive: true });
 
   /* ═══════════════════════════════════════════════════════════════
      PARALLAX — hero nebula follows scroll
@@ -1648,28 +1639,6 @@ void main(){
   window.addEventListener('scroll', () => requestAnimationFrame(updateSectionProgress), { passive: true });
   window.addEventListener('resize', updateSectionProgress, { passive: true });
   updateSectionProgress();
-
-  /* ═══════════════════════════════════════════════════════════════
-     INTERSECTION OBSERVER — reveal on scroll
-     ═══════════════════════════════════════════════════════════════ */
-  if (!REDUCED) {
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          const siblings = Array.from(
-            e.target.parentElement.querySelectorAll('.reveal')
-          );
-          e.target.style.transitionDelay = (siblings.indexOf(e.target) % 5) * 0.085 + 's';
-          e.target.classList.add('vis');
-          io.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-  } else {
-    document.querySelectorAll('.reveal').forEach(el => el.classList.add('vis'));
-  }
 
 })();
 </script>
@@ -1818,57 +1787,7 @@ if ('serviceWorker' in navigator) {
 })();
 </script>
 
-<script>
-/* ── Genius Mode: Nav scrolled state + active section tracking ── */
-(function () {
-  const nav = document.getElementById('nav');
-  if (!nav) return;
 
-  // Scrolled class
-  const onScroll = () => {
-    nav.classList.toggle('scrolled', window.scrollY > 60);
-  };
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-
-  // Active section highlighting
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
-  if (!sections.length || !navLinks.length) return;
-
-  // Map section IDs to which nav link to highlight
-  const sectionMap = {
-    'hero':       null,
-    'stream':     '#stream',
-    'radio':      '#stream', 'our-story': '#our-story', 'human-maps': '#human-maps', 'open-air': '#human-maps', 'the-poem': '#the-vision',
-    'the-vision': '#the-vision',
-    'inside-out': '#the-vision',
-    'orchard':    '#the-vision',
-    'river':      '#the-vision',
-    'lyrics':     '#the-vision',
-    'games':      '#games',
-    'support':    '#support',
-    'vip':        '#support',
-    'connect':    '#connect',
-  };
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      const id = entry.target.id;
-      const targetHref = sectionMap[id];
-      navLinks.forEach(a => {
-        a.removeAttribute('data-active');
-        if (targetHref && a.getAttribute('href') === targetHref) {
-          a.setAttribute('data-active', 'true');
-        }
-      });
-    });
-  }, { threshold: 0.35 });
-
-  sections.forEach(s => observer.observe(s));
-})();
-</script>
 
 </body>
 </html>

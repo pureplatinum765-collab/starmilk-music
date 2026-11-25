@@ -103,6 +103,8 @@
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
+          const siblings = Array.from(entry.target.parentElement.querySelectorAll('.reveal'));
+          entry.target.style.transitionDelay = (siblings.indexOf(entry.target) % 5) * 0.085 + 's';
           entry.target.classList.add('is-revealed');
           revealObserver.unobserve(entry.target);
         }
