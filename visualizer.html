@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
@@ -29,6 +30,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
+      color-scheme: dark;
       --bg: #080b14;
       --bg-deep: #05070e;
       --glass: rgba(12, 16, 28, 0.72);
@@ -220,6 +222,10 @@
       transform: translateX(-50%) translateY(16px);
       pointer-events: none;
     }
+    /* True fullscreen: the stage fills the screen and the radio panel stays docked */
+    body:fullscreen, body:-webkit-full-screen { background: #05070e; }
+    body.is-fullscreen .viz-ui { bottom: 1.1rem; }
+    body.is-fullscreen .viz-layer { transform: scale(1); }
 
     .viz-header-row {
       width: 100%;
@@ -498,14 +504,14 @@
 
   <!-- ═══ Tap Hint ═══ -->
   <div class="viz-hint" id="viz-hint" aria-hidden="true">
-    <p>Move cursor or tap to reveal controls &bull; Press F for fullscreen</p>
+    <p>Move cursor or tap to reveal controls &bull; Double-click or F for fullscreen &bull; Radio stays up in fullscreen</p>
   </div>
 
   <!-- ═══ Floating Glass Controls UI ═══ -->
   <div class="viz-ui" id="viz-ui" role="region" aria-label="Visualizer controls">
 
     <div class="viz-header-row">
-      <span class="viz-label">Visual Listening Room</span>
+      <span class="viz-label">Visual Listening Room &middot; STARMILK Radio</span>
       <span class="viz-scene-name" id="viz-scene-name">Chalice Dance</span>
     </div>
 
@@ -628,8 +634,15 @@
     fullscreenBtn?.addEventListener('click', toggleFullscreen);
     document.addEventListener('fullscreenchange', () => {
       const isFs = Boolean(document.fullscreenElement);
+      document.body.classList.toggle('is-fullscreen', isFs);
+      buildMotes();
+      sizeReactiveCanvas();
       if (fsLabel) fsLabel.textContent = isFs ? 'Exit Fullscreen' : 'Fullscreen';
       fullscreenBtn?.setAttribute('aria-label', isFs ? 'Exit fullscreen' : 'Enter fullscreen');
+    });
+    document.addEventListener('dblclick', (e) => {
+      if (e.target.closest('.viz-ui') || e.target.closest('.viz-topbar')) return;
+      toggleFullscreen();
     });
 
     fitToggleBtn?.addEventListener('click', () => {
@@ -687,6 +700,13 @@
     }
 
     function hideUI() {
+      // In fullscreen the STARMILK Radio panel stays available; only the top bar retreats.
+      if (document.fullscreenElement) {
+        topbar.classList.add('hidden');
+        hint.classList.add('show');
+        setTimeout(() => hint.classList.remove('show'), 2000);
+        return;
+      }
       ui.classList.add('hidden');
       topbar.classList.add('hidden');
       document.body.classList.remove('controls-visible');
@@ -907,7 +927,7 @@
         color: Math.random() > 0.7
           ? `217,170,78`
           : Math.random() > 0.5
-            ? `124,107,158`
+            ? `136,170,160`
             : `242,231,208`
       }));
     }
@@ -915,12 +935,29 @@
     buildMotes();
     window.addEventListener('resize', buildMotes);
 
+    // Autonomous constellation field — drifts on its own, never reacts to input
+    const bgStars = Array.from({ length: 70 }, () => ({
+      x: Math.random(),
+      y: Math.random(),
+      vx: 0.000006 + Math.random() * 0.00002,
+      vy: 0.000003 + Math.random() * 0.00001,
+      ph: rnd(0, TAU),
+    }));
+    let meteor = null;
+    let nextMeteorAt = 5000;
+
     if (REDUCED) {
       pCtx.clearRect(0, 0, PW, PH);
       motes.forEach(p => {
         pCtx.beginPath();
         pCtx.arc(p.x, p.y, p.r, 0, TAU);
         pCtx.fillStyle = `rgba(${p.color},${p.alpha * 0.4})`;
+        pCtx.fill();
+      });
+      bgStars.forEach(s => {
+        pCtx.beginPath();
+        pCtx.arc(s.x * PW, s.y * PH, 1.1, 0, TAU);
+        pCtx.fillStyle = 'rgba(242,231,208,0.22)';
         pCtx.fill();
       });
     }
@@ -1002,6 +1039,110 @@
         const cx = RW / 2;
         const cy = RH / 2;
 
+        // Drifting constellation — stars wander on their own and nearby ones
+        // link with faint threads; purely time-driven, no pointer involvement
+        bgStars.forEach(s => {
+          s.x = (s.x + s.vx) % 1;
+          s.y = (s.y + s.vy) % 1;
+          if (s.x < 0) s.x += 1;
+          if (s.y < 0) s.y += 1;
+        });
+        const starPts = bgStars.map(s => ({ x: s.x * RW, y: s.y * RH, ph: s.ph }));
+        starPts.forEach(p => {
+          const tw = 0.5 + 0.5 * Math.sin(time * 0.0009 + p.ph);
+          rCtx.fillStyle = `rgba(242,231,208,${(0.14 + 0.3 * tw).toFixed(3)})`;
+          rCtx.beginPath();
+          rCtx.arc(p.x, p.y, 0.8 + tw * 0.9, 0, TAU);
+          rCtx.fill();
+        });
+        const linkDist = 0.09 * RW;
+        rCtx.lineWidth = 0.5;
+        for (let i = 0; i < starPts.length; i++) {
+          for (let j = i + 1; j < starPts.length; j++) {
+            const dx = starPts[i].x - starPts[j].x;
+            const dy = starPts[i].y - starPts[j].y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < linkDist * linkDist) {
+              const a = 0.05 * (1 - Math.sqrt(d2) / linkDist);
+              rCtx.strokeStyle = `rgba(136,170,160,${a.toFixed(3)})`;
+              rCtx.beginPath();
+              rCtx.moveTo(starPts[i].x, starPts[i].y);
+              rCtx.lineTo(starPts[j].x, starPts[j].y);
+              rCtx.stroke();
+            }
+          }
+        }
+
+        // Aurora ribbons — slow flowing veils of color drifting across the frame
+        rCtx.save();
+        rCtx.globalCompositeOperation = 'screen';
+        rCtx.lineCap = 'round';
+        for (let b = 0; b < 3; b++) {
+          const baseY = RH * (0.28 + b * 0.22);
+          const amp = 40 + b * 26;
+          const speed = 0.00012 + b * 0.00005;
+          const tint = b === 0 ? '217,170,78' : b === 1 ? '136,170,160' : '97,116,75';
+          rCtx.beginPath();
+          for (let x = 0; x <= RW; x += 24) {
+            const y = baseY
+              + Math.sin(x * 0.004 + time * speed * (1 + b * 0.3) + b * 2.1) * amp
+              + Math.sin(x * 0.011 - time * speed * 0.7 + b) * amp * 0.4;
+            if (x === 0) rCtx.moveTo(x, y);
+            else rCtx.lineTo(x, y);
+          }
+          rCtx.strokeStyle = `rgba(${tint},${(0.045 + 0.02 * Math.sin(time * 0.0004 + b)).toFixed(3)})`;
+          rCtx.lineWidth = 34 + b * 18;
+          rCtx.stroke();
+        }
+        rCtx.restore();
+
+        // Slow-rotating astrolabe ring
+        const ringR = Math.min(RW, RH) * 0.44;
+        const rot = time * 0.00003;
+        const sides = 7;
+        rCtx.beginPath();
+        for (let i = 0; i <= sides; i++) {
+          const a = rot + (i / sides) * TAU;
+          const x = cx + Math.cos(a) * ringR;
+          const y = cy + Math.sin(a) * ringR * 0.82;
+          if (i === 0) rCtx.moveTo(x, y);
+          else rCtx.lineTo(x, y);
+        }
+        rCtx.strokeStyle = 'rgba(217,170,78,0.05)';
+        rCtx.lineWidth = 1;
+        rCtx.stroke();
+
+        // Occasional shooting star
+        if (!meteor && time > nextMeteorAt) {
+          meteor = {
+            x: RW * (0.15 + Math.random() * 0.7),
+            y: RH * Math.random() * 0.35,
+            vx: -(0.35 + Math.random() * 0.3),
+            vy: 0.16 + Math.random() * 0.12,
+            life: 1,
+          };
+          nextMeteorAt = time + 6000 + Math.random() * 9000;
+        }
+        if (meteor) {
+          meteor.x += meteor.vx * 16.7;
+          meteor.y += meteor.vy * 16.7;
+          meteor.life -= 0.016;
+          if (meteor.life <= 0 || meteor.x < -80 || meteor.y > RH + 80) {
+            meteor = null;
+          } else {
+            const tail = 90;
+            const mGrad = rCtx.createLinearGradient(meteor.x, meteor.y, meteor.x - meteor.vx * tail, meteor.y - meteor.vy * tail);
+            mGrad.addColorStop(0, `rgba(245,212,143,${(0.5 * meteor.life).toFixed(3)})`);
+            mGrad.addColorStop(1, 'rgba(245,212,143,0)');
+            rCtx.strokeStyle = mGrad;
+            rCtx.lineWidth = 1.6;
+            rCtx.beginPath();
+            rCtx.moveTo(meteor.x, meteor.y);
+            rCtx.lineTo(meteor.x - meteor.vx * tail, meteor.y - meteor.vy * tail);
+            rCtx.stroke();
+          }
+        }
+
         rings.forEach((ring, ri) => {
           const bandStart = Math.floor((ri / ringCount) * NUM_BANDS * 0.6);
           rCtx.beginPath();
@@ -1064,8 +1205,8 @@
         const glowAlpha = 0.015 + avgAudio * 0.02;
         const glow = rCtx.createRadialGradient(cx, cy, 0, cx, cy, glowRadius);
         glow.addColorStop(0, `rgba(217,170,78,${glowAlpha})`);
-        glow.addColorStop(0.5, `rgba(124,107,158,${glowAlpha * 0.5})`);
-        glow.addColorStop(1, 'rgba(8,11,20,0)');
+        glow.addColorStop(0.5, `rgba(136,170,160,${glowAlpha * 0.5})`);
+        glow.addColorStop(1, 'rgba(5,7,10,0)');
         rCtx.fillStyle = glow;
         rCtx.fillRect(cx - glowRadius, cy - glowRadius, glowRadius * 2, glowRadius * 2);
       })(0);

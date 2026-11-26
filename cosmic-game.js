@@ -30,8 +30,8 @@
     {
       id: 'tribe',
       title: 'TRIBE STAR MILK',
-      embedBase: 'https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/star-milk-645735333/tribe-star-milk&color=%239333ea&hide_related=true&show_comments=false&show_reposts=false&show_teaser=false',
-      color: '#9333ea',
+      embedBase: 'https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/star-milk-645735333/tribe-star-milk&color=%23d9aa4e&hide_related=true&show_comments=false&show_reposts=false&show_teaser=false',
+      color: '#c9944a',
       fragsNeed: 4,
     },
     {
@@ -63,8 +63,8 @@
 
   const POWER_UPS = [
     { id: 'star-vision', title: 'Star Vision', color: '#fbbf24', duration: 10000, icon: '✦' },
-    { id: 'cosmic-speed', title: 'Cosmic Speed', color: '#38bdf8', duration: 15000, icon: '➤' },
-    { id: 'milk-shield', title: 'Milk Shield', color: '#a78bfa', duration: 0, icon: '◍' },
+    { id: 'cosmic-speed', title: 'Cosmic Speed', color: '#88aaa0', duration: 15000, icon: '➤' },
+    { id: 'milk-shield', title: 'Milk Shield', color: '#edc77d', duration: 0, icon: '◍' },
   ];
 
   // ─── Score constants ────────────────────────────────────────────
@@ -173,7 +173,7 @@
 
   function buildDOM() {
     overlay = document.createElement('div');
-    overlay.style.cssText = 'display:none;position:fixed;inset:0;z-index:9000;background:#040008;color:#e9ddff;font-family:Segoe UI,system-ui,sans-serif;';
+    overlay.style.cssText = 'display:none;position:fixed;inset:0;z-index:9000;background:#0a0f0b;color:#f2e7d0;font-family:Segoe UI,system-ui,sans-serif;';
 
     playArea = document.createElement('div');
     // On mobile, the play area takes full width
@@ -191,7 +191,7 @@
     minimapCanvas = document.createElement('canvas');
     minimapCanvas.width = 180;
     minimapCanvas.height = 130;
-    minimapCanvas.style.cssText = 'position:absolute;right:4.5rem;top:3.2rem;z-index:10;border-radius:10px;border:1px solid rgba(147,51,234,.45);background:rgba(4,0,12,.78);pointer-events:none;';
+    minimapCanvas.style.cssText = 'position:absolute;right:4.5rem;top:3.2rem;z-index:10;border-radius:10px;border:1px solid rgba(217,170,78,.45);background:rgba(10,14,10,.82);pointer-events:none;';
     minimapCtx = minimapCanvas.getContext('2d');
     playArea.appendChild(minimapCanvas);
 
@@ -199,14 +199,14 @@
     exitButton.onclick = () => exitGame();
     playArea.appendChild(exitButton);
 
-    const controlsBtn = floatingBtn('☰ Controls', 'left:1rem;top:1rem;border-color:rgba(124,58,237,.5);');
+    const controlsBtn = floatingBtn('☰ Controls', 'left:1rem;top:1rem;border-color:rgba(217,170,78,.5);');
     controlsTray = document.createElement('div');
-    controlsTray.style.cssText = 'display:none;position:absolute;left:1rem;top:3.35rem;z-index:11;background:rgba(8,0,18,.9);border:1px solid rgba(124,58,237,.45);border-radius:12px;padding:.4rem;gap:.35rem;flex-direction:column;';
+    controlsTray.style.cssText = 'display:none;position:absolute;left:1rem;top:3.35rem;z-index:11;background:rgba(13,18,13,.92);border:1px solid rgba(217,170,78,.45);border-radius:12px;padding:.4rem;gap:.35rem;flex-direction:column;';
 
     const mapBtn = floatingBtn('★ Star Map', 'position:static;border-color:rgba(245,158,11,.5);font-size:.62rem;padding:.34rem .72rem;');
     mapBtn.onclick = toggleMap;
 
-    const mmBtn = floatingBtn('◎ Mini Map', 'position:static;border-color:rgba(124,58,237,.5);font-size:.62rem;padding:.34rem .72rem;');
+    const mmBtn = floatingBtn('◎ Mini Map', 'position:static;border-color:rgba(217,170,78,.5);font-size:.62rem;padding:.34rem .72rem;');
     mmBtn.onclick = () => {
       state.minimapVisible = !state.minimapVisible;
       minimapCanvas.style.display = state.minimapVisible ? 'block' : 'none';
@@ -224,19 +224,19 @@
     playArea.appendChild(controlsTray);
 
     hud = document.createElement('div');
-    hud.style.cssText = 'position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);padding:.7rem 1rem;background:rgba(8,0,16,.72);border:1px solid rgba(147,51,234,.45);border-radius:12px;letter-spacing:.08em;font-size:.72rem;text-transform:uppercase;max-width:96vw;text-align:center;';
+    hud.style.cssText = 'position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);padding:.7rem 1rem;background:rgba(13,18,13,.78);border:1px solid rgba(217,170,78,.45);border-radius:12px;letter-spacing:.08em;font-size:.72rem;text-transform:uppercase;max-width:96vw;text-align:center;';
     playArea.appendChild(hud);
 
     popup = document.createElement('div');
-    popup.style.cssText = 'display:none;position:absolute;z-index:40;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,92vw);background:rgba(6,0,15,.98);border:1px solid rgba(245,158,11,.5);border-radius:18px;padding:1rem;';
+    popup.style.cssText = 'display:none;position:absolute;z-index:40;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,92vw);background:rgba(11,15,11,.98);border:1px solid rgba(245,158,11,.5);border-radius:18px;padding:1rem;';
     overlay.appendChild(popup);
 
     powerPrompt = document.createElement('div');
-    powerPrompt.style.cssText = 'display:none;position:absolute;right:1rem;bottom:4.6rem;z-index:25;max-width:min(360px,88vw);background:rgba(8,0,18,.92);border:1px solid rgba(147,51,234,.45);border-radius:14px;padding:.75rem;box-shadow:0 8px 24px rgba(0,0,0,.45);';
+    powerPrompt.style.cssText = 'display:none;position:absolute;right:1rem;bottom:4.6rem;z-index:25;max-width:min(360px,88vw);background:rgba(13,18,13,.94);border:1px solid rgba(217,170,78,.45);border-radius:14px;padding:.75rem;box-shadow:0 8px 24px rgba(0,0,0,.45);';
     overlay.appendChild(powerPrompt);
 
     mapScreen = document.createElement('div');
-    mapScreen.style.cssText = 'display:none;position:absolute;inset:0;background:rgba(2,0,9,.94);z-index:30;align-items:center;justify-content:center;';
+    mapScreen.style.cssText = 'display:none;position:absolute;inset:0;background:rgba(8,12,8,.94);z-index:30;align-items:center;justify-content:center;';
     overlay.appendChild(mapScreen);
 
     buildMusicPanel();
@@ -247,15 +247,15 @@
   function floatingBtn(text, extra) {
     const b = document.createElement('button');
     b.textContent = text;
-    b.style.cssText = `position:absolute;z-index:8;padding:.45rem .9rem;border-radius:999px;border:1px solid rgba(147,51,234,.4);background:rgba(8,0,16,.9);color:#d8c8ff;cursor:pointer;font-size:.69rem;letter-spacing:.12em;text-transform:uppercase;${extra}`;
+    b.style.cssText = `position:absolute;z-index:8;padding:.45rem .9rem;border-radius:999px;border:1px solid rgba(217,170,78,.4);background:rgba(13,18,13,.92);color:#f2e7d0;cursor:pointer;font-size:.69rem;letter-spacing:.12em;text-transform:uppercase;${extra}`;
     return b;
   }
 
   function buildMusicPanel() {
     musicPanel = document.createElement('aside');
     musicPanel.style.cssText = state.isMobile
-      ? 'display:none;position:absolute;top:0;right:0;bottom:0;width:320px;background:linear-gradient(180deg,rgba(12,0,26,.98),rgba(6,0,16,.98));border-left:1px solid rgba(147,51,234,.4);padding:1rem;overflow:auto;z-index:20;'
-      : 'position:absolute;top:0;right:0;bottom:0;width:320px;background:linear-gradient(180deg,rgba(12,0,26,.98),rgba(6,0,16,.98));border-left:1px solid rgba(147,51,234,.4);padding:1rem;overflow:auto;';
+      ? 'display:none;position:absolute;top:0;right:0;bottom:0;width:320px;background:linear-gradient(180deg,rgba(17,23,17,.98),rgba(11,15,11,.98));border-left:1px solid rgba(217,170,78,.4);padding:1rem;overflow:auto;z-index:20;'
+      : 'position:absolute;top:0;right:0;bottom:0;width:320px;background:linear-gradient(180deg,rgba(17,23,17,.98),rgba(11,15,11,.98));border-left:1px solid rgba(217,170,78,.4);padding:1rem;overflow:auto;';
     musicPanel.innerHTML = '<div style="font-weight:800;letter-spacing:.16em;font-size:.72rem;text-transform:uppercase;color:#fcd34d">Cosmic Player</div><h3 style="margin:.4rem 0 1rem;font-size:1rem">TRIBE STAR MILK — STARMILK</h3>';
 
     musicFrame = document.createElement('iframe');
@@ -266,7 +266,7 @@
     musicPanel.appendChild(musicFrame);
 
     const mini = document.createElement('div');
-    mini.style.cssText = 'margin-top:1rem;font-size:.72rem;color:#ab96d4;letter-spacing:.1em;text-transform:uppercase;';
+    mini.style.cssText = 'margin-top:1rem;font-size:.72rem;color:#edc77d;letter-spacing:.1em;text-transform:uppercase;';
     mini.textContent = 'Mini Playlist';
     musicPanel.appendChild(mini);
 
@@ -275,7 +275,7 @@
     TRACKS.forEach((track, i) => {
       const item = document.createElement('button');
       item.textContent = track.title;
-      item.style.cssText = 'text-align:left;border:1px solid rgba(147,51,234,.35);background:rgba(21,5,35,.8);color:#e8dbff;padding:.5rem;border-radius:10px;cursor:pointer;';
+      item.style.cssText = 'text-align:left;border:1px solid rgba(217,170,78,.35);background:rgba(28,36,28,.85);color:#f2e7d0;padding:.5rem;border-radius:10px;cursor:pointer;';
       item.onclick = () => setTrack(track, true);
       if (i === 0) item.dataset.active = '1';
       playlist.appendChild(item);
@@ -287,7 +287,7 @@
     if (state.isMobile) {
       musicToggleBtn = document.createElement('button');
       musicToggleBtn.textContent = '♪ Music';
-      musicToggleBtn.style.cssText = 'position:absolute;right:1rem;top:5.8rem;z-index:8;padding:.45rem .9rem;border-radius:999px;border:1px solid rgba(245,158,11,.5);background:rgba(8,0,16,.9);color:#fcd34d;cursor:pointer;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;';
+      musicToggleBtn.style.cssText = 'position:absolute;right:1rem;top:5.8rem;z-index:8;padding:.45rem .9rem;border-radius:999px;border:1px solid rgba(245,158,11,.5);background:rgba(13,18,13,.92);color:#fcd34d;cursor:pointer;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;';
       musicToggleBtn.onclick = () => {
         state.musicPanelOpen = !state.musicPanelOpen;
         musicPanel.style.display = state.musicPanelOpen ? 'block' : 'none';
@@ -299,9 +299,9 @@
   function buildJoystick() {
     if (!state.isMobile) return;
     const base = document.createElement('div');
-    base.style.cssText = 'position:absolute;left:20px;bottom:22px;width:110px;height:110px;border-radius:50%;background:rgba(7,0,18,.5);border:1px solid rgba(147,51,234,.4);z-index:9;touch-action:none;';
+    base.style.cssText = 'position:absolute;left:20px;bottom:22px;width:110px;height:110px;border-radius:50%;background:rgba(10,14,10,.55);border:1px solid rgba(217,170,78,.4);z-index:9;touch-action:none;';
     const knob = document.createElement('div');
-    knob.style.cssText = 'position:absolute;left:50%;top:50%;width:46px;height:46px;border-radius:50%;transform:translate(-50%,-50%);background:rgba(147,51,234,.7);';
+    knob.style.cssText = 'position:absolute;left:50%;top:50%;width:46px;height:46px;border-radius:50%;transform:translate(-50%,-50%);background:rgba(217,170,78,.7);';
     base.appendChild(knob);
     playArea.appendChild(base);
     const max = 30;
@@ -711,7 +711,7 @@
         showPopup(`<h3>Hidden bonus song unlocked</h3><iframe allow="autoplay" width="100%" height="166" scrolling="no" frameborder="no" src="${pick.embed}"></iframe>`);
       } else if (roll === 1) {
         const fact = FACTS[Math.floor(Math.random() * FACTS.length)];
-        showPopup(`<h3>Mystery Transmission</h3><p style="line-height:1.5;color:#e8dfff">${fact}</p>`);
+        showPopup(`<h3>Mystery Transmission</h3><p style="line-height:1.5;color:#f2e7d0">${fact}</p>`);
       } else {
         const target = TRACKS[Math.floor(Math.random() * TRACKS.length)];
         state.tracks[target.id].frags = Math.min(target.fragsNeed, state.tracks[target.id].frags + 1);
@@ -740,11 +740,12 @@
 
     ctx.clearRect(-10, -10, W + 20, H + 20);
     const bg = ctx.createLinearGradient(0, 0, 0, H);
-    bg.addColorStop(0, '#120026');
-    bg.addColorStop(1, '#040008');
+    bg.addColorStop(0, '#1c241c');
+    bg.addColorStop(1, '#0a0f0b');
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, W, H);
 
+    renderBgStars(ts);
     renderParticles(ts);
     renderMaze(ts);
     renderFogOfWar();
@@ -764,13 +765,35 @@
 
   // ─── Background particles ───────────────────────────────────────────
 
+  // ── Drifting parallax starfield behind the maze (autonomous, time-driven) ──
+
+  function renderBgStars(ts) {
+    if (!state.bgStars) {
+      state.bgStars = Array.from({ length: 110 }, () => ({
+        wx: Math.random() * WORLD_W,
+        wy: Math.random() * WORLD_H,
+        r: 0.6 + Math.random() * 1.7,
+        depth: 0.2 + Math.random() * 0.55,
+        ph: Math.random() * Math.PI * 2,
+        drift: 2 + Math.random() * 6,
+      }));
+    }
+    state.bgStars.forEach((s) => {
+      const sx = (((s.wx + ts * 0.001 * s.drift - state.cam.x * s.depth) % W) + W) % W;
+      const sy = (((s.wy + ts * 0.0006 * s.drift - state.cam.y * s.depth) % H) + H) % H;
+      const tw = REDUCED ? 0.5 : 0.5 + 0.5 * Math.sin(ts * 0.0011 + s.ph);
+      ctx.fillStyle = `rgba(242,231,208,${(0.1 + 0.2 * tw).toFixed(3)})`;
+      ctx.beginPath(); ctx.arc(sx, sy, s.r, 0, Math.PI * 2); ctx.fill();
+    });
+  }
+
   function renderParticles(ts) {
     state.particles.forEach((p, i) => {
       const sx = p.x - state.cam.x;
       const sy = p.y - state.cam.y;
       if (sx < -5 || sy < -5 || sx > W + 5 || sy > H + 5) return;
       const tw = REDUCED ? 0 : Math.sin(ts * 0.001 + i) * 0.25;
-      ctx.fillStyle = `rgba(180,150,255,${p.a + tw})`;
+      ctx.fillStyle = `rgba(237,199,125,${p.a + tw})`;
       ctx.beginPath(); ctx.arc(sx, sy, p.r, 0, Math.PI * 2); ctx.fill();
     });
   }
@@ -786,16 +809,16 @@
         if (ox > W || oy > H || ox + CELL < 0 || oy + CELL < 0) continue;
 
         const grd = ctx.createRadialGradient(ox + CELL / 2, oy + CELL / 2, 20, ox + CELL / 2, oy + CELL / 2, CELL / 1.2);
-        grd.addColorStop(0, 'rgba(60,20,120,0.22)');
-        grd.addColorStop(1, 'rgba(8,2,24,0.05)');
+        grd.addColorStop(0, 'rgba(97,116,75,0.28)');
+        grd.addColorStop(1, 'rgba(12,16,12,0.06)');
         ctx.fillStyle = grd;
         ctx.fillRect(ox, oy, CELL, CELL);
 
         const pulse = 0.55 + Math.sin(ts * 0.002 + (x + y)) * 0.3;
-        ctx.strokeStyle = `rgba(80,180,255,${pulse})`;
+        ctx.strokeStyle = `rgba(136,170,160,${pulse})`;
         ctx.lineWidth = 7;
         ctx.shadowBlur = 16;
-        ctx.shadowColor = 'rgba(80,180,255,.65)';
+        ctx.shadowColor = 'rgba(136,170,160,.65)';
 
         if (!cell.n) drawWall(ox, oy, ox + CELL, oy);
         if (!cell.s) drawWall(ox, oy + CELL, ox + CELL, oy + CELL);
@@ -826,9 +849,9 @@
     if (hasStarVision) return; // No fog when star vision is active
 
     const fog = ctx.createRadialGradient(px, py, lightRadius * 0.4, px, py, lightRadius);
-    fog.addColorStop(0, 'rgba(4,0,8,0)');
-    fog.addColorStop(0.6, 'rgba(4,0,8,0.15)');
-    fog.addColorStop(1, 'rgba(4,0,8,0.55)');
+    fog.addColorStop(0, 'rgba(6,10,7,0)');
+    fog.addColorStop(0.6, 'rgba(6,10,7,0.15)');
+    fog.addColorStop(1, 'rgba(6,10,7,0.55)');
     ctx.fillStyle = fog;
     ctx.fillRect(0, 0, W, H);
   }
@@ -851,7 +874,7 @@
       if (b.open) return;
       const sx = b.wx - state.cam.x, sy = b.wy - state.cam.y;
       const p = 0.5 + Math.sin(ts * 0.004 + b.wx) * 0.25;
-      ctx.fillStyle = `rgba(147,51,234,${0.5 + p})`;
+      ctx.fillStyle = `rgba(217,170,78,${0.5 + p})`;
       ctx.strokeStyle = '#fcd34d';
       ctx.lineWidth = 2;
       ctx.fillRect(sx - 12, sy - 12, 24, 24);
@@ -929,9 +952,9 @@
       const radius = 8 * progress + 2;
 
       const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, radius);
-      grad.addColorStop(0, `rgba(124,58,237,${alpha})`);
-      grad.addColorStop(0.5, `rgba(167,139,250,${alpha * 0.6})`);
-      grad.addColorStop(1, `rgba(124,58,237,0)`);
+      grad.addColorStop(0, `rgba(217,170,78,${alpha})`);
+      grad.addColorStop(0.5, `rgba(217,170,78,${alpha * 0.6})`);
+      grad.addColorStop(1, `rgba(217,170,78,0)`);
       ctx.fillStyle = grad;
       ctx.beginPath(); ctx.arc(sx, sy, radius, 0, Math.PI * 2); ctx.fill();
     }
@@ -953,18 +976,18 @@
     const auraPulse = 0.3 + Math.sin(ts * 0.003) * 0.15;
     const auraRadius = PLAYER_R + 14 + Math.sin(ts * 0.004) * 4;
     const aura = ctx.createRadialGradient(0, 0, PLAYER_R * 0.5, 0, 0, auraRadius);
-    aura.addColorStop(0, `rgba(124,58,237,${auraPulse})`);
-    aura.addColorStop(0.5, `rgba(167,139,250,${auraPulse * 0.4})`);
-    aura.addColorStop(1, 'rgba(124,58,237,0)');
+    aura.addColorStop(0, `rgba(217,170,78,${auraPulse})`);
+    aura.addColorStop(0.5, `rgba(217,170,78,${auraPulse * 0.4})`);
+    aura.addColorStop(1, 'rgba(217,170,78,0)');
     ctx.fillStyle = aura;
     ctx.beginPath(); ctx.arc(0, 0, auraRadius, 0, Math.PI * 2); ctx.fill();
 
     // Body
-    ctx.fillStyle = '#f7f1ff';
+    ctx.fillStyle = '#f2e7d0';
     ctx.beginPath(); ctx.roundRect(-16, -18, 32, 36, 8); ctx.fill();
 
     // Subtle body border
-    ctx.strokeStyle = 'rgba(124,58,237,.35)';
+    ctx.strokeStyle = 'rgba(217,170,78,.35)';
     ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.roundRect(-16, -18, 32, 36, 8); ctx.stroke();
 
@@ -980,7 +1003,7 @@
     ctx.fill();
 
     // Pupils (follow direction more)
-    ctx.fillStyle = '#7c3aed';
+    ctx.fillStyle = '#d9aa4e';
     ctx.beginPath();
     ctx.arc(-6 + eyeOffsetX, -5 + eyeOffsetY, 1.8, 0, Math.PI * 2);
     ctx.arc(6 + eyeOffsetX, -5 + eyeOffsetY, 1.8, 0, Math.PI * 2);
@@ -994,7 +1017,7 @@
     ctx.fill();
 
     // Mouth — changes based on state
-    ctx.strokeStyle = '#7c3aed';
+    ctx.strokeStyle = '#d9aa4e';
     ctx.lineWidth = 2;
     ctx.lineCap = 'round';
     if (speed > 3) {
@@ -1049,7 +1072,7 @@
       } else if (effect.type === 'milk-shield') {
         const msx = state.player.x - state.cam.x;
         const msy = state.player.y - state.cam.y;
-        ctx.strokeStyle = `rgba(167,139,250,${0.6 * (1 - age)})`;
+        ctx.strokeStyle = `rgba(217,170,78,${0.6 * (1 - age)})`;
         ctx.lineWidth = 4;
         ctx.beginPath();
         ctx.arc(msx, msy, PLAYER_R + 16 + age * 20, 0, Math.PI * 2);
@@ -1070,14 +1093,14 @@
     mc.clearRect(0, 0, mw, mh);
 
     // Background
-    mc.fillStyle = 'rgba(4,0,12,.85)';
+    mc.fillStyle = 'rgba(10,14,10,.88)';
     mc.fillRect(0, 0, mw, mh);
 
     const sx = mw / WORLD_W;
     const sy = mh / WORLD_H;
 
     // Maze walls
-    mc.strokeStyle = 'rgba(80,180,255,.35)';
+    mc.strokeStyle = 'rgba(136,170,160,.35)';
     mc.lineWidth = 0.8;
     for (let y = 0; y < ROWS; y++) {
       for (let x = 0; x < COLS; x++) {
@@ -1094,7 +1117,7 @@
     // Collectibles
     TRACKS.forEach(t => {
       const s = state.tracks[t.id];
-      mc.fillStyle = s.discovered ? t.color : 'rgba(170,150,200,.45)';
+      mc.fillStyle = s.discovered ? t.color : 'rgba(237,199,125,.45)';
       mc.beginPath(); mc.arc(s.wx * sx, s.wy * sy, 3, 0, Math.PI * 2); mc.fill();
     });
 
@@ -1106,7 +1129,7 @@
 
     state.mysteryBoxes.forEach(b => {
       if (b.open) return;
-      mc.fillStyle = 'rgba(147,51,234,.5)';
+      mc.fillStyle = 'rgba(217,170,78,.5)';
       mc.fillRect(b.wx * sx - 2, b.wy * sy - 2, 4, 4);
     });
 
@@ -1116,7 +1139,7 @@
     mc.beginPath(); mc.arc(state.player.x * sx, state.player.y * sy, 3.5, 0, Math.PI * 2); mc.fill();
 
     // Player light radius indicator
-    mc.strokeStyle = 'rgba(124,58,237,.3)';
+    mc.strokeStyle = 'rgba(217,170,78,.3)';
     mc.lineWidth = 1;
     mc.beginPath(); mc.arc(state.player.x * sx, state.player.y * sy, 12, 0, Math.PI * 2); mc.stroke();
   }
@@ -1129,8 +1152,8 @@
     musicFrame.src = `${track.embedBase}&auto_play=${autoplay ? 'true' : 'false'}`;
     Array.from(playlist.children).forEach(btn => {
       const on = btn.textContent === track.title;
-      btn.style.borderColor = on ? 'rgba(245,158,11,.8)' : 'rgba(147,51,234,.35)';
-      btn.style.color = on ? '#fcd34d' : '#e8dbff';
+      btn.style.borderColor = on ? 'rgba(245,158,11,.8)' : 'rgba(217,170,78,.35)';
+      btn.style.color = on ? '#fcd34d' : '#f2e7d0';
     });
     const title = musicPanel.querySelector('h3');
     title.textContent = `${track.title} — STARMILK`;
@@ -1164,7 +1187,7 @@
       activatePowerUp(powerUp.id);
       powerPrompt.style.display = 'none';
     };
-    powerPrompt.innerHTML = `<div style="font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;color:#fcd34d">${powerUp.title} collected</div><p style="margin:.35rem 0 .6rem;color:#ddccff;font-size:.86rem">Enjoying STARMILK? Support the music!</p><div style="display:flex;gap:.45rem;flex-wrap:wrap"><button id="cq-power-free" style="border:1px solid rgba(147,51,234,.55);background:rgba(16,2,30,.88);color:#f5ecff;padding:.4rem .6rem;border-radius:9px;cursor:pointer">Use Power-Up (Free)</button><button id="cq-power-donate" style="border:1px solid rgba(245,158,11,.65);background:rgba(42,15,4,.78);color:#ffd36b;padding:.4rem .6rem;border-radius:9px;cursor:pointer">Support STARMILK</button></div>`;
+    powerPrompt.innerHTML = `<div style="font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;color:#fcd34d">${powerUp.title} collected</div><p style="margin:.35rem 0 .6rem;color:#edc77d;font-size:.86rem">Enjoying STARMILK? Support the music!</p><div style="display:flex;gap:.45rem;flex-wrap:wrap"><button id="cq-power-free" style="border:1px solid rgba(217,170,78,.55);background:rgba(20,27,20,.9);color:#f2e7d0;padding:.4rem .6rem;border-radius:9px;cursor:pointer">Use Power-Up (Free)</button><button id="cq-power-donate" style="border:1px solid rgba(245,158,11,.65);background:rgba(42,15,4,.78);color:#ffd36b;padding:.4rem .6rem;border-radius:9px;cursor:pointer">Support STARMILK</button></div>`;
     powerPrompt.style.display = 'block';
     powerPrompt.querySelector('#cq-power-free').onclick = activateNow;
     powerPrompt.querySelector('#cq-power-donate').onclick = () => {
@@ -1196,7 +1219,7 @@
     }
     const discovered = TRACKS.filter(t => state.tracks[t.id].discovered).length;
     const rows = TRACKS.map(t => `<li>${t.title}: ${state.tracks[t.id].discovered ? 'Discovered' : 'Hidden'} (${state.tracks[t.id].frags}/${t.fragsNeed} fragments)</li>`).join('');
-    mapScreen.innerHTML = `<div style="width:min(760px,95vw);background:rgba(10,0,22,.95);border:1px solid rgba(147,51,234,.5);border-radius:18px;padding:1rem;"><h2 style="margin-bottom:.5rem;letter-spacing:.12em;text-transform:uppercase">Star Map</h2><p style="color:#aa96d3;margin-bottom:.5rem">Constellation progress: ${discovered}/${TRACKS.length} songs found | Score: ${state.score} | Time: ${formatTime(state.elapsedMs)}</p><canvas id="cq-map" width="700" height="360" style="width:100%;height:auto;border:1px solid rgba(147,51,234,.3);border-radius:12px"></canvas><ul style="margin:.8rem 0 0 1rem;line-height:1.6">${rows}</ul><button id="cq-close-map" style="margin-top:.8rem;border:1px solid rgba(245,158,11,.5);background:rgba(10,0,20,.7);color:#fcd34d;padding:.45rem .8rem;border-radius:10px;cursor:pointer">Close</button></div>`;
+    mapScreen.innerHTML = `<div style="width:min(760px,95vw);background:rgba(14,19,14,.96);border:1px solid rgba(217,170,78,.5);border-radius:18px;padding:1rem;"><h2 style="margin-bottom:.5rem;letter-spacing:.12em;text-transform:uppercase">Star Map</h2><p style="color:#cbbfa7;margin-bottom:.5rem">Constellation progress: ${discovered}/${TRACKS.length} songs found | Score: ${state.score} | Time: ${formatTime(state.elapsedMs)}</p><canvas id="cq-map" width="700" height="360" style="width:100%;height:auto;border:1px solid rgba(217,170,78,.3);border-radius:12px"></canvas><ul style="margin:.8rem 0 0 1rem;line-height:1.6">${rows}</ul><button id="cq-close-map" style="margin-top:.8rem;border:1px solid rgba(245,158,11,.5);background:rgba(14,19,14,.75);color:#fcd34d;padding:.45rem .8rem;border-radius:10px;cursor:pointer">Close</button></div>`;
     mapScreen.style.display = 'flex';
     mapScreen.querySelector('#cq-close-map').onclick = toggleMap;
     drawMap();
@@ -1206,7 +1229,7 @@
     const c = mapScreen.querySelector('#cq-map');
     if (!c) return;
     const g = c.getContext('2d');
-    g.fillStyle = '#05000d';
+    g.fillStyle = '#0c120d';
     g.fillRect(0, 0, c.width, c.height);
     const sx = c.width / WORLD_W;
     const sy = c.height / WORLD_H;
@@ -1216,7 +1239,7 @@
         const cell = state.maze[y][x];
         const ox = x * CELL * sx;
         const oy = y * CELL * sy;
-        g.strokeStyle = 'rgba(80,180,255,.5)';
+        g.strokeStyle = 'rgba(136,170,160,.5)';
         if (!cell.n) line(g, ox, oy, ox + CELL * sx, oy);
         if (!cell.s) line(g, ox, oy + CELL * sy, ox + CELL * sx, oy + CELL * sy);
         if (!cell.w) line(g, ox, oy, ox, oy + CELL * sy);
@@ -1226,7 +1249,7 @@
 
     TRACKS.forEach(t => {
       const s = state.tracks[t.id];
-      g.fillStyle = s.discovered ? t.color : 'rgba(170,150,200,.55)';
+      g.fillStyle = s.discovered ? t.color : 'rgba(237,199,125,.55)';
       g.beginPath(); g.arc(s.wx * sx, s.wy * sy, 6, 0, Math.PI * 2); g.fill();
     });
 
@@ -1239,7 +1262,7 @@
   // ─── Popup ─────────────────────────────────────────────────────────────
 
   function showPopup(inner) {
-    popup.innerHTML = `${inner}<div style="margin-top:.7rem;text-align:right"><button id="cq-close-pop" style="border:1px solid rgba(147,51,234,.5);background:#130428;color:#e8dfff;padding:.35rem .7rem;border-radius:8px;cursor:pointer">Continue</button></div>`;
+    popup.innerHTML = `${inner}<div style="margin-top:.7rem;text-align:right"><button id="cq-close-pop" style="border:1px solid rgba(217,170,78,.5);background:#1e2620;color:#f2e7d0;padding:.35rem .7rem;border-radius:8px;cursor:pointer">Continue</button></div>`;
     popup.style.display = 'block';
     popup.querySelector('#cq-close-pop').onclick = () => { popup.style.display = 'none'; };
   }

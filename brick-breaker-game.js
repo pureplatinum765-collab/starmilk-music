@@ -45,7 +45,7 @@
   const POWERUP_TYPES = [
     { id: 'wider', icon: 'W', color: '#f59e0b', glowColor: 'rgba(245,158,11,.7)', label: 'WIDER PADDLE' },
     { id: 'multiball', icon: 'M', color: '#67e8f9', glowColor: 'rgba(103,232,249,.7)', label: 'MULTI-BALL' },
-    { id: 'laser', icon: 'L', color: '#a78bfa', glowColor: 'rgba(167,139,250,.7)', label: 'LASER' },
+    { id: 'laser', icon: 'L', color: '#edc77d', glowColor: 'rgba(237,199,125,.7)', label: 'LASER' },
     { id: 'slow', icon: 'S', color: '#2dd4bf', glowColor: 'rgba(45,212,191,.7)', label: 'SLOW-MO' },
   ];
   const DROP_CHANCE = 0.14;
@@ -83,6 +83,7 @@
     screenShake: { x: 0, y: 0, intensity: 0, decay: 0.85 },
     transition: { active: false, text: '', alpha: 0, ringRadius: 0, startTime: 0 },
     paddleTrail: [],
+    ballTrail: [],
   };
 
   let audioCtx;
@@ -370,7 +371,7 @@
     }
     if (state.effects.laserUntil > now) {
       const sec = Math.ceil((state.effects.laserUntil - now) / 1000);
-      items.push(`<span style="color:#a78bfa">◆ LASER ${sec}s</span>`);
+      items.push(`<span style="color:#edc77d">◆ LASER ${sec}s</span>`);
     }
     const markup = items.length
       ? items.join('  ')
@@ -482,6 +483,12 @@
       if (s.y > canvas.height) { s.y = -3; s.x = Math.random() * canvas.width; }
     });
 
+    // Ball trail fade
+    for (let i = state.ballTrail.length - 1; i >= 0; i--) {
+      state.ballTrail[i].a *= 0.86;
+      if (state.ballTrail[i].a < 0.04) state.ballTrail.splice(i, 1);
+    }
+
     // Balls
     state.balls.forEach((ball) => {
       if (ball.attached) {
@@ -492,6 +499,8 @@
       const slowFactor = active('slow') ? 0.7 : 1;
       ball.x += ball.vx * slowFactor;
       ball.y += ball.vy * slowFactor;
+      state.ballTrail.push({ x: ball.x, y: ball.y, a: 0.5 });
+      if (state.ballTrail.length > 18) state.ballTrail.shift();
 
       // Wall collisions
       if (ball.x < ball.r) { ball.x = ball.r; ball.vx = Math.abs(ball.vx); beep(220, 0.05, 'sine', 0.03); }
@@ -948,14 +957,24 @@
 
     // Background gradient
     const grad = g.createLinearGradient(0, 0, 0, canvas.height);
-    grad.addColorStop(0, '#080b16');
-    grad.addColorStop(1, '#0e1325');
+    grad.addColorStop(0, '#0a0f0b');
+    grad.addColorStop(1, '#101812');
     g.fillStyle = grad;
     g.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Stars
+    // Slow breathing glow behind the field (zen ambience)
+    const breathe = 0.5 + 0.5 * Math.sin(performance.now() * 0.0004);
+    const bgGlow = g.createRadialGradient(canvas.width / 2, canvas.height * 0.42, 0, canvas.width / 2, canvas.height * 0.42, Math.max(canvas.width, canvas.height) * 0.55);
+    bgGlow.addColorStop(0, `rgba(217,170,78,${0.045 + breathe * 0.025})`);
+    bgGlow.addColorStop(1, 'rgba(217,170,78,0)');
+    g.fillStyle = bgGlow;
+    g.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Stars — slow twinkle in warm honey light
+    const nowMs = performance.now();
     state.stars.forEach((s) => {
-      g.fillStyle = `rgba(185, 158, 255, ${s.a})`;
+      const tw = 0.65 + 0.35 * Math.sin(nowMs * 0.0012 + s.x * 0.05 + s.y * 0.03);
+      g.fillStyle = `rgba(237,199,125,${(s.a * tw).toFixed(3)})`;
       g.beginPath(); g.arc(s.x, s.y, s.r, 0, Math.PI * 2); g.fill();
     });
 
@@ -1025,6 +1044,14 @@
     g.fillRect(state.paddle.x, state.paddle.y, state.paddle.w, state.paddle.h);
     g.shadowBlur = 0;
 
+    // Ball trail — a soft comet of light following each ball
+    state.ballTrail.forEach((t) => {
+      g.fillStyle = `rgba(237,199,125,${(t.a * 0.35).toFixed(3)})`;
+      g.beginPath();
+      g.arc(t.x, t.y, Math.max(1.5, 4.5 * dpr * t.a), 0, Math.PI * 2);
+      g.fill();
+    });
+
     // Balls
     state.balls.forEach((ball) => {
       g.beginPath();
@@ -1086,7 +1113,7 @@
       g.fillStyle = `rgba(4,1,10,${t.alpha * 0.85})`;
       g.fillRect(0, 0, canvas.width, canvas.height);
 
-      g.strokeStyle = `rgba(147,51,234,${t.alpha * 0.6})`;
+      g.strokeStyle = `rgba(217,170,78,${t.alpha * 0.6})`;
       g.lineWidth = 3 * dpr;
       g.beginPath();
       g.arc(canvas.width / 2, canvas.height / 2, t.ringRadius, 0, Math.PI * 2);
@@ -1113,7 +1140,7 @@
 
     // Game over / victory overlay
     if ((state.gameOver || state.gameWon) && !state.running) {
-      g.fillStyle = 'rgba(4,1,10,.82)';
+      g.fillStyle = 'rgba(8,12,8,.85)';
       g.fillRect(0, 0, canvas.width, canvas.height);
 
       g.textAlign = 'center';
@@ -1127,14 +1154,14 @@
 
       g.shadowBlur = 0;
       g.font = `700 ${Math.floor(18 * dpr)}px Segoe UI, system-ui, sans-serif`;
-      g.fillStyle = '#d8c8ff';
+      g.fillStyle = '#f2e7d0';
       g.fillText(`Score: ${state.score}  ·  High Score: ${state.highScore}  ·  Max Combo: ${state.maxCombo}x`, canvas.width / 2, canvas.height * 0.48);
 
       const btnW = 200 * dpr;
       const btnH = 48 * dpr;
       const btnX = canvas.width / 2 - btnW / 2;
       const btnY = canvas.height * 0.6;
-      g.fillStyle = 'rgba(124,58,237,.65)';
+      g.fillStyle = 'rgba(217,170,78,.65)';
       g.strokeStyle = 'rgba(245,158,11,.6)';
       g.lineWidth = 2 * dpr;
       g.beginPath();

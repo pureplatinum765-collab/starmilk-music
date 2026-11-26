@@ -24,27 +24,27 @@
   const SIDE_PANEL_W = 5; // in cells, for next/hold display
 
   // ─── Starry Night palette ────────────────────────────────────
-  const BG_DARK   = '#080b16';
-  const BG_MID    = '#0e1325';
+  const BG_DARK   = '#0a0f0b';
+  const BG_MID    = '#101812';
   const GOLD      = '#c9944a';
   const GOLD_LT   = '#dbb87a';
-  const PURPLE    = '#6b5b8a';
-  const INDIGO    = '#3d5080';
-  const INDIGO_DK = '#1b3058';
+  const PURPLE    = '#a36e4d';
+  const INDIGO    = '#355c52';
+  const INDIGO_DK = '#24403a';
   const TEAL      = '#3a7068';
   const TEAL_LT   = '#6aad96';
   const TEXT_CLR   = '#d5cfc2';
   const MUTED     = '#8c8578';
-  const GRID_CLR  = 'rgba(60,55,80,.18)';
+  const GRID_CLR  = 'rgba(136,170,160,.14)';
 
   // Piece colors (Starry Night theme)
   const PIECE_COLORS = {
-    I: '#3d87b0', // muted sky blue
+    I: '#88aaa0', // river teal
     O: '#c9944a', // earthy gold
-    T: '#7b6998', // soft purple
+    T: '#a36e4d', // warm clay
     S: '#6aad96', // sage teal
     Z: '#a05050', // muted brick red
-    J: '#3d5080', // indigo
+    J: '#355c52', // deep river
     L: '#b8874a', // warm amber
   };
 
@@ -142,6 +142,7 @@
   let stars = [];
   let particles = [];
   let lineClearAnim = null; // { rows, alpha, time }
+  const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Cell size computed on resize
   let cellSize = 0;
@@ -651,7 +652,7 @@
     }
 
     // Star twinkle
-    stars.forEach(s => { s.twinkle += 0.02; });
+    if (!REDUCED) stars.forEach(s => { s.twinkle += 0.02; });
   }
 
   function movePiece(dx, dy) {
@@ -682,6 +683,14 @@
     g.fillStyle = grad;
     g.fillRect(0, 0, w, h);
 
+    // Slow breathing glow behind the playfield (zen ambience)
+    const breathe = REDUCED ? 0.5 : 0.5 + 0.5 * Math.sin(performance.now() * 0.00045);
+    const bgGlow = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, Math.max(w, h) * 0.62);
+    bgGlow.addColorStop(0, `rgba(217,170,78,${0.05 + breathe * 0.035})`);
+    bgGlow.addColorStop(1, 'rgba(217,170,78,0)');
+    g.fillStyle = bgGlow;
+    g.fillRect(0, 0, w, h);
+
     // Stars
     stars.forEach(s => {
       const a = s.a * (0.6 + 0.4 * Math.sin(s.twinkle));
@@ -692,7 +701,7 @@
     });
 
     // Grid background
-    g.fillStyle = 'rgba(6,4,14,.6)';
+    g.fillStyle = 'rgba(8,12,8,.6)';
     g.fillRect(gridOffX, gridOffY, COLS * cellSize, ROWS * cellSize);
 
     // Grid lines
@@ -708,7 +717,7 @@
     }
 
     // Grid border
-    g.strokeStyle = 'rgba(100,90,130,.3)';
+    g.strokeStyle = 'rgba(97,116,75,.3)';
     g.lineWidth = 2;
     g.strokeRect(gridOffX, gridOffY, COLS * cellSize, ROWS * cellSize);
 
@@ -741,17 +750,21 @@
       g.globalAlpha = 1;
     }
 
-    // Current piece
+    // Current piece — rendered with a smooth fractional drop offset so the
+    // fall reads as continuous motion instead of grid steps
     if (current && !gameOver) {
       const shape = getShape(current.type, current.rot);
       const color = PIECE_COLORS[current.type];
+      const resting = collides(current.type, current.rot, current.x, current.y + 1);
+      const dropInterval = softDropping ? Math.min(getDropInterval(), 50) : getDropInterval();
+      const frac = (resting || paused) ? 0 : Math.min(1, dropTimer / dropInterval);
       for (let r = 0; r < shape.length; r++) {
         for (let c = 0; c < shape[r].length; c++) {
           if (!shape[r][c]) continue;
           const py = current.y + r;
-          if (py < 0) continue; // above visible area
+          if (py + frac < 0) continue; // above visible area
           const px = gridOffX + (current.x + c) * cellSize;
-          const ppy = gridOffY + py * cellSize;
+          const ppy = gridOffY + (py + frac) * cellSize;
           drawBlock(g, px, ppy, cellSize, color);
         }
       }
@@ -790,7 +803,7 @@
 
     // Pause overlay
     if (paused && !gameOver) {
-      g.fillStyle = 'rgba(8,11,22,.8)';
+      g.fillStyle = 'rgba(9,13,10,.8)';
       g.fillRect(0, 0, w, h);
       g.textAlign = 'center';
       g.textBaseline = 'middle';
@@ -804,7 +817,7 @@
 
     // Game over overlay
     if (gameOver) {
-      g.fillStyle = 'rgba(8,11,22,.85)';
+      g.fillStyle = 'rgba(9,13,10,.85)';
       g.fillRect(0, 0, w, h);
       g.textAlign = 'center';
       g.textBaseline = 'middle';
@@ -823,7 +836,7 @@
       const btnH = cellSize * 2;
       const btnX = w / 2 - btnW / 2;
       const btnY = h * 0.62;
-      g.fillStyle = 'rgba(61,80,128,.6)';
+      g.fillStyle = 'rgba(53,92,82,.6)';
       g.strokeStyle = 'rgba(201,148,74,.5)';
       g.lineWidth = 2;
       g.beginPath();
@@ -859,6 +872,10 @@
     g.fillStyle = 'rgba(0,0,0,.2)';
     g.fillRect(x + pad, y + pad + s - 2, s, 2);
     g.fillRect(x + pad + s - 2, y + pad, 2, s);
+
+    // Soft inner light so blocks read as lit from within
+    g.fillStyle = 'rgba(255,255,255,.07)';
+    g.fillRect(x + pad + 3, y + pad + 3, s - 6, s - 6);
   }
 
   function drawSidePanel(g, label, pieceType, px, py) {
@@ -866,9 +883,9 @@
     const panelH = cellSize * 5;
 
     // Panel background
-    g.fillStyle = 'rgba(10,8,20,.5)';
+    g.fillStyle = 'rgba(10,14,10,.5)';
     g.fillRect(px, py, panelW, panelH);
-    g.strokeStyle = 'rgba(100,90,130,.2)';
+    g.strokeStyle = 'rgba(97,116,75,.22)';
     g.lineWidth = 1;
     g.strokeRect(px, py, panelW, panelH);
 
