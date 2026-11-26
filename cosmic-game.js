@@ -745,6 +745,7 @@
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, W, H);
 
+    renderBgStars(ts);
     renderParticles(ts);
     renderMaze(ts);
     renderFogOfWar();
@@ -764,13 +765,35 @@
 
   // ─── Background particles ───────────────────────────────────────────
 
+  // ── Drifting parallax starfield behind the maze (autonomous, time-driven) ──
+
+  function renderBgStars(ts) {
+    if (!state.bgStars) {
+      state.bgStars = Array.from({ length: 110 }, () => ({
+        wx: Math.random() * WORLD_W,
+        wy: Math.random() * WORLD_H,
+        r: 0.6 + Math.random() * 1.7,
+        depth: 0.2 + Math.random() * 0.55,
+        ph: Math.random() * Math.PI * 2,
+        drift: 2 + Math.random() * 6,
+      }));
+    }
+    state.bgStars.forEach((s) => {
+      const sx = (((s.wx + ts * 0.001 * s.drift - state.cam.x * s.depth) % W) + W) % W;
+      const sy = (((s.wy + ts * 0.0006 * s.drift - state.cam.y * s.depth) % H) + H) % H;
+      const tw = REDUCED ? 0.5 : 0.5 + 0.5 * Math.sin(ts * 0.0011 + s.ph);
+      ctx.fillStyle = `rgba(242,231,208,${(0.1 + 0.2 * tw).toFixed(3)})`;
+      ctx.beginPath(); ctx.arc(sx, sy, s.r, 0, Math.PI * 2); ctx.fill();
+    });
+  }
+
   function renderParticles(ts) {
     state.particles.forEach((p, i) => {
       const sx = p.x - state.cam.x;
       const sy = p.y - state.cam.y;
       if (sx < -5 || sy < -5 || sx > W + 5 || sy > H + 5) return;
       const tw = REDUCED ? 0 : Math.sin(ts * 0.001 + i) * 0.25;
-      ctx.fillStyle = `rgba(180,150,255,${p.a + tw})`;
+      ctx.fillStyle = `rgba(237,199,125,${p.a + tw})`;
       ctx.beginPath(); ctx.arc(sx, sy, p.r, 0, Math.PI * 2); ctx.fill();
     });
   }
@@ -930,7 +953,7 @@
 
       const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, radius);
       grad.addColorStop(0, `rgba(217,170,78,${alpha})`);
-      grad.addColorStop(0.5, `rgba(167,139,250,${alpha * 0.6})`);
+      grad.addColorStop(0.5, `rgba(217,170,78,${alpha * 0.6})`);
       grad.addColorStop(1, `rgba(217,170,78,0)`);
       ctx.fillStyle = grad;
       ctx.beginPath(); ctx.arc(sx, sy, radius, 0, Math.PI * 2); ctx.fill();
@@ -954,7 +977,7 @@
     const auraRadius = PLAYER_R + 14 + Math.sin(ts * 0.004) * 4;
     const aura = ctx.createRadialGradient(0, 0, PLAYER_R * 0.5, 0, 0, auraRadius);
     aura.addColorStop(0, `rgba(217,170,78,${auraPulse})`);
-    aura.addColorStop(0.5, `rgba(167,139,250,${auraPulse * 0.4})`);
+    aura.addColorStop(0.5, `rgba(217,170,78,${auraPulse * 0.4})`);
     aura.addColorStop(1, 'rgba(217,170,78,0)');
     ctx.fillStyle = aura;
     ctx.beginPath(); ctx.arc(0, 0, auraRadius, 0, Math.PI * 2); ctx.fill();
@@ -1049,7 +1072,7 @@
       } else if (effect.type === 'milk-shield') {
         const msx = state.player.x - state.cam.x;
         const msy = state.player.y - state.cam.y;
-        ctx.strokeStyle = `rgba(167,139,250,${0.6 * (1 - age)})`;
+        ctx.strokeStyle = `rgba(217,170,78,${0.6 * (1 - age)})`;
         ctx.lineWidth = 4;
         ctx.beginPath();
         ctx.arc(msx, msy, PLAYER_R + 16 + age * 20, 0, Math.PI * 2);

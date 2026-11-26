@@ -142,6 +142,7 @@
   let stars = [];
   let particles = [];
   let lineClearAnim = null; // { rows, alpha, time }
+  const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Cell size computed on resize
   let cellSize = 0;
@@ -651,7 +652,7 @@
     }
 
     // Star twinkle
-    stars.forEach(s => { s.twinkle += 0.02; });
+    if (!REDUCED) stars.forEach(s => { s.twinkle += 0.02; });
   }
 
   function movePiece(dx, dy) {
@@ -680,6 +681,14 @@
     grad.addColorStop(0.5, BG_MID);
     grad.addColorStop(1, BG_DARK);
     g.fillStyle = grad;
+    g.fillRect(0, 0, w, h);
+
+    // Slow breathing glow behind the playfield (zen ambience)
+    const breathe = REDUCED ? 0.5 : 0.5 + 0.5 * Math.sin(performance.now() * 0.00045);
+    const bgGlow = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, Math.max(w, h) * 0.62);
+    bgGlow.addColorStop(0, `rgba(217,170,78,${0.05 + breathe * 0.035})`);
+    bgGlow.addColorStop(1, 'rgba(217,170,78,0)');
+    g.fillStyle = bgGlow;
     g.fillRect(0, 0, w, h);
 
     // Stars
@@ -741,17 +750,21 @@
       g.globalAlpha = 1;
     }
 
-    // Current piece
+    // Current piece — rendered with a smooth fractional drop offset so the
+    // fall reads as continuous motion instead of grid steps
     if (current && !gameOver) {
       const shape = getShape(current.type, current.rot);
       const color = PIECE_COLORS[current.type];
+      const resting = collides(current.type, current.rot, current.x, current.y + 1);
+      const dropInterval = softDropping ? Math.min(getDropInterval(), 50) : getDropInterval();
+      const frac = (resting || paused) ? 0 : Math.min(1, dropTimer / dropInterval);
       for (let r = 0; r < shape.length; r++) {
         for (let c = 0; c < shape[r].length; c++) {
           if (!shape[r][c]) continue;
           const py = current.y + r;
-          if (py < 0) continue; // above visible area
+          if (py + frac < 0) continue; // above visible area
           const px = gridOffX + (current.x + c) * cellSize;
-          const ppy = gridOffY + py * cellSize;
+          const ppy = gridOffY + (py + frac) * cellSize;
           drawBlock(g, px, ppy, cellSize, color);
         }
       }
@@ -859,6 +872,10 @@
     g.fillStyle = 'rgba(0,0,0,.2)';
     g.fillRect(x + pad, y + pad + s - 2, s, 2);
     g.fillRect(x + pad + s - 2, y + pad, 2, s);
+
+    // Soft inner light so blocks read as lit from within
+    g.fillStyle = 'rgba(255,255,255,.07)';
+    g.fillRect(x + pad + 3, y + pad + 3, s - 6, s - 6);
   }
 
   function drawSidePanel(g, label, pieceType, px, py) {

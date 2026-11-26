@@ -1661,13 +1661,13 @@ void main(){
 })();
 </script>
 
-<script src="brick-breaker-game.js?v=healing-sanctuary-20261125a" defer></script>
+<script src="brick-breaker-game.js?v=healing-sanctuary-20261126a" defer></script>
 
 <!-- ═══ STARMILK COSMIC QUEST ════════════════════════════════════════════ -->
-<script src="cosmic-game.js?v=healing-sanctuary-20261125a" defer></script>
+<script src="cosmic-game.js?v=healing-sanctuary-20261126a" defer></script>
 
 <!-- ═══ COSMIC WORM ═════════════════════════════════════════════════════ -->
-<script src="tetris-game.js?v=healing-sanctuary-20261125a" defer></script>
+<script src="tetris-game.js?v=healing-sanctuary-20261126a" defer></script>
 
 <script>
 (function(){const orb=document.getElementById('breath-orb'),lbl=document.getElementById('breath-phase-label'),tmr=document.getElementById('breath-timer'),toggleBtn=document.getElementById('breath-toggle-btn'),modeBtn=document.getElementById('breath-mode-btn'),chimeBtn=document.getElementById('breath-chime-btn');if(!orb||!toggleBtn)return;let actx=null,active=false,mode='478',timerId=null;const MODES={'478':{label:'Pace: 4-7-8 Settle',phases:[{name:'Inhale Slowly',sec:4,phase:'inhale',freq:432},{name:'Hold Gently',sec:7,phase:'hold',freq:528},{name:'Long Exhale',sec:8,phase:'exhale',freq:288}]},'55':{label:'Pace: 5.5s Coherent River',phases:[{name:'River Inhale',sec:5.5,phase:'inhale',freq:432},{name:'Ocean Exhale',sec:5.5,phase:'exhale',freq:324}]}};function ringBowl(baseFreq,dur=3.6){try{if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();const now=actx.currentTime;[1,1.5,2].forEach((mult,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type=i===0?'sine':'triangle';o.frequency.setValueAtTime(baseFreq*mult,now);g.gain.setValueAtTime(0.0001,now);g.gain.linearRampToValueAtTime(0.032/(i+1),now+0.08);g.gain.exponentialRampToValueAtTime(0.0001,now+dur/(i*0.4+1));o.connect(g).connect(actx.destination);o.start(now);o.stop(now+dur);});}catch(_){}}function runPhase(pIdx){if(!active)return;const seq=MODES[mode].phases,step=seq[pIdx%seq.length];orb.dataset.phase=step.phase;orb.style.setProperty('--breath-dur',step.sec+'s');lbl.textContent=step.name;ringBowl(step.freq,Math.min(3.8,step.sec*0.8));let rem=Math.ceil(step.sec);tmr.textContent=rem+'s';clearInterval(timerId);timerId=setInterval(()=>{if(!active)return clearInterval(timerId);rem-=1;if(rem>0){tmr.textContent=rem+'s';}else{clearInterval(timerId);runPhase(pIdx+1);}},1000);}function toggleBreath(){active=!active;toggleBtn.setAttribute('aria-pressed',String(active));if(active){toggleBtn.textContent='Pause Breath Flow';runPhase(0);}else{clearInterval(timerId);orb.dataset.phase='idle';lbl.textContent='Tap to Breathe';tmr.textContent=mode==='478'?'4 · 7 · 8':'5.5 · 5.5';toggleBtn.textContent='Begin Breath Flow';}}toggleBtn.addEventListener('click',toggleBreath);orb.addEventListener('click',toggleBreath);orb.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleBreath();}});modeBtn?.addEventListener('click',()=>{mode=mode==='478'?'55':'478';modeBtn.dataset.mode=mode;modeBtn.textContent=MODES[mode].label;if(active)runPhase(0);else tmr.textContent=mode==='478'?'4 · 7 · 8':'5.5 · 5.5';});chimeBtn?.addEventListener('click',()=>ringBowl(432,4.2));})();

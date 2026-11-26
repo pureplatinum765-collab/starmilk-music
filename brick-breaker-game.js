@@ -83,6 +83,7 @@
     screenShake: { x: 0, y: 0, intensity: 0, decay: 0.85 },
     transition: { active: false, text: '', alpha: 0, ringRadius: 0, startTime: 0 },
     paddleTrail: [],
+    ballTrail: [],
   };
 
   let audioCtx;
@@ -482,6 +483,12 @@
       if (s.y > canvas.height) { s.y = -3; s.x = Math.random() * canvas.width; }
     });
 
+    // Ball trail fade
+    for (let i = state.ballTrail.length - 1; i >= 0; i--) {
+      state.ballTrail[i].a *= 0.86;
+      if (state.ballTrail[i].a < 0.04) state.ballTrail.splice(i, 1);
+    }
+
     // Balls
     state.balls.forEach((ball) => {
       if (ball.attached) {
@@ -492,6 +499,8 @@
       const slowFactor = active('slow') ? 0.7 : 1;
       ball.x += ball.vx * slowFactor;
       ball.y += ball.vy * slowFactor;
+      state.ballTrail.push({ x: ball.x, y: ball.y, a: 0.5 });
+      if (state.ballTrail.length > 18) state.ballTrail.shift();
 
       // Wall collisions
       if (ball.x < ball.r) { ball.x = ball.r; ball.vx = Math.abs(ball.vx); beep(220, 0.05, 'sine', 0.03); }
@@ -953,9 +962,19 @@
     g.fillStyle = grad;
     g.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Stars
+    // Slow breathing glow behind the field (zen ambience)
+    const breathe = 0.5 + 0.5 * Math.sin(performance.now() * 0.0004);
+    const bgGlow = g.createRadialGradient(canvas.width / 2, canvas.height * 0.42, 0, canvas.width / 2, canvas.height * 0.42, Math.max(canvas.width, canvas.height) * 0.55);
+    bgGlow.addColorStop(0, `rgba(217,170,78,${0.045 + breathe * 0.025})`);
+    bgGlow.addColorStop(1, 'rgba(217,170,78,0)');
+    g.fillStyle = bgGlow;
+    g.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Stars — slow twinkle in warm honey light
+    const nowMs = performance.now();
     state.stars.forEach((s) => {
-      g.fillStyle = `rgba(185, 158, 255, ${s.a})`;
+      const tw = 0.65 + 0.35 * Math.sin(nowMs * 0.0012 + s.x * 0.05 + s.y * 0.03);
+      g.fillStyle = `rgba(237,199,125,${(s.a * tw).toFixed(3)})`;
       g.beginPath(); g.arc(s.x, s.y, s.r, 0, Math.PI * 2); g.fill();
     });
 
@@ -1024,6 +1043,14 @@
     g.shadowColor = 'rgba(245,158,11,.9)';
     g.fillRect(state.paddle.x, state.paddle.y, state.paddle.w, state.paddle.h);
     g.shadowBlur = 0;
+
+    // Ball trail — a soft comet of light following each ball
+    state.ballTrail.forEach((t) => {
+      g.fillStyle = `rgba(237,199,125,${(t.a * 0.35).toFixed(3)})`;
+      g.beginPath();
+      g.arc(t.x, t.y, Math.max(1.5, 4.5 * dpr * t.a), 0, Math.PI * 2);
+      g.fill();
+    });
 
     // Balls
     state.balls.forEach((ball) => {
