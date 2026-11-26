@@ -3,6 +3,7 @@
    Rule: every element must reinforce the composed listening journey, never compete with it. */
 
 :root {
+  color-scheme: dark;
   --ink: #181f19;
   --ink-deep: #0e1511;
   --plum: #28352c;
@@ -185,7 +186,7 @@ html:not(.js) .mood-ring-trigger { display: none !important; }
   overflow: hidden;
   pointer-events: none;
   isolation: isolate;
-  background: radial-gradient(circle at 50% 40%, rgba(38,28,48,.08), rgba(8,7,11,.28));
+  background: radial-gradient(circle at 50% 40%, rgba(28,34,26,.08), rgba(8,11,9,.28));
   transition: filter .9s var(--ease), opacity .55s var(--ease);
 }
 .tapestry-plate {
@@ -225,7 +226,7 @@ html:not(.js) .mood-ring-trigger { display: none !important; }
   transform: translate3d(0, calc(var(--tapestry-progress) * -3vh), 0) scale(1.08);
   will-change: transform;
 }
-.tapestry-window::after { content: ""; position: absolute; inset: 0; background: linear-gradient(120deg, rgba(13,10,17,.6), rgba(13,10,17,.14) 53%, rgba(15,20,34,.54)); }
+.tapestry-window::after { content: ""; position: absolute; inset: 0; background: linear-gradient(120deg, rgba(14,17,12,.6), rgba(14,17,12,.14) 53%, rgba(13,18,14,.54)); }
 .tapestry-window--moon { opacity: .2; mix-blend-mode: normal; filter: saturate(.72); transform: translate3d(0, calc(var(--tapestry-progress) * -4vh), 0) scale(1.12) rotate(1deg); }
 .tapestry-window--rose { opacity: .25; mix-blend-mode: normal; filter: saturate(1.12) hue-rotate(8deg); transform: translate3d(0, calc(var(--tapestry-progress) * -5vh), 0) scale(1.1) rotate(-1deg); }
 .tapestry-window--ochre { opacity: .21; mix-blend-mode: normal; filter: saturate(.72) sepia(.14); transform: translate3d(0, calc(var(--tapestry-progress) * -2vh), 0) scale(1.1); }
@@ -360,7 +361,7 @@ section { position: relative; overflow: clip; padding: var(--space) var(--gutter
 .river-copy { position: absolute; left: var(--gutter); bottom: 13svh; width: min(34rem, calc(100% - 2 * var(--gutter))); z-index: 2; }
 .river-title { color: #f3ecdd; }
 .river-caption, .river-ocean-copy { color: rgba(243,236,221,.76); }
-.tributary, .river-leaf { border-radius: 0; border: 1px solid rgba(243,236,221,.35); background: rgba(23,32,43,.65); color: #f3ecdd; box-shadow: var(--shadow-lift); }
+.tributary, .river-leaf { border-radius: 0; border: 1px solid rgba(243,236,221,.35); background: rgba(18,25,20,.65); color: #f3ecdd; box-shadow: var(--shadow-lift); }
 .tributary:nth-of-type(1) { top: 22vh; }
 .tributary:nth-of-type(2) { top: 30vh; }
 .tributary:nth-of-type(3) { top: 43vh; }
@@ -624,7 +625,7 @@ section { position: relative; overflow: clip; padding: var(--space) var(--gutter
   min-height: 16rem;
   border: 1px solid var(--line);
   background:
-    radial-gradient(circle at 50% 0%, rgba(74,85,120,.28), transparent 70%),
+    radial-gradient(circle at 50% 0%, rgba(97,116,75,.28), transparent 70%),
     rgba(26,39,28,.6);
   box-shadow: inset 0 1px 0 rgba(242,231,208,.07), inset 0 -18px 34px rgba(11,18,13,.36);
 }
@@ -1008,7 +1009,7 @@ footer { padding: 5rem var(--gutter) 6rem; border-top: 1px solid var(--line); ba
 .chat-suggestions { display: flex; flex-wrap: wrap; gap: .45rem; }
 .chat-suggestion-chip, .starmilk-chat-links a { padding: .38rem .5rem; border: 1px solid var(--line); border-radius: 0; background: transparent; color: var(--paper-dim); text-decoration: none; cursor: pointer; font-size: .7rem; }
 .starmilk-chat-input { border-top: 1px solid var(--line); border-bottom: 0; }
-.starmilk-chat-input input { min-width: 0; flex: 1; border: 1px solid var(--line); border-radius: 0; background: rgba(8,8,10,.35); color: var(--paper); padding: .6rem; }
+.starmilk-chat-input input { min-width: 0; flex: 1; border: 1px solid var(--line); border-radius: 0; background: rgba(10,14,10,.4); color: var(--paper); padding: .6rem; }
 .starmilk-chat-input button { border: 1px solid var(--honey); background: transparent; color: var(--honey-soft); padding: .6rem .7rem; cursor: pointer; }
 body:has(.radio-floating.open) .starmilk-chat-toggle, body:has(.radio-floating.open) .starmilk-chat-panel { opacity: 0; pointer-events: none; }
 
@@ -1961,7 +1962,7 @@ section {
   width: 3.1rem;
   height: 3.1rem;
   border-radius: 12px;
-  background: linear-gradient(135deg, #2d3a4a, #6b5238);
+  background: linear-gradient(135deg, #2c3a2f, #6b5238);
   border: 1px solid rgba(255, 255, 255, .14);
   box-shadow: 0 6px 16px rgba(0, 0, 0, .35);
   position: relative;
@@ -2426,7 +2427,7 @@ main > section:not(#hero) {
   gap: 0.5rem;
   padding: 0.35rem 1rem;
   border-radius: 999px;
-  background: rgba(12, 17, 22, 0.78);
+  background: rgba(11, 15, 12, 0.78);
   border: 1px solid rgba(217, 170, 78, 0.22);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   font-family: var(--font-sans);
@@ -2746,7 +2747,7 @@ footer {
   height: 2.15rem;
   padding: 0 0.5rem;
   border-radius: 999px;
-  background: radial-gradient(circle at 50% 35%, rgba(217, 170, 78, 0.26), rgba(12, 17, 24, 0.92));
+  background: radial-gradient(circle at 50% 35%, rgba(217, 170, 78, 0.26), rgba(11, 15, 12, 0.92));
   border: 1px solid rgba(240, 203, 126, 0.42);
   box-shadow: 0 0 20px rgba(217, 170, 78, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.14);
   font-family: var(--font-monument);
@@ -2761,7 +2762,7 @@ footer {
   align-items: center;
   padding: 0.38rem 1.05rem;
   border-radius: 999px;
-  background: rgba(10, 15, 22, 0.76);
+  background: rgba(9, 14, 11, 0.76);
   border: 1px solid rgba(242, 231, 208, 0.14);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
@@ -2830,7 +2831,7 @@ footer {
   padding: 1rem 1.15rem !important;
   border-radius: 16px !important;
   border: 1px solid rgba(242, 231, 208, 0.12) !important;
-  background: rgba(12, 17, 22, 0.62) !important;
+  background: rgba(11, 15, 12, 0.62) !important;
   color: rgba(242, 231, 208, 0.82) !important;
   text-align: left;
   cursor: pointer;
@@ -2848,7 +2849,7 @@ footer {
 
 .lyrics-song.active {
   border-color: rgba(240, 203, 126, 0.62) !important;
-  background: linear-gradient(135deg, rgba(217, 170, 78, 0.18), rgba(16, 23, 28, 0.88)) !important;
+  background: linear-gradient(135deg, rgba(217, 170, 78, 0.18), rgba(15, 21, 18, 0.88)) !important;
   color: #fffdf9 !important;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35), inset 3px 0 0 #f0cb7e !important;
 }
@@ -2880,7 +2881,7 @@ footer {
   padding: clamp(1.75rem, 4vw, 3rem) !important;
   background:
     radial-gradient(circle at 75% 25%, rgba(217, 170, 78, 0.12), transparent 60%),
-    rgba(12, 17, 22, 0.72) !important;
+    rgba(11, 15, 12, 0.72) !important;
 }
 
 .honey-line {
@@ -2971,7 +2972,7 @@ footer {
 }
 
 .yt-play-icon path:first-child {
-  fill: rgba(12, 17, 24, 0.86) !important;
+  fill: rgba(11, 15, 12, 0.86) !important;
   stroke: rgba(240, 203, 126, 0.75);
   stroke-width: 1.6px;
 }
@@ -2995,7 +2996,7 @@ footer {
   padding: 0.65rem 1.35rem !important;
   border-radius: 999px;
   border: 1px solid rgba(240, 203, 126, 0.36) !important;
-  background: rgba(14, 20, 26, 0.78);
+  background: rgba(13, 19, 16, 0.78);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
@@ -3019,7 +3020,7 @@ footer {
   border-radius: 16px !important;
   border: 1px solid rgba(242, 231, 208, 0.12) !important;
   border-left: 3px solid #d9aa4e !important;
-  background: rgba(12, 17, 22, 0.65) !important;
+  background: rgba(11, 15, 12, 0.65) !important;
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
@@ -3049,7 +3050,7 @@ footer {
 }
 
 .mood-ring-card {
-  background: rgba(12, 16, 24, 0.92) !important;
+  background: rgba(11, 15, 12, 0.92) !important;
   border: 1px solid rgba(240, 203, 126, 0.26) !important;
   -webkit-backdrop-filter: blur(28px);
   backdrop-filter: blur(28px);
@@ -3062,13 +3063,13 @@ footer {
   padding: 1rem 1.15rem !important;
   border-radius: 16px !important;
   border: 1px solid rgba(242, 231, 208, 0.14) !important;
-  background: radial-gradient(circle at 85% 20%, rgba(217, 170, 78, 0.12), rgba(20, 26, 34, 0.75)) !important;
+  background: radial-gradient(circle at 85% 20%, rgba(217, 170, 78, 0.12), rgba(18, 24, 19, 0.75)) !important;
   color: #fbf6ec !important;
 }
 
 .mood-orb:hover {
   border-color: #f0cb7e !important;
-  background: linear-gradient(135deg, rgba(217, 170, 78, 0.28), rgba(32, 42, 52, 0.9)) !important;
+  background: linear-gradient(135deg, rgba(217, 170, 78, 0.28), rgba(28, 37, 30, 0.9)) !important;
   color: #fffdf9 !important;
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.4), 0 0 20px rgba(217, 170, 78, 0.2);
 }
@@ -3086,7 +3087,7 @@ footer {
   background:
     radial-gradient(circle at 18% 50%, rgba(126, 184, 179, 0.16), transparent 52%),
     radial-gradient(circle at 85% 20%, rgba(217, 170, 78, 0.14), transparent 48%),
-    linear-gradient(155deg, rgba(14, 21, 29, 0.84) 0%, rgba(9, 13, 19, 0.9) 100%);
+    linear-gradient(155deg, rgba(13, 19, 17, 0.84) 0%, rgba(8, 12, 10, 0.9) 100%);
   -webkit-backdrop-filter: blur(22px) saturate(135%);
   backdrop-filter: blur(22px) saturate(135%);
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 248, 231, 0.1);
@@ -3113,7 +3114,7 @@ footer {
   user-select: none;
   border: 1.5px solid rgba(240, 203, 126, 0.48);
   background:
-    radial-gradient(circle at 35% 30%, rgba(240, 203, 126, 0.35), rgba(126, 184, 179, 0.18) 55%, rgba(12, 18, 26, 0.92) 100%);
+    radial-gradient(circle at 35% 30%, rgba(240, 203, 126, 0.35), rgba(126, 184, 179, 0.18) 55%, rgba(11, 16, 14, 0.92) 100%);
   box-shadow:
     0 0 36px rgba(217, 170, 78, 0.22),
     0 0 70px rgba(126, 184, 179, 0.14),
@@ -3210,7 +3211,7 @@ footer {
   left: 50%;
   transform: translateX(-50%) translateY(6px);
   padding: 0.55rem 0.65rem;
-  background: rgba(14, 20, 26, 0.96);
+  background: rgba(13, 19, 16, 0.96);
   border: 1px solid rgba(240, 203, 126, 0.35);
   border-radius: 999px;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55), 0 0 16px rgba(217, 170, 78, 0.15);
